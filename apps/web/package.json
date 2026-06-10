@@ -21,6 +21,7 @@
         "@bible-reader/config": "*",
         "@types/react": "^18.0.0",
         "@types/react-dom": "^18.0.0",
+        "@types/node": "^20.17.6",
         "typescript": "^5.4.0",
         "eslint": "^8.0.0",
         "eslint-config-next": "^15.0.0"
