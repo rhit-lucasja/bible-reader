@@ -1,0 +1,65 @@
+name: bible-reader
+
+services:
+
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bible_reader
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: builder
+    command: npm run dev --workspace=apps/api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/bible_reader
+      EMBEDDING_PROVIDER: ollama
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./apps/api/src:/app/apps/api/src
+      - ./packages:/app/packages
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: builder
+    command: npm run dev --workspace=apps/web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: local-dev-secret-replace-in-production
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/web/app:/app/apps/web/app
+      - ./apps/web/components:/app/apps/web/components
+      - ./packages:/app/packages
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
