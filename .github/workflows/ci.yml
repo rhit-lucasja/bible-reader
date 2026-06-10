@@ -12,6 +12,8 @@ jobs:
   ci:
     name: Lint, typecheck, test
     runs-on: ubuntu-latest
+    env:
+      TURBO_TELEMETRY_DISABLED: 1
 
     steps:
       - name: Checkout repository
