@@ -32,3 +32,6 @@ npm-debug.log*
 
 # Prisma generated client (generated at build time)
 packages/db/src/generated
+
+# Vercel build
+.vercel/
