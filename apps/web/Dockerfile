@@ -1,3 +1,8 @@
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat openssl
+RUN npm install -g turbo
+WORKDIR /app
+
 FROM base AS pruner
 COPY . .
 RUN turbo prune @bible-redaer/web --docker
