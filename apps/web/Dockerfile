@@ -5,7 +5,7 @@ WORKDIR /app
 
 FROM base AS pruner
 COPY . .
-RUN turbo prune @bible-redaer/web --docker
+RUN turbo prune @bible-reader/web --docker
 
 FROM base AS builder
 COPY --from=pruner /app/out/json/ .
