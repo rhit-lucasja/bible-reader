@@ -8,7 +8,6 @@ const prisma = new PrismaClient()
 const TRANSLATIONS: { id: string; sourceId: string; adapter: SourceAdapter }[] = [
     { id: 'KJV', sourceId: 'eng_kjv', adapter: helloaoAdapter },
     { id: 'BSB', sourceId: 'BSB', adapter: helloaoAdapter },
-    { id: 'WEB', sourceId: 'eng_webc', adapter: helloaoAdapter },
 ]
 
 async function seedTranslation(
