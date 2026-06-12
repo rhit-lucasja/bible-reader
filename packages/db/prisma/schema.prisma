@@ -1,0 +1,183 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url = env("DATABASE_URL")
+}
+
+// ---------------------
+// Bible Contents
+// ---------------------
+model Translation {
+    id                  String @id      // e.g. "KJV" or "NAB"
+    name                String          // e.g. "New American Bible"
+    englishName         String
+    website             String
+    licenseUrl          String
+    shortName           String          // e.g. "KJV" or "NAB"
+    language            String          // ISO 639 3-letter code, e.g. "eng"
+    languageName        String?
+    languageEnglishName String?
+    textDirection       String @default("ltr")  // "ltr" | "rtl"
+    numBooks            Int
+    numChapters         Int
+    numVerses           Int
+
+    books               Book[]
+}
+
+model Book {
+    id                  String          // e.g. "GEN" or "EXO"
+    translationId       String
+    name                String          // translation-specific name
+    commonName          String          // common canonical name
+    title               String?         // a more descriptive name sometimes given by translation
+    order               Int             // book order in the translation
+    numChapters         Int
+    numVerses           Int
+
+    translation         Translation @relation(fields: [translationId], references: [id], onDelete: Cascade)
+    chapters            Chapter[]
+
+    @@id([id, translationId])
+}
+
+model Chapter {
+    number              Int
+    bookId              String
+    translationId       String
+    numVerses           Int
+
+    book                Book @relation(fields: [bookId, translationId], references: [id, translationId], onDelete: Cascade)
+    verses              Verse[]
+
+    @@id([number, bookId, translationId])
+}
+
+model Verse {
+    id                  Int @id @default(autoincrement())
+    number              Int
+    chapterNumber       Int
+    bookId              String
+    translationId       String
+    
+    // plaintext, used for embedding and simple display
+    text                String
+    
+    // full structured content from API, preserved as JSON
+    // includes format, headings, footnote refs, etc.
+    content             Json
+
+    // pgvector embedding (768 dimensions for nomic-embed-text)
+    // Only populated for one translation to avoid storing redundant
+    //   near-idential embeddings for every translation
+    embedding           Unsupported("vector(768)")?
+
+    chapter             Chapter @relation(fields: [chapterNumber, bookId, translationId], references: [number, bookId, translationId], onDelete: Cascade)
+
+    @@unique([number, chapterNumber, bookId, translationId])
+    @@index([bookId, translationId])
+    @@index([chapterNumber, bookId, translationId])
+}
+
+// ---------------------
+// User Accounts & Auth
+// ---------------------
+model User {
+    id                  String @id @default(cuid())
+    email               String @unique
+    emailVerified       DateTime?
+    name                String?
+    image               String?
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @updatedAt
+
+    // User's preferred translation, defaults to NABRE
+    preferredTranslationId String @default("NABRE")
+
+    accounts            Account[]
+    sessions            Session[]
+    bookmarks           Bookmark[]
+    searchHistory       SearchHistory[]
+    readingHistory      ReadingHistory[]
+}
+
+// Auth.js required tables
+model Account {
+    id                  String @id @default(cuid())
+    userId              String
+    type                String
+    provider            String
+    providerAccountId   String
+    refresh_token       String? @db.Text
+    access_token        String? @db.Text
+    expires_at          Int?
+    token_type          String?
+    scope               String?
+    id_token            String? @db.Text
+    session_state       String?
+
+    user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id                  String @id @default(cuid())
+    sessionToken        String @unique
+    userId              String
+    expires             DateTime
+
+    user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+    identifier          String
+    token               String @unique
+    expires             DateTime
+
+    @@unique([identifier, token])
+}
+
+// ---------------------
+// User Activity
+// ---------------------
+model Bookmark {
+    id                  Int @id @default(autoincrement())
+    userId              String
+    verseId             Int
+    translationId       String
+    note                String?
+    createdAt           DateTime @default(now())
+
+    user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, verseId, translationId])
+}
+
+model SearchHistory {
+    id                  Int @id @default(autoincrement())
+    userId              String
+    query               String
+    searchType          String // "reference" || "keyword" || "semantic"
+    createdAt           DateTime @default(now())
+
+    user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId, createdAt])
+}
+
+model ReadingHistory {
+    id                  Int @id @default(autoincrement())
+    userId              String
+    bookId              String
+    chapterNumber       Int
+    translationId       String
+    readAt              DateTime @default(now())
+
+    user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId, readAt])
+}
