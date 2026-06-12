@@ -19,6 +19,20 @@ services:
       timeout: 5s
       retries: 5
 
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: builder
+    command: sh -c "npx prisma migrate deploy --schema=packages/db/prisma/schema.prisma && npx prisma db execute --schema=packages/db/prisma/schema.prisma --stdin <<< 'CREATE EXTENSION IF NOT EXISTS vector;'"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/bible_reader
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./packages:/app/packages
+
   api:
     build:
       context: .
@@ -39,6 +53,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
   web:
     build:
