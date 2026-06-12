@@ -1,2 +1,15 @@
-// Prisma client will export from here once defined
-export {}
+export * from './generated'
+export { PrismaClient } from './generated'
+
+import { PrismaClient } from './generated'
+
+declare global {
+    // eslint-disable-next-line no-var
+    var prisma: PrismaClient | undefined
+}
+
+export const db = globalThis.prisma ?? new PrismaClient()
+
+if (process.env.NODE_ENV !== 'production') {
+    globalThis.prisma = db
+}
