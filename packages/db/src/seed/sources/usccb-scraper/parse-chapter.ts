@@ -43,6 +43,7 @@ $('#scribeI').children().each((_, el) => {
     const $el = $(el)
     const tag = el.tagName
     const cls = $el.attr('class') ?? ''
+    console.log(`Parsing <${tag}> tag with class '${cls}'`)
 
     // skip footnotes and cross-references
     if (cls.includes('fn') || cls.includes('en')) return

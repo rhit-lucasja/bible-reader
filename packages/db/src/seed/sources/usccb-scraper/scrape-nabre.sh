@@ -71,7 +71,7 @@ for ((i = 0 ; i < 2 ; i++)); do
     nameStripped="${name// /}"
     echo "  => $base_url/${nameStripped,,}/$chapter"
     # may need to try multiple times if server refuses
-    MAX_RETRIES=3
+    MAX_RETRIES=5
     for attempt in $(seq 1 $MAX_RETRIES); do
       curl -s \
         -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
@@ -86,12 +86,12 @@ for ((i = 0 ; i < 2 ; i++)); do
       fi
 
       # else error message and try again
-      echo "Attempt $attempt failed, retrying in ${attempt}s..."
+      echo "    => attempt $attempt failed, retrying in ${attempt}s..."
       sleep $attempt
     done
 
     if ! grep -q 'id="scribeI"' "$temp_html"; then
-      echo "ERROR: Could not retrieve $base_url/${nameStripped,,}/$chapter after $MAX_RETRIES attempts"
+      echo "    => ERROR: Could not retrieve $base_url/${nameStripped,,}/$chapter after $MAX_RETRIES attempts"
       exit 1
     fi
     
