@@ -56,12 +56,17 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
     # Credits to https://github.com/RaynardGerraldo/bible_verse-cli
     usccb_html=$(curl -s "$base_url/${name,,}/$chapter")
 
-    
+    # append chapter to book json directly
+    book_json=$(echo "$book_json" | jq --arg chapter "$usccb_html" '.chapters += [$chapter]')
+
   done
 
   # append the book to output file
   echo -n "$book_json" >> "$output_file"
   echo "," >> "$output_file"
+
+  ### FOR DEVELOPMENT PURPOSES STOP AFTER GENESIS COMPLETES ###
+  break
 
 done
 
