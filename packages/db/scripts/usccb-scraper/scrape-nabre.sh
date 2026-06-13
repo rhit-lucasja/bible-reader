@@ -44,35 +44,30 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
   name=$(echo "$entry" | jq -r '.name') # common name (serves also as route on USCCB site)
   title=$(echo "$entry" | jq -r '.title') # longer title
   numChapters=$(echo "$entry" | jq -r '.numChapters') # number of chapters in the book
-  echo "Processing book $id"
+  echo "Processing $id"
 
   # Start an empty array for chapters of the current book
   book_json=$(jq -n --arg id "$id" --arg name "$name" --arg title "$title" '{"id": $id, "name": $name, "title": $title, "chapters": []}')
 
   # Loop through each chapter
   for chapter in $(seq 1 "$numChapters"); do
-    echo "  Chapter $chapter"
+    nameStripped="${name// /}"
+    echo "  => $base_url/${nameStripped,,}/$chapter"
+    # Credits to https://github.com/RaynardGerraldo/bible_verse-cli
+    usccb_html=$(curl -s "$base_url/${name,,}/$chapter")
+
+    
   done
 
   # append the book to output file
   echo -n "$book_json" >> "$output_file"
   echo "," >> "$output_file"
+
 done
 
 # Close the array of books
 sed -i '$ s/.$//' "$output_file"
 echo ']' >> "$output_file"
-    
-#     # Start an empty array for the chapters of the current book
-#     book_json=$(jq -n --arg book "$book" '{"book": $book, "chapters": []}')
-
-#     # Loop through each chapter
-#     for chapter in $(seq 1 "$chapters"); do
-#       echo "  Chapter $chapter"
-      
-#       # Temporary file to store verses for the current chapter
-#       chapter_file=$(mktemp)
-#       echo '[]' > "$chapter_file"  # Start with an empty array for verses
 
 #       # Fetch and process verses
 #       verse=1
