@@ -36,11 +36,11 @@ base_url="https://bible.usccb.org/bible"
 # to access a chapter at a time, use route /${name.lower()}/${chapterNum}
 
 # create temp HTML file to save to and ensure it deletes even after error
-temp_html=$(mktemp /tmp/chapter.html)
-trap 'rm -f "$temp_html"' EXIT
+temp_html=$(mktemp /tmp/chapter_XXXXXX.html)
+# trap 'rm -f "$temp_html"' EXIT
 # temp JSON file that TypeScript saves to after verse parsing
-temp_ch=$(mktemp /tmp/chapter.json)
-trap 'rm -f "$temp_ch"' EXIT
+temp_ch=$(mktemp /tmp/chapter_XXXXXX.json)
+# trap 'rm -f "$temp_ch"' EXIT
 
 # Loop over books using the data JSON file
 #jq -c '.[]' "$chapters_file" | while read -r entry; do
@@ -73,11 +73,13 @@ for ((i = 0 ; i < 2 ; i++)); do
     curl -s "$base_url/${nameStripped,,}/$chapter" -o "$temp_html"
     
     # run TypeScript to parse verses out of HTML
-    npx tsx parse-chapter.ts "$temp_ch" "$temp_html" "$chapter"
+    npx tsx src/seed/sources/usccb-scraper/parse-chapter.ts "$temp_ch" "$temp_html" "$chapter"
 
     # gather the resulting chapter JSON and add to current book
     chapter_json=$(jq -c '.' "$temp_ch")
     book_json=$(echo "$book_json" | jq --argjson chapter "$chapter_json" '.chapters += [$chapter]')
+    echo "$book_json"
+    exit 1
 
     # sleep a bit so as not to explode USCCB servers
     sleep 1
