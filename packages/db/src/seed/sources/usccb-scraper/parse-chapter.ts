@@ -30,7 +30,8 @@ function flushVerse() {
     }
 }
 
-const [, , outputPath, inputPath, number] = process.argv
+const [, , outputPath, inputPath, numberStr] = process.argv
+const number = parseInt(numberStr, 10)
 
 // load HTML structure from generated input file
 const inputFile = readFileSync(inputPath, 'utf-8')
