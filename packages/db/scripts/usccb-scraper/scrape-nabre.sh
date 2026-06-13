@@ -39,11 +39,22 @@ base_url="https://bible.usccb.org/bible"
 echo '[' > "$output_file"
 
 # Loop over the JSON containing the book and the number of chapters per book
-jq -c '.[]' "$chapters_file" | while read -r entry; do
-  id=$(echo "$entry" | jq -r '.id') # 3-letter ID
-  name=$(echo "$entry" | jq -r '.name') # common name (serves also as route on USCCB site)
-  title=$(echo "$entry" | jq -r '.title') # longer title
-  numChapters=$(echo "$entry" | jq -r '.numChapters') # number of chapters in the book
+#jq -c '.[]' "$chapters_file" | while read -r entry; do
+#  id=$(echo "$entry" | jq -r '.id') # 3-letter ID
+#  name=$(echo "$entry" | jq -r '.name') # common name (serves also as route on USCCB site)
+#  title=$(echo "$entry" | jq -r '.title') # longer title
+#  numChapters=$(echo "$entry" | jq -r '.numChapters') # number of chapters in the book
+### FOR DEBUGGING PURPOSES, ONLY TESTING GENESIS AND PSALMS ###
+ids=('GEN' 'PSA')
+names=('Genesis' 'Psalms')
+titles=('The Book of Genesis' 'The Book of Psalms')
+chs=('50' '150')
+for ((i = 0 ; i < 2 ; i++)); do
+  id="${ids[$i]}"
+  name="${names[$i]}"
+  title="${titles[$i]}"
+  numChapters="${chs[$i]}"
+### REMOVE THESE LINES AND UNCOMMENT ABOVE ONCE CHAPTER PARSING WORKS
   echo "Processing $id"
 
   # Start an empty array for chapters of the current book
@@ -64,9 +75,6 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
   # append the book to output file
   echo -n "$book_json" >> "$output_file"
   echo "," >> "$output_file"
-
-  ### FOR DEVELOPMENT PURPOSES STOP AFTER GENESIS COMPLETES ###
-  break
 
 done
 
