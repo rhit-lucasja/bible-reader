@@ -48,7 +48,7 @@ echo '[' > "$output_file"
 ids=('GEN' 'PSA')
 names=('Genesis' 'Psalms')
 titles=('The Book of Genesis' 'The Book of Psalms')
-chs=('50' '150')
+chs=(50 150)
 for ((i = 0 ; i < 2 ; i++)); do
   id="${ids[$i]}"
   name="${names[$i]}"
@@ -67,14 +67,22 @@ for ((i = 0 ; i < 2 ; i++)); do
     # Credits to https://github.com/RaynardGerraldo/bible_verse-cli
     usccb_html=$(curl -s "$base_url/${name,,}/$chapter")
 
-    # append chapter to book json directly
-    book_json=$(echo "$book_json" | jq --arg chapter "$usccb_html" '.chapters += [$chapter]')
+    # create an empty chapter JSON
+    chapter_json=$(jq -n --argjson number "$chapter" '{"number": $number, "verses": []}')
+    # iterate through verses in chapter
+    
+
+    # append chapter JSON to current book JSON
+    book_json=$(echo "$book_json" | jq --argjson chapter "$chapter_json" '.chapters += [$chapter]')
 
   done
 
   # append the book to output file
   echo -n "$book_json" >> "$output_file"
   echo "," >> "$output_file"
+
+  ### DEBUG LINE: UNCOMMENT TO STOP LOOP AFTER GENESIS ###
+  # break
 
 done
 
