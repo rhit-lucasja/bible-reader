@@ -70,7 +70,30 @@ for ((i = 0 ; i < 2 ; i++)); do
     # save the page with entire chapter contents
     nameStripped="${name// /}"
     echo "  => $base_url/${nameStripped,,}/$chapter"
-    curl -s "$base_url/${nameStripped,,}/$chapter" -o "$temp_html"
+    # may need to try multiple times if server refuses
+    MAX_RETRIES=3
+    for attempt in $(seq 1 $MAX_RETRIES); do
+      curl -s \
+        -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
+        -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+        -H "Accept-Language: en-US,en;q=0.9" \
+        "$base_url/${nameStripped,,}/$chapter" \
+        -o "$temp_html"
+
+      # check if actual content received
+      if grep -q 'id="scribeI"' "$temp_html"; then
+        break
+      fi
+
+      # else error message and try again
+      echo "Attempt $attempt failed, retrying in ${attempt}s..."
+      sleep $attempt
+    done
+
+    if ! grep -q 'id="scribeI"' "$temp_html"; then
+      echo "ERROR: Could not retrieve $base_url/${nameStripped,,}/$chapter after $MAX_RETRIES attempts"
+      exit 1
+    fi
     
     # run TypeScript to parse verses out of HTML
     npx tsx src/seed/sources/usccb-scraper/parse-chapter.ts "$temp_ch" "$temp_html" "$chapter"
