@@ -44,21 +44,10 @@ trap 'rm -f "$temp_ch"' EXIT
 
 # Loop over books using the data JSON file
 jq -c '.[]' "$chapters_file" | while read -r entry; do
- id=$(echo "$entry" | jq -r '.id') # 3-letter ID
- name=$(echo "$entry" | jq -r '.name') # common name (serves also as route on USCCB site)
- title=$(echo "$entry" | jq -r '.title') # longer title
- numChapters=$(echo "$entry" | jq -r '.numChapters') # number of chapters in the book
-### FOR DEBUGGING PURPOSES, ONLY TESTING GENESIS AND PSALMS ###
-# ids=('GEN' 'PSA')
-# names=('Genesis' 'Psalms')
-# titles=('The Book of Genesis' 'The Book of Psalms')
-# chs=(50 150)
-# for ((i = 1 ; i < 2 ; i++)); do
-#   id="${ids[$i]}"
-#   name="${names[$i]}"
-#   title="${titles[$i]}"
-#   numChapters="${chs[$i]}"
-### REMOVE THESE LINES AND UNCOMMENT ABOVE ONCE CHAPTER PARSING WORKS
+  id=$(echo "$entry" | jq -r '.id') # 3-letter ID
+  name=$(echo "$entry" | jq -r '.name') # common name (serves also as route on USCCB site)
+  title=$(echo "$entry" | jq -r '.title') # longer title
+  numChapters=$(echo "$entry" | jq -r '.numChapters') # number of chapters in the book
   echo "Processing $id"
 
   # Start an empty array for chapters of the current book
@@ -94,7 +83,6 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
 
     if ! grep -q 'id="scribeI"' "$temp_html"; then
       echo "    => ERROR: Could not retrieve $base_url/${nameStripped,,}/$chapter after $MAX_TRIES attempts"
-      cat "$temp_html" | head -n 200
       exit 1
     fi
     
