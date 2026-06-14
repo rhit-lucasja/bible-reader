@@ -94,7 +94,7 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
 
     if ! grep -q 'id="scribeI"' "$temp_html"; then
       echo "    => ERROR: Could not retrieve $base_url/${nameStripped,,}/$chapter after $MAX_TRIES attempts"
-      cat "$temp_html" -h 200
+      cat "$temp_html" | head -n 200
       exit 1
     fi
     
