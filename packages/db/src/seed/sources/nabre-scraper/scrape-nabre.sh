@@ -29,9 +29,11 @@ set -e
 # SOFTWARE.
 
 chapters_file="./book-chapters.json"
+output_file="./nabre.json"
+echo '[' > "$output_file"
 # USCCB is official site for NABRE
 base_url="https://www.biblegateway.com/passage"
-# get a book and chapters with /search?=name%20chapter&version=NABRE
+# get a book and chapters with /?search=$name%20$chapter&version=NABRE
 # list of all books available at base URL
 # intro to book (including longer title) at /${name.lower()}/0
 # to access a chapter at a time, use route /${name.lower()}/${chapterNum}
@@ -56,53 +58,46 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
 
   # Loop through each chapter
   for chapter in $(seq 1 "$numChapters"); do
+    
+    # Temporary json to store verses for the current chapter
+    chapter_json=$(jq -n --arg number "$chapter" '{"number": $number, "content": []}')
+    
+    # Credits to https://github.com/RaynardGerraldo/bible_verse-cli
+    target_url="$base_url/?search=$name%20$chapter&version=NABRE"
+    echo "=> Chapter $chapter at $target_url"
+    curl -s \
+      -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
+      -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+      -H "Accept-Language: en-US,en;q=0.9" \
+      -H "Accept-Encoding: gzip, deflate, br" \
+      --compressed \
+      "$target_url" \
+      -o "$temp_html"
 
-    # save the page with entire chapter contents
-    # nameStripped="${name// /}"
-    # echo "  => $base_url/${nameStripped,,}/$chapter"
-    echo "    => $base_url/search?=$name%20$chapter&version=NABRE"
-    # may need to try multiple times if server refuses
-    MAX_TRIES=3
-    for attempt in $(seq 1 $((MAX_TRIES-1))); do
-      curl -s \
-        -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
-        -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-        -H "Accept-Language: en-US,en;q=0.9" \
-        -H "Accept-Encoding: gzip, deflate, br" \
-        --compressed \
-        "$base_url/search?=$name%20$chapter&version=NABRE" \
-        -o "$temp_html"
-
-      # check if actual content received
-      if grep -q 'id="scribeI"' "$temp_html"; then
-        break
-      fi
-
-      # else error message and try again
-      echo "    => attempt $attempt failed, retrying in ${attempt}s..."
-      sleep $attempt
-    done
-
-    if ! grep -q 'id="scribeI"' "$temp_html"; then
-      echo "    => ERROR: Could not retrieve $base_url/${nameStripped,,}/$chapter after $MAX_TRIES attempts"
+    # check if content received properly
+    if ! grep -q 'passage-content' "$temp_html"; then
+      echo "=> ERROR: Failed to receive passage contents"
+      cat "$temp_html" > "./err.html"
       exit 1
     fi
-    
-    # run TypeScript to parse verses out of HTML
-    npx tsx src/seed/sources/usccb-scraper/parse-chapter.ts "$temp_ch" "$temp_html" "$chapter"
+
+    # run TypeScript to parse verse contents
+    npx tsx src/seed/sources/nabre-scraper/parse-chapter.ts "$temp_ch" "$temp_html" "$chapter"
 
     # gather the resulting chapter JSON and add to current book
     chapter_json=$(jq -c '.' "$temp_ch")
     book_json=$(echo "$book_json" | jq --argjson chapter "$chapter_json" '.chapters += [$chapter]')
+    ### DEBUG LINE: UNCOMMENT TO STOP LOOP AFTER CHAPTER 1
+    break
 
-    # sleep a bit so as not to explode USCCB servers
+    # sleep a bit so as not to explode web servers
     sleep 1
 
   done
   
   # append the book to output file
   echo -n "$book_json" >> "$output_file"
-  echo "," >> "$output_file"
+  echo ',' >> "$output_file"
 
   ### DEBUG LINE: UNCOMMENT TO STOP LOOP AFTER GENESIS ###
   break
