@@ -53,7 +53,7 @@ ids=('GEN' 'PSA')
 names=('Genesis' 'Psalms')
 titles=('The Book of Genesis' 'The Book of Psalms')
 chs=(50 150)
-for ((i = 0 ; i < 2 ; i++)); do
+for ((i = 1 ; i < 2 ; i++)); do
   id="${ids[$i]}"
   name="${names[$i]}"
   title="${titles[$i]}"
@@ -65,7 +65,7 @@ for ((i = 0 ; i < 2 ; i++)); do
   book_json=$(jq -n --arg id "$id" --arg name "$name" --arg title "$title" '{"id": $id, "name": $name, "title": $title, "chapters": []}')
 
   # Loop through each chapter
-  for chapter in $(seq 1 "$numChapters"); do
+  for chapter in $(seq 23 "$numChapters"); do
 
     # save the page with entire chapter contents
     nameStripped="${name// /}"
