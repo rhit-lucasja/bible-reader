@@ -30,7 +30,8 @@ set -e
 
 chapters_file="./book-chapters.json"
 # USCCB is official site for NABRE
-base_url="https://bible.usccb.org/bible"
+base_url="https://www.biblegateway.com/passage"
+# get a book and chapters with /search?=name%20chapter&version=NABRE
 # list of all books available at base URL
 # intro to book (including longer title) at /${name.lower()}/0
 # to access a chapter at a time, use route /${name.lower()}/${chapterNum}
@@ -57,8 +58,9 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
   for chapter in $(seq 1 "$numChapters"); do
 
     # save the page with entire chapter contents
-    nameStripped="${name// /}"
-    echo "  => $base_url/${nameStripped,,}/$chapter"
+    # nameStripped="${name// /}"
+    # echo "  => $base_url/${nameStripped,,}/$chapter"
+    echo "    => $base_url/search?=$name%20$chapter&version=NABRE"
     # may need to try multiple times if server refuses
     MAX_TRIES=3
     for attempt in $(seq 1 $((MAX_TRIES-1))); do
@@ -68,7 +70,7 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
         -H "Accept-Language: en-US,en;q=0.9" \
         -H "Accept-Encoding: gzip, deflate, br" \
         --compressed \
-        "$base_url/${nameStripped,,}/$chapter" \
+        "$base_url/search?=$name%20$chapter&version=NABRE" \
         -o "$temp_html"
 
       # check if actual content received
