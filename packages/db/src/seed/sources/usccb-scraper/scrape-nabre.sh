@@ -37,10 +37,10 @@ base_url="https://bible.usccb.org/bible"
 
 # create temp HTML file to save to and ensure it deletes even after error
 temp_html=$(mktemp /tmp/chapter_XXXXXX.html)
-# trap 'rm -f "$temp_html"' EXIT
+trap 'rm -f "$temp_html"' EXIT
 # temp JSON file that TypeScript saves to after verse parsing
 temp_ch=$(mktemp /tmp/chapter_XXXXXX.json)
-# trap 'rm -f "$temp_ch"' EXIT
+trap 'rm -f "$temp_ch"' EXIT
 
 # Loop over books using the data JSON file
 #jq -c '.[]' "$chapters_file" | while read -r entry; do
@@ -77,6 +77,8 @@ for ((i = 0 ; i < 2 ; i++)); do
         -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
         -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
         -H "Accept-Language: en-US,en;q=0.9" \
+        -H "Accept-Encoding: gzip, deflate, br" \
+        --compressed \
         "$base_url/${nameStripped,,}/$chapter" \
         -o "$temp_html"
 
