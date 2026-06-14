@@ -63,7 +63,7 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
     chapter_json=$(jq -n --arg number "$chapter" '{"number": $number, "content": []}')
     
     # Credits to https://github.com/RaynardGerraldo/bible_verse-cli
-    ### DEBUG LINE: Uncomment next two lines to test Psalm 23 only
+    ### DEBUG: Uncomment the following lines to test a specific book/chapter only
     # name="Psalms"
     # chapter=23
     target_url="$base_url/?search=$name%20$chapter&version=NABRE"
@@ -88,9 +88,9 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
     npx tsx src/seed/sources/nabre-scraper/parse-chapter.ts "$temp_ch" "$temp_html" "$chapter"
 
     # gather the resulting chapter JSON and add to current book
-    chapter_json=$(jq -c '.' "$temp_ch")
+    chapter_json=$(jq '.' "$temp_ch")
     book_json=$(echo "$book_json" | jq --argjson chapter "$chapter_json" '.chapters += [$chapter]')
-    ### DEBUG LINE: UNCOMMENT TO STOP LOOP AFTER CHAPTER 1
+    ### DEBUG: UNCOMMENT TO STOP LOOP AFTER CHAPTER 1
     # break
 
     # sleep a bit so as not to explode web servers
@@ -102,8 +102,8 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
   echo -n "$book_json" >> "$output_file"
   echo ',' >> "$output_file"
 
-  ### DEBUG LINE: UNCOMMENT TO STOP LOOP AFTER GENESIS ###
-  break
+  ### DEBUG: UNCOMMENT TO STOP LOOP AFTER FIRST BOOK ###
+  # break
 
 done
 

@@ -1,4 +1,4 @@
-import { readFileSync, appendFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import * as cheerio from 'cheerio'
 import type { Element } from 'domhandler'
 
@@ -63,11 +63,14 @@ let currentParts: string[] = []
 // helper function to save text of current stream to content
 function flush() {
     if (currentNum !== null) {
-        content.push({
-            type: 'verse',
-            number: currentNum,
-            content: [currentParts.join('').replace(/[^\S\n]+/g, ' ').trim()]
-        })
+        const text = currentParts.join('').replace(/[^\S\n]+/g, ' ').trim()
+        if (text.length > 0) {
+            content.push({
+                type: 'verse',
+                number: currentNum,
+                content: [currentParts.join('').replace(/[^\S\n]+/g, ' ').trim()]
+            })
+        }
         currentParts = []
     }
 }
@@ -133,4 +136,4 @@ $('.text-html').first().children().each((_, el) => {
 flush()
 
 const result = { number, content }
-appendFileSync(outputPath, JSON.stringify(result))
+writeFileSync(outputPath, JSON.stringify(result))
