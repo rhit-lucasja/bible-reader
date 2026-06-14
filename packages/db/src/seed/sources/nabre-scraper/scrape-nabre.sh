@@ -63,6 +63,9 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
     chapter_json=$(jq -n --arg number "$chapter" '{"number": $number, "content": []}')
     
     # Credits to https://github.com/RaynardGerraldo/bible_verse-cli
+    ### DEBUG LINE: Uncomment next two lines to test Psalm 23 only
+    # name="Psalms"
+    # chapter=23
     target_url="$base_url/?search=$name%20$chapter&version=NABRE"
     echo "=> Chapter $chapter at $target_url"
     curl -s \
@@ -88,7 +91,7 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
     chapter_json=$(jq -c '.' "$temp_ch")
     book_json=$(echo "$book_json" | jq --argjson chapter "$chapter_json" '.chapters += [$chapter]')
     ### DEBUG LINE: UNCOMMENT TO STOP LOOP AFTER CHAPTER 1
-    break
+    # break
 
     # sleep a bit so as not to explode web servers
     sleep 1

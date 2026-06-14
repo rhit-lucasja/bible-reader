@@ -5,6 +5,7 @@ import type { Element } from 'domhandler'
 
 // flatten <p> and other content tags into a linear stream of text/verseNum markers
 type Token = { type: 'text'; value: string }
+    | { type: 'heading'; value: string }
     | { type: 'number'; value : number }
 
 function flattenParagraph($p: cheerio.Cheerio<Element>, $: cheerio.CheerioAPI): Token[] {
@@ -18,18 +19,31 @@ function flattenParagraph($p: cheerio.Cheerio<Element>, $: cheerio.CheerioAPI): 
         if (node.type === 'tag') {
             const $node = $(node)
 
-            // strip footnote/cross-reference markers and don't recurse
-            if (node.tagName === 'a' && ($node.hasClass('fnref') || $node.hasClass('enref'))) {
+            // ignore footnotes or cross-reference tags
+            if ($node.hasClass('footnote') || $node.hasClass('crossreference')) {
                 return
             }
 
-            // verse number marker, don't recurse into but recognize break
-            if (node.tagName === 'span' && $node.hasClass('bcv')) {
+            // line breaks, especially show up in poetry segments
+            if (node.tagName === 'br') {
+                tokens.push({ type: 'text', value: '\n' })
+                return
+            }
+
+            // inline heading tag, don't recurse into but record token
+            if (node.tagName === 'b' && $node.hasClass('inline-h3')) {
+                // tokens.push({ type: 'number', value: parseInt($node.text().trim(), 10) })
+                tokens.push({ type: 'heading', value: $node.text().trim() })
+                return
+            }
+            
+            // verse number tag
+            if (node.tagName === 'sup' && $node.hasClass('versenum')) {
                 tokens.push({ type: 'number', value: parseInt($node.text().trim(), 10) })
                 return
             }
 
-            // recurse into children of everything else
+            // recurse into children of anything else
             ;(node.children ?? []).forEach(walk)
         }
     }
@@ -39,6 +53,7 @@ function flattenParagraph($p: cheerio.Cheerio<Element>, $: cheerio.CheerioAPI): 
 }
 
 type ContentItem = { type: 'heading'; content: string[] }
+    | { type: 'inline-heading'; content: string[] }
     | { type: 'verse'; number: number; content: unknown[] }
 
 const content: ContentItem[] = []
@@ -65,37 +80,23 @@ const inputFile = readFileSync(inputPath, 'utf-8')
 const $ = cheerio.load(inputFile)
 
 // iterate through all children elements of content area
-$('#scribeI').children().each((_, el) => {
+$('.text-html').first().children().each((_, el) => {
     // get tag type and class (if applicable) from element
     const $el = $(el)
     const tag = el.tagName
 
     // skip footnotes and cross-references
-    if ($el.hasClass('fn') || $el.hasClass('en')) return
+    if ($el.hasClass('footnotes') || $el.hasClass('crossrefs')) return
+    // skip "CHAPTER #" or similar subheadings
+    if ((tag === 'h3' && $el.hasClass('chapter')) || (tag === 'h2' && $el.hasClass('outline'))) {
+        return
+    }
 
-    // section headings
-    if (tag === 'h3' && $el.hasClass('cs')) {
-        // subtitle, like "The Lord, Shepherd and Host" for Psalm 23
-        flush()
+    // other headings are like Psalm titles or I/II separators
+    if (tag === 'h3') {
+        // flush()
         content.push({ type: 'heading', content: [$el.text().trim()] })
         return
-    }
-    if (tag === 'h4' && $el.hasClass('chsect')) {
-        // section, like I/II in Psalms - skip for now
-        return
-    }
-    if (tag === 'h3' && $el.hasClass('ch')) {
-        // skip "CHAPTER #" heading
-        return
-    }
-
-    if (tag !== 'p') return // don't bother with non-<p> tags
-
-    // record inline section header (flushing previous verse) if it exists
-    const strong = $el.children('strong').first()
-    if (strong.length > 0) {
-        flush()
-        content.push({ type: 'heading', content: [strong.text().trim()] })
     }
 
     // if within a verse and have parts to flush, then do it with a new line
@@ -105,11 +106,22 @@ $('#scribeI').children().each((_, el) => {
     }
 
     // else flatten paragraph that may contain multiple verses
-    const tokens = flattenParagraph($el, $)
+    // div poetry elements wrap around paragraph elements
+    let tokens: Token[] = []
+    if (tag == 'div' && $el.hasClass('poetry')) {
+        // <div.poetry> tags wrap around <p>
+        tokens = flattenParagraph($el.children('p').first(), $)
+    } else {
+        // direct <p> tag
+        tokens = flattenParagraph($el, $)
+    }
     for (const token of tokens) {
         if (token.type === 'number') {
             flush() // flush previous verse contents
             currentNum = token.value
+        } else if (token.type === 'heading') {
+            flush() // flush verse contents
+            content.push({ type: 'inline-heading', content: [token.value] })
         } else if (currentNum !== null) {
             // else push token contents to working stream in verse
             currentParts.push(token.value)
