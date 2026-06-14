@@ -71,8 +71,8 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
     nameStripped="${name// /}"
     echo "  => $base_url/${nameStripped,,}/$chapter"
     # may need to try multiple times if server refuses
-    MAX_RETRIES=3
-    for attempt in $(seq 1 $MAX_RETRIES); do
+    MAX_TRIES=3
+    for attempt in $(seq 1 $((MAX_TRIES-1))); do
       curl -s \
         -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
         -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
@@ -93,7 +93,8 @@ jq -c '.[]' "$chapters_file" | while read -r entry; do
     done
 
     if ! grep -q 'id="scribeI"' "$temp_html"; then
-      echo "    => ERROR: Could not retrieve $base_url/${nameStripped,,}/$chapter after $MAX_RETRIES attempts"
+      echo "    => ERROR: Could not retrieve $base_url/${nameStripped,,}/$chapter after $MAX_TRIES attempts"
+      cat "$temp_html" -h 200
       exit 1
     fi
     
