@@ -44,7 +44,6 @@ type ContentItem = { type: 'heading'; content: string[] }
 const content: ContentItem[] = []
 let currentNum: number | null = null
 let currentParts: string[] = []
-// let currentVerse: { number: number; parts: string[] } | null = null
 
 // helper function to save text of current stream to content
 function flush() {
@@ -59,13 +58,11 @@ function flush() {
 }
 
 const [, , outputPath, inputPath, numberStr] = process.argv
-// appendFileSync('src/seed/sources/usccb-scraper/out.html', readFileSync(inputPath, 'utf-8'))
 const number = parseInt(numberStr, 10)
 
 // load HTML structure from generated input file
 const inputFile = readFileSync(inputPath, 'utf-8')
 const $ = cheerio.load(inputFile)
-// console.log($('#scribeI').html()?.slice(0, 2000))
 
 // iterate through all children elements of content area
 $('#scribeI').children().each((_, el) => {

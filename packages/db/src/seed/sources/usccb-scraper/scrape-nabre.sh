@@ -43,21 +43,21 @@ temp_ch=$(mktemp /tmp/chapter_XXXXXX.json)
 trap 'rm -f "$temp_ch"' EXIT
 
 # Loop over books using the data JSON file
-#jq -c '.[]' "$chapters_file" | while read -r entry; do
-#  id=$(echo "$entry" | jq -r '.id') # 3-letter ID
-#  name=$(echo "$entry" | jq -r '.name') # common name (serves also as route on USCCB site)
-#  title=$(echo "$entry" | jq -r '.title') # longer title
-#  numChapters=$(echo "$entry" | jq -r '.numChapters') # number of chapters in the book
+jq -c '.[]' "$chapters_file" | while read -r entry; do
+ id=$(echo "$entry" | jq -r '.id') # 3-letter ID
+ name=$(echo "$entry" | jq -r '.name') # common name (serves also as route on USCCB site)
+ title=$(echo "$entry" | jq -r '.title') # longer title
+ numChapters=$(echo "$entry" | jq -r '.numChapters') # number of chapters in the book
 ### FOR DEBUGGING PURPOSES, ONLY TESTING GENESIS AND PSALMS ###
-ids=('GEN' 'PSA')
-names=('Genesis' 'Psalms')
-titles=('The Book of Genesis' 'The Book of Psalms')
-chs=(50 150)
-for ((i = 1 ; i < 2 ; i++)); do
-  id="${ids[$i]}"
-  name="${names[$i]}"
-  title="${titles[$i]}"
-  numChapters="${chs[$i]}"
+# ids=('GEN' 'PSA')
+# names=('Genesis' 'Psalms')
+# titles=('The Book of Genesis' 'The Book of Psalms')
+# chs=(50 150)
+# for ((i = 1 ; i < 2 ; i++)); do
+#   id="${ids[$i]}"
+#   name="${names[$i]}"
+#   title="${titles[$i]}"
+#   numChapters="${chs[$i]}"
 ### REMOVE THESE LINES AND UNCOMMENT ABOVE ONCE CHAPTER PARSING WORKS
   echo "Processing $id"
 
@@ -65,13 +65,13 @@ for ((i = 1 ; i < 2 ; i++)); do
   book_json=$(jq -n --arg id "$id" --arg name "$name" --arg title "$title" '{"id": $id, "name": $name, "title": $title, "chapters": []}')
 
   # Loop through each chapter
-  for chapter in $(seq 23 "$numChapters"); do
+  for chapter in $(seq 1 "$numChapters"); do
 
     # save the page with entire chapter contents
     nameStripped="${name// /}"
     echo "  => $base_url/${nameStripped,,}/$chapter"
     # may need to try multiple times if server refuses
-    MAX_RETRIES=5
+    MAX_RETRIES=3
     for attempt in $(seq 1 $MAX_RETRIES); do
       curl -s \
         -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
@@ -103,8 +103,6 @@ for ((i = 1 ; i < 2 ; i++)); do
     # gather the resulting chapter JSON and add to current book
     chapter_json=$(jq -c '.' "$temp_ch")
     book_json=$(echo "$book_json" | jq --argjson chapter "$chapter_json" '.chapters += [$chapter]')
-    echo "$book_json"
-    exit 1
 
     # sleep a bit so as not to explode USCCB servers
     sleep 1
