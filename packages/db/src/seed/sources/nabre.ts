@@ -1,19 +1,36 @@
+import { verify } from 'node:crypto'
 import type { SourceAdapter, NormalizedTranslation, NormalizedVerse } from '../types'
+import { fstat, readFileSync } from 'node:fs'
 
-// USCCB is official site for NABRE
-// to access a chapter at a time, use route /${bookName.lower()}/${chapterNum}
-// intro to book (including longer title) at /${bookName.lower()}/0
-// list of all books available at base URL
-const BASE_URL = 'https://bible.usccb.org/bible'
+const BASE_URL = 'https://www.biblegateway.com/versions/New-American-Bible-Revised-Edition-NABRE-Bible'
+const NABRE_FILEPATH = "src/seed/sources/nabre-scraper/nabre.json"
 
-// scrape the online site for text contents - need to keep some structure to search as well
+// minimal typing for nabre.json contents
+interface NabreBook {
+    id: string,
+    name: string,
+    title: string,
+    chapters: NabreChapter[]
+}
 
+interface NabreChapter {
+    number: number,
+    content: NabreContentItem[]
+}
 
-// adapter that fetches translation from scraper and structures for type
-export const usccbAdapter: SourceAdapter = {
-    name: 'usccb',
+type NabreContentItem = { type: 'heading'; content: string[] }
+    | { type: 'inline-heading'; content: string[] }
+    | { type: 'verse'; number: number; content: string[] }
+
+// adapter that fetches translation from JSON and structures for type
+export const NabreAdapter: SourceAdapter = {
+    name: 'nabre',
 
     async fetchTranslation(translationId: string): Promise<NormalizedTranslation> {
+
+        const nabreFile = readFileSync(NABRE_FILEPATH, 'utf-8')
+        const data: NabreBook[] = JSON.parse(nabreFile) as NabreBook[]
+
         return {
             id: 'NABRE',
             name: 'New American Bible Revised Edition',
@@ -25,10 +42,20 @@ export const usccbAdapter: SourceAdapter = {
             languageName: 'English',
             languageEnglishName: 'English',
             textDirection: 'ltr',
-            numBooks: 0,
-            numChapters: 0,
-            numVerses: 0,
-            books: []
+            numBooks: -1,
+            numChapters: -1,
+            numVerses: -1,
+            books: data.map((book: NabreBook) => ({
+                id: book.id,
+                name: book.name,
+                commonName: book.name,
+                title: book.title,
+                order: -1,
+                chapters: book.chapters.map((ch: NabreChapter) => ({
+                    number: ch.number,
+                    verses: []
+                }))
+            }))
         }
     }
 }
