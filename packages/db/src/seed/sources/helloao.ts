@@ -1,4 +1,4 @@
-import type { SourceAdapter, NormalizedTranslation, NormalizedVerse } from '../types'
+import type { SourceAdapter, NormalizedTranslation, NormalizedVerse, ContentBlock } from '../types'
 
 const BASE_URL = 'https://bible.helloao.org/api'
 
@@ -62,6 +62,19 @@ function extractText(content: unknown[]): string {
         .trim()
 }
 
+function extractContents(content: unknown[]): string[] {
+    return content
+        .map((item) => {
+            if (typeof item === 'string') return item
+            if (typeof item === 'object' && item != null) {
+                if ('text' in item) return (item as { text: string }).text
+                if ('heading' in item) return (item as { heading: string }).heading
+                // ignore other things like line breaks, footnote references, etc.
+            }
+        })
+        .filter(Boolean) as string[]
+}
+
 export const helloaoAdapter: SourceAdapter = {
     name: 'helloao',
 
@@ -94,16 +107,29 @@ export const helloaoAdapter: SourceAdapter = {
                 commonName: book.commonName,
                 title: book.title ?? null,
                 order: book.order,
-                chapters: book.chapters.map((ch: HelloaoChapter) => ({
-                    number: ch.chapter.number,
-                    verses: ch.chapter.content
-                        .filter((item): item is { type: 'verse'; number: number; content: unknown[] } => item.type === 'verse')
-                        .map((verse): NormalizedVerse => ({
-                            number: verse.number,
-                            text: extractText(verse.content),
-                            content: verse.content,
-                        })),
-                })),
+                chapters: book.chapters.map((ch: HelloaoChapter) => {
+                    const verses: NormalizedVerse[] = []
+                    const layout: ContentBlock[] = []
+
+                    for (const item of ch.chapter.content) {
+                        if (item.type === 'verse') {
+                            const textContents = extractContents(item.content)
+                            verses.push({
+                                number: item.number,
+                                text: textContents.join(' '),
+                                content: textContents
+                            })
+                            layout.push({ type: 'verse', number: item.number })
+                        } else if (item.type === 'heading') {
+                            layout.push({ type: 'heading', text: item.content.join(' ') })
+                        } else if (item.type === 'line_break') {
+                            layout.push({ type: 'line_break' })
+                        }
+                        // Hebrew subtitles skipped
+                    }
+
+                    return { number: ch.chapter.number, verses, layout }
+                }),
             })),
         }
     },
