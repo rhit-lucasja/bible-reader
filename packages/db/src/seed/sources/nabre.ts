@@ -22,6 +22,18 @@ type NabreContentItem = { type: 'heading'; content: string[] }
     | { type: 'inline-heading'; content: string[] }
     | { type: 'verse'; number: number; content: string[] }
 
+// Extracts plain text from the structured verse content array
+function extractText(content: string[]): string {
+    return content
+        .map((item) => {
+            return item
+        })
+        .filter(Boolean)
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+}
+
 // adapter that fetches translation from JSON and structures for type
 export const NabreAdapter: SourceAdapter = {
     name: 'nabre',
@@ -53,7 +65,13 @@ export const NabreAdapter: SourceAdapter = {
                 order: -1,
                 chapters: book.chapters.map((ch: NabreChapter) => ({
                     number: ch.number,
-                    verses: []
+                    verses: ch.content
+                        .filter((item): item is { type: 'verse'; number: number; content: string[] } => item.type === 'verse')
+                        .map((verse): NormalizedVerse => ({
+                            number: verse.number,
+                            text: extractText(verse.content),
+                            content: verse.content
+                        }))
                 }))
             }))
         }
