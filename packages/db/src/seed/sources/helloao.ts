@@ -44,24 +44,7 @@ type HelloaoContentItem =
     | { type: 'hebrew_subtitle'; content: unknown[] }
     | { type: 'verse'; number: number; content: unknown[] }
 
-// Extracts plain text from the API's structured verse content array
-function extractText(content: unknown[]): string {
-    return content
-        .map((item) => {
-            if (typeof item === 'string') return item
-            if (typeof item === 'object' && item !== null) {
-                if ('text' in item) return (item as { text: string }).text
-                if ('heading' in item) return (item as { heading: string }).heading
-                // line breaks and footnote references do not contribute to text
-            }
-            return ''
-        })
-        .filter(Boolean)
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-}
-
+// extracts plain text from API's structured JSON array
 function extractContents(content: unknown[]): string[] {
     return content
         .map((item) => {
