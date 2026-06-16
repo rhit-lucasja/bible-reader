@@ -26,17 +26,17 @@ async function seedTranslation(
         data: {
             id: translationId,
             name: translation.name,
-            englishName: translation.englishName,
+            english_name: translation.englishName,
             website: translation.website,
-            licenseUrl: translation.licenseUrl,
-            shortName: translation.shortName,
+            license_url: translation.licenseUrl,
+            short_name: translation.shortName,
             language: translation.language,
-            languageName: translation.languageName,
-            languageEnglishName: translation.languageEnglishName,
-            textDirection: translation.textDirection,
-            numBooks: translation.numBooks,
-            numChapters: translation.numChapters,
-            numVerses: translation.numVerses,
+            language_name: translation.languageName,
+            language_english_name: translation.languageEnglishName,
+            text_direction: translation.textDirection,
+            num_books: translation.numBooks,
+            num_chapters: translation.numChapters,
+            num_verses: translation.numVerses,
         }
     })
 
@@ -46,13 +46,13 @@ async function seedTranslation(
         await prisma.book.create({
             data: {
                 id: book.id,
-                translationId: translationId,
+                translation_id: translationId,
                 name: book.name,
-                commonName: book.commonName,
+                common_name: book.commonName,
                 title: book.title,
                 order: book.order,
-                numChapters: book.chapters.length,
-                numVerses: book.chapters.reduce((sum, ch) => sum + ch.verses.length, 0),
+                num_chapters: book.chapters.length,
+                num_verses: book.chapters.reduce((sum, ch) => sum + ch.verses.length, 0),
             }
         })
 
@@ -60,9 +60,9 @@ async function seedTranslation(
             await prisma.chapter.create({
                 data: {
                     number: chapter.number,
-                    bookId: book.id,
-                    translationId: translationId,
-                    numVerses: chapter.verses.length,
+                    book_id: book.id,
+                    translation_id: translationId,
+                    num_verses: chapter.verses.length,
                 }
             })
 
@@ -70,11 +70,23 @@ async function seedTranslation(
             await prisma.verse.createMany({
                 data: chapter.verses.map((verse) => ({
                     number: verse.number,
-                    chapterNumber: chapter.number,
-                    bookId: book.id,
-                    translationId: translationId,
+                    chapter_number: chapter.number,
+                    book_id: book.id,
+                    translation_id: translationId,
                     text: verse.text,
                     content: verse.content as any,
+                }))
+            })
+
+            await prisma.chapterContentBlock.createMany({
+                data: chapter.layout.map((block, index) => ({
+                    chapter_number: chapter.number,
+                    book_id: book.id,
+                    translation_id: translationId,
+                    order: index,
+                    block_type: block.type,
+                    heading_text: block.type === 'heading' ? block.text : null,
+                    verse_number: block.type === 'verse' ? block.number: null
                 }))
             })
         }
