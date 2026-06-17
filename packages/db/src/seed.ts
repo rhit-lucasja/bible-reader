@@ -80,6 +80,7 @@ async function seedTranslation(
                 }))
             })
 
+            // also batch insert chapter layout contents
             await prisma.chapterContentBlock.createMany({
                 data: chapter.layout.map((block, index) => ({
                     chapter_number: chapter.number,
