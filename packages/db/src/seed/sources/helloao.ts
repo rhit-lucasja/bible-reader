@@ -58,7 +58,7 @@ function extractContents(content: unknown[]): string[] {
         .filter(Boolean) as string[]
 }
 
-export const helloaoAdapter: SourceAdapter = {
+export const HelloaoAdapter: SourceAdapter = {
     name: 'helloao',
 
     async fetchTranslation(translationId: string): Promise<NormalizedTranslation> {

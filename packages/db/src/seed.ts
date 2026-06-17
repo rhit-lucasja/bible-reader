@@ -1,13 +1,15 @@
 import { PrismaClient } from './generated'
-import { helloaoAdapter } from './seed/sources/helloao'
+import { HelloaoAdapter } from './seed/sources/helloao'
+import { NabreAdapter } from './seed/sources/nabre'
 import type { SourceAdapter } from './seed/types'
 
 const prisma = new PrismaClient()
 
 // map of translationId to the correct fetch adapter
 const TRANSLATIONS: { id: string; sourceId: string; adapter: SourceAdapter }[] = [
-    { id: 'KJV', sourceId: 'eng_kjv', adapter: helloaoAdapter },
-    { id: 'BSB', sourceId: 'BSB', adapter: helloaoAdapter },
+    { id: 'KJV', sourceId: 'eng_kjv', adapter: HelloaoAdapter },
+    { id: 'BSB', sourceId: 'BSB', adapter: HelloaoAdapter },
+    { id: 'NABRE', sourceId: 'NABRE', adapter: NabreAdapter }
 ]
 
 async function seedTranslation(
