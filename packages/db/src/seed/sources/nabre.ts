@@ -44,6 +44,8 @@ export const NabreAdapter: SourceAdapter = {
             languageEnglishName: 'English',
             textDirection: 'ltr',
             numBooks: data.length,
+            // TODO: find way to accumulate number of verses in each chapter (and in whole translation, thus)
+            //   also maybe just better way to do numChapters to prevent redundant iteration
             numChapters: data.reduce((acc, curr) => acc + curr.chapters.length, 0),
             numVerses: -1,
             books: data.map((book: NabreBook, idx) => ({
@@ -57,6 +59,7 @@ export const NabreAdapter: SourceAdapter = {
                     const layout: ContentBlock[] = []
 
                     for (const item of ch.content) {
+                        // TODO: need to combine verse objects that have same number but got split somehow (uniqueness)
                         if (item.type === 'verse') {
                             verses.push({
                                 number: item.number,
