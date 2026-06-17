@@ -104,7 +104,7 @@ export const helloaoAdapter: SourceAdapter = {
                             })
                             layout.push({ type: 'verse', number: item.number })
                         } else if (item.type === 'heading') {
-                            layout.push({ type: 'heading', text: item.content.join(' ') })
+                            layout.push({ type: 'heading', text: item.content.join(' ').replace(/\s+/g, ' ').trim() })
                         } else if (item.type === 'line_break') {
                             layout.push({ type: 'line-break' })
                         }

@@ -58,25 +58,20 @@ export const NabreAdapter: SourceAdapter = {
 
                     for (const item of ch.content) {
                         if (item.type === 'verse') {
-
-                        } else if (item.type === 'heading') {
-
-                        } else if (item.type === 'inline-heading') {
-
+                            verses.push({
+                                number: item.number,
+                                text: item.content.join(' ').replace(/\s+/g, ' ').trim(),
+                                content: item.content
+                            })
+                            layout.push({ type: 'verse', number: item.number })
+                        } else if (item.type === 'heading' || item.type === 'inline-heading') {
+                            layout.push({ type: 'heading', text: item.content.join(' ').replace(/\s+/g, ' ').trim() })
                         } else {
                             layout.push({ type: 'line-break' })
                         }
                     }
                     
                     return { number: ch.number, verses, layout }
-                    // number: ch.number,
-                    // verses: ch.content
-                    //     .filter((item): item is { type: 'verse'; number: number; content: string[] } => item.type === 'verse')
-                    //     .map((verse): NormalizedVerse => ({
-                    //         number: verse.number,
-                    //         text: extractText(verse.content),
-                    //         content: verse.content
-                    //     }))
                 })
             }))
         }
