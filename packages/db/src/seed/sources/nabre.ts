@@ -1,5 +1,5 @@
 import { verify } from 'node:crypto'
-import type { SourceAdapter, NormalizedTranslation, NormalizedVerse } from '../types'
+import type { SourceAdapter, NormalizedTranslation, NormalizedVerse, ContentBlock } from '../types'
 import { fstat, readFileSync } from 'node:fs'
 
 const BASE_URL = 'https://www.biblegateway.com/versions/New-American-Bible-Revised-Edition-NABRE-Bible'
@@ -21,18 +21,7 @@ interface NabreChapter {
 type NabreContentItem = { type: 'heading'; content: string[] }
     | { type: 'inline-heading'; content: string[] }
     | { type: 'verse'; number: number; content: string[] }
-
-// Extracts plain text from the structured verse content array
-function extractText(content: string[]): string {
-    return content
-        .map((item) => {
-            return item
-        })
-        .filter(Boolean)
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-}
+    | { type: 'line-break' }
 
 // adapter that fetches translation from JSON and structures for type
 export const NabreAdapter: SourceAdapter = {
@@ -63,16 +52,32 @@ export const NabreAdapter: SourceAdapter = {
                 commonName: book.name,
                 title: book.title,
                 order: -1,
-                chapters: book.chapters.map((ch: NabreChapter) => ({
-                    number: ch.number,
-                    verses: ch.content
-                        .filter((item): item is { type: 'verse'; number: number; content: string[] } => item.type === 'verse')
-                        .map((verse): NormalizedVerse => ({
-                            number: verse.number,
-                            text: extractText(verse.content),
-                            content: verse.content
-                        }))
-                }))
+                chapters: book.chapters.map((ch: NabreChapter) => {
+                    const verses: NormalizedVerse[] = []
+                    const layout: ContentBlock[] = []
+
+                    for (const item of ch.content) {
+                        if (item.type === 'verse') {
+
+                        } else if (item.type === 'heading') {
+
+                        } else if (item.type === 'inline-heading') {
+
+                        } else {
+                            layout.push({ type: 'line-break' })
+                        }
+                    }
+                    
+                    return { number: ch.number, verses, layout }
+                    // number: ch.number,
+                    // verses: ch.content
+                    //     .filter((item): item is { type: 'verse'; number: number; content: string[] } => item.type === 'verse')
+                    //     .map((verse): NormalizedVerse => ({
+                    //         number: verse.number,
+                    //         text: extractText(verse.content),
+                    //         content: verse.content
+                    //     }))
+                })
             }))
         }
     }

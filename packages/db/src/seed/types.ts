@@ -6,7 +6,7 @@ export interface NormalizedVerse {
 
 export type ContentBlock = { type: 'heading'; text: string }
     | { type: 'verse'; number: number }
-    | { type: 'line_break' }
+    | { type: 'line-break' }
 
 export interface NormalizedChapter {
     number: number

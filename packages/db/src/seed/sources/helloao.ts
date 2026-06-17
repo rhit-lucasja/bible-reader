@@ -99,14 +99,14 @@ export const helloaoAdapter: SourceAdapter = {
                             const textContents = extractContents(item.content)
                             verses.push({
                                 number: item.number,
-                                text: textContents.join(' '),
+                                text: textContents.join(' ').replace(/\s+/g, ' ').trim(),
                                 content: textContents
                             })
                             layout.push({ type: 'verse', number: item.number })
                         } else if (item.type === 'heading') {
                             layout.push({ type: 'heading', text: item.content.join(' ') })
                         } else if (item.type === 'line_break') {
-                            layout.push({ type: 'line_break' })
+                            layout.push({ type: 'line-break' })
                         }
                         // Hebrew subtitles skipped
                     }
