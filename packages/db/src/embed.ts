@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'
 const EMBEDDING_MODEL = 'nomic-embed-text'
-const TRANSLATION = 'BSB'
+const TRANSLATION = 'NABRE'
 const BATCH_SIZE = 50 // verses fetched from DB per page
 const CONCURRENCY = 5 // parallel Ollama requests
 
@@ -59,7 +59,7 @@ async function main() {
     console.log(`Using Ollama at ${OLLAMA_BASE_URL} with model ${EMBEDDING_MODEL}`)
 
     const total = await prisma.verse.count({
-        where: { translationId: TRANSLATION }
+        where: { translation_id: TRANSLATION }
     })
     console.log(`Total verses to embed: ${total}`)
 
@@ -68,7 +68,7 @@ async function main() {
 
     while (true) {
         const verses = await prisma.verse.findMany({
-            where: { translationId: TRANSLATION },
+            where: { translation_id: TRANSLATION },
             select: { id: true, text: true },
             orderBy: { id: 'asc' },
             take: BATCH_SIZE,
