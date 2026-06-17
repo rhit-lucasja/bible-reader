@@ -34,8 +34,7 @@ npm-debug.log*
 packages/db/src/generated
 
 # generated data file and backup
-nabre.json
-nabre-backup.json
+nabre*.json
 
 # Vercel build
 .vercel/
