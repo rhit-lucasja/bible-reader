@@ -129,11 +129,12 @@ $('.text-html').first().children().each((_, el) => {
 
     // new <p> or <div> tag means line break in chapter display
     if (currentNum !== null) {
-        flush()
-        if (content[content.length - 1].type != 'line-break') {
+        currentParts.push('\n')
+        //flush()
+        //if (content[content.length - 1].type !== 'line-break') {
             // prevents duplicate line breaks between paragraphs
-            content.push({ type: 'line-break' })
-        }
+        //    content.push({ type: 'line-break' })
+        //}
     }
 
     // else flatten paragraph that may contain multiple verses
