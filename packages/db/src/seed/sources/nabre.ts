@@ -43,15 +43,15 @@ export const NabreAdapter: SourceAdapter = {
             languageName: 'English',
             languageEnglishName: 'English',
             textDirection: 'ltr',
-            numBooks: -1,
-            numChapters: -1,
+            numBooks: data.length,
+            numChapters: data.reduce((acc, curr) => acc + curr.chapters.length, 0),
             numVerses: -1,
-            books: data.map((book: NabreBook) => ({
+            books: data.map((book: NabreBook, idx) => ({
                 id: book.id,
                 name: book.name,
                 commonName: book.name,
                 title: book.title,
-                order: -1,
+                order: idx + 1,
                 chapters: book.chapters.map((ch: NabreChapter) => {
                     const verses: NormalizedVerse[] = []
                     const layout: ContentBlock[] = []
