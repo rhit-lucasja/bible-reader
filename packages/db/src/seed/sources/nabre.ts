@@ -1,6 +1,6 @@
 import { verify } from 'node:crypto'
-import type { SourceAdapter, NormalizedTranslation, NormalizedVerse, ContentBlock } from '../types'
-import { fstat, readFileSync } from 'node:fs'
+import type { SourceAdapter, NormalizedTranslation, NormalizedBook, NormalizedChapter, NormalizedVerse, ContentBlock } from '../types'
+import { readFileSync } from 'node:fs'
 
 const BASE_URL = 'https://www.biblegateway.com/versions/New-American-Bible-Revised-Edition-NABRE-Bible'
 const NABRE_FILEPATH = "src/seed/sources/nabre-scraper/nabre.json"
@@ -32,6 +32,60 @@ export const NabreAdapter: SourceAdapter = {
         const nabreFile = readFileSync(NABRE_FILEPATH, 'utf-8')
         const data: NabreBook[] = JSON.parse(nabreFile) as NabreBook[]
 
+        // iterate through whole text to accumulate counts and structure
+        let numBooks = 0
+        let numChapters: number = 0
+        let numVerses: number = 0
+        // iterate through books in translation
+        const books: NormalizedBook[] = []
+        for (const book of data) {
+            // iterate through chapters in book
+            const chapters: NormalizedChapter[] = []
+            for (const chapter of book.chapters) {
+                // iterate through contents in a chapter (verses, headers, line breaks)
+                const verses: NormalizedVerse[] = []
+                const layout: ContentBlock[] = []
+                for (const item of chapter.content) {
+                    if (item.type === 'verse') {
+                        verses.push({
+                            number: item.number,
+                            text: item.content.join(' ').replace(/\s+/g, ' ').trim(),
+                            content: item.content
+                        })
+                        layout.push({ type: 'verse', number: item.number })
+                    } else if (item.type === 'heading' || item.type === 'inline-heading') {
+                        layout.push({ type: 'heading', text: item.content.join(' ').replace(/\s+/g, ' ').trim() })
+                    } else {
+                        layout.push({ type: 'line-break' })
+                    }
+                }
+
+                // form chapter contents and add to book
+                chapters.push({
+                    number: chapter.number,
+                    verses: verses,
+                    layout: layout
+                })
+            }
+
+            // add book to list of books
+            books.push({
+                id: book.id,
+                name: book.name,
+                commonName: book.name,
+                title: book.title,
+                order: numBooks + 1,
+                chapters: chapters
+            })
+
+            // add to counts
+            numBooks += 1
+            numChapters += chapters.length
+            numVerses += chapters.reduce((acc, curr) => acc + curr.verses.length, 0)
+
+        }
+
+        // return adapted translation contents as NormalizedTranslation
         return {
             id: 'NABRE',
             name: 'New American Bible Revised Edition',
@@ -43,40 +97,10 @@ export const NabreAdapter: SourceAdapter = {
             languageName: 'English',
             languageEnglishName: 'English',
             textDirection: 'ltr',
-            numBooks: data.length,
-            // TODO: find way to accumulate number of verses in each chapter (and in whole translation, thus)
-            //   also maybe just better way to do numChapters to prevent redundant iteration
-            numChapters: data.reduce((acc, curr) => acc + curr.chapters.length, 0),
-            numVerses: -1,
-            books: data.map((book: NabreBook, idx) => ({
-                id: book.id,
-                name: book.name,
-                commonName: book.name,
-                title: book.title,
-                order: idx + 1,
-                chapters: book.chapters.map((ch: NabreChapter) => {
-                    const verses: NormalizedVerse[] = []
-                    const layout: ContentBlock[] = []
-
-                    for (const item of ch.content) {
-                        // TODO: need to combine verse objects that have same number but got split somehow (uniqueness)
-                        if (item.type === 'verse') {
-                            verses.push({
-                                number: item.number,
-                                text: item.content.join(' ').replace(/\s+/g, ' ').trim(),
-                                content: item.content
-                            })
-                            layout.push({ type: 'verse', number: item.number })
-                        } else if (item.type === 'heading' || item.type === 'inline-heading') {
-                            layout.push({ type: 'heading', text: item.content.join(' ').replace(/\s+/g, ' ').trim() })
-                        } else {
-                            layout.push({ type: 'line-break' })
-                        }
-                    }
-                    
-                    return { number: ch.number, verses, layout }
-                })
-            }))
+            numBooks: numBooks,
+            numChapters: numChapters,
+            numVerses: numVerses,
+            books: books
         }
     }
 }
