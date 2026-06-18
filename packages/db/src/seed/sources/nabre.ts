@@ -43,16 +43,20 @@ export const NabreAdapter: SourceAdapter = {
             const chapters: NormalizedChapter[] = []
             for (const chapter of book.chapters) {
                 // iterate through contents in a chapter (verses, headers, line breaks)
-                const verses: NormalizedVerse[] = []
+                const verseBuffers = new Map<number, string[]>()
                 const layout: ContentBlock[] = []
                 for (const item of chapter.content) {
                     if (item.type === 'verse') {
-                        verses.push({
-                            number: item.number,
-                            text: item.content.join(' ').replace(/\s+/g, ' ').trim(),
-                            content: item.content
-                        })
-                        layout.push({ type: 'verse', number: item.number })
+                        // get existing verse contents if they exist
+                        const existing = verseBuffers.get(item.number)
+                        if (existing) {
+                            // merge with already existing verse contents, no need to add to layout again
+                            existing.push(...item.content)
+                        } else {
+                            // start new verse buffer and push reference to layout
+                            verseBuffers.set(item.number, item.content)
+                            layout.push({ type: 'verse', number: item.number })
+                        }
                     } else if (item.type === 'heading' || item.type === 'inline-heading') {
                         layout.push({ type: 'heading', text: item.content.join(' ').replace(/\s+/g, ' ').trim() })
                     } else {
@@ -61,6 +65,13 @@ export const NabreAdapter: SourceAdapter = {
                 }
 
                 // form chapter contents and add to book
+                const verses: NormalizedVerse[] = Array.from(verseBuffers.entries()).map(
+                    ([number, content]) => ({
+                        number: number,
+                        text: content.join(' ').replace(/\s+/g, ' ').trim(),
+                        content: content
+                    })
+                )
                 chapters.push({
                     number: chapter.number,
                     verses: verses,
