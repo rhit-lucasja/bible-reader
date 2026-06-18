@@ -1,12 +1,17 @@
 export interface NormalizedVerse {
     number: number
     text: string
-    content: unknown // raw structured content, stored as JSON
+    content: string[]
 }
+
+export type ContentBlock = { type: 'heading'; text: string }
+    | { type: 'verse'; number: number }
+    | { type: 'line-break' }
 
 export interface NormalizedChapter {
     number: number
     verses: NormalizedVerse[]
+    layout: ContentBlock[]
 }
 
 export interface NormalizedBook {

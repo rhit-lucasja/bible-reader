@@ -14,73 +14,93 @@ datasource db {
 model Translation {
     id                  String @id      // e.g. "KJV" or "NAB"
     name                String          // e.g. "New American Bible"
-    englishName         String
+    english_name        String
     website             String
-    licenseUrl          String
-    shortName           String          // e.g. "KJV" or "NAB"
+    license_url         String
+    short_name          String          // e.g. "KJV" or "NAB"
     language            String          // ISO 639 3-letter code, e.g. "eng"
-    languageName        String?
-    languageEnglishName String?
-    textDirection       String @default("ltr")  // "ltr" | "rtl"
-    numBooks            Int
-    numChapters         Int
-    numVerses           Int
+    language_name       String?
+    language_english_name String?
+    text_direction      String @default("ltr")  // "ltr" | "rtl"
+    num_books           Int
+    num_chapters        Int
+    num_verses          Int
 
     books               Book[]
 }
 
 model Book {
     id                  String          // e.g. "GEN" or "EXO"
-    translationId       String
+    translation_id      String
     name                String          // translation-specific name
-    commonName          String          // common canonical name
+    common_name         String          // common canonical name
     title               String?         // a more descriptive name sometimes given by translation
     order               Int             // book order in the translation
-    numChapters         Int
-    numVerses           Int
+    num_chapters        Int
+    num_verses          Int
 
-    translation         Translation @relation(fields: [translationId], references: [id], onDelete: Cascade)
+    translation         Translation @relation(fields: [translation_id], references: [id], onDelete: Cascade)
     chapters            Chapter[]
 
-    @@id([id, translationId])
+    @@id([id, translation_id])
 }
 
 model Chapter {
     number              Int
-    bookId              String
-    translationId       String
-    numVerses           Int
+    book_id             String
+    translation_id      String
+    num_verses          Int
 
-    book                Book @relation(fields: [bookId, translationId], references: [id, translationId], onDelete: Cascade)
+    book                Book @relation(fields: [book_id, translation_id], references: [id, translation_id], onDelete: Cascade)
     verses              Verse[]
+    content_blocks      ChapterContentBlock[]
 
-    @@id([number, bookId, translationId])
+    @@id([number, book_id, translation_id])
 }
 
 model Verse {
     id                  Int @id @default(autoincrement())
     number              Int
-    chapterNumber       Int
-    bookId              String
-    translationId       String
+    chapter_number      Int
+    book_id             String
+    translation_id      String
     
     // plaintext, used for embedding and simple display
     text                String
     
-    // full structured content from API, preserved as JSON
-    // includes format, headings, footnote refs, etc.
-    content             Json
+    // structured content of verse text, separated on lines
+    content             String[]
 
     // pgvector embedding (768 dimensions for nomic-embed-text)
     // Only populated for one translation to avoid storing redundant
     //   near-idential embeddings for every translation
     embedding           Unsupported("vector(768)")?
 
-    chapter             Chapter @relation(fields: [chapterNumber, bookId, translationId], references: [number, bookId, translationId], onDelete: Cascade)
+    chapter             Chapter @relation(fields: [chapter_number, book_id, translation_id], references: [number, book_id, translation_id], onDelete: Cascade)
 
-    @@unique([number, chapterNumber, bookId, translationId])
-    @@index([bookId, translationId])
-    @@index([chapterNumber, bookId, translationId])
+    @@unique([number, chapter_number, book_id, translation_id])
+    @@index([book_id, translation_id])
+    @@index([chapter_number, book_id, translation_id])
+}
+
+model ChapterContentBlock {
+    id                  Int @id @default(autoincrement())
+    chapter_number      Int
+    book_id             String
+    translation_id      String
+    order               Int             // position within chapter, 0-indexed
+
+    block_type          String          // "heading" | "verse" | "line_break"
+
+    // for heading blocks
+    heading_text        String?
+
+    // for verse blocks
+    verse_number        Int?
+
+    chapter             Chapter @relation(fields: [chapter_number, book_id, translation_id], references: [number, book_id, translation_id], onDelete: Cascade)
+
+    @@index([chapter_number, book_id, translation_id, order])
 }
 
 // ---------------------
@@ -89,20 +109,20 @@ model Verse {
 model User {
     id                  String @id @default(cuid())
     email               String @unique
-    emailVerified       DateTime?
+    email_verified      DateTime?
     name                String?
     image               String?
-    createdAt           DateTime @default(now())
-    updatedAt           DateTime @updatedAt
+    created_at          DateTime @default(now())
+    updated_at          DateTime @updatedAt
 
     // User's preferred translation, defaults to NABRE
-    preferredTranslationId String @default("NABRE")
+    preferred_translation_id String @default("NABRE")
 
     accounts            Account[]
     sessions            Session[]
     bookmarks           Bookmark[]
-    searchHistory       SearchHistory[]
-    readingHistory      ReadingHistory[]
+    search_history      SearchHistory[]
+    reading_history     ReadingHistory[]
 }
 
 // Auth.js required tables
@@ -147,38 +167,38 @@ model VerificationToken {
 // ---------------------
 model Bookmark {
     id                  Int @id @default(autoincrement())
-    userId              String
-    verseId             Int
-    translationId       String
+    user_id             String
+    verse_id            Int
+    translation_id      String
     note                String?
-    createdAt           DateTime @default(now())
+    created_at          DateTime @default(now())
 
-    user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user                User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@unique([userId, verseId, translationId])
+    @@unique([user_id, verse_id, translation_id])
 }
 
 model SearchHistory {
     id                  Int @id @default(autoincrement())
-    userId              String
+    user_id             String
     query               String
-    searchType          String // "reference" || "keyword" || "semantic"
-    createdAt           DateTime @default(now())
+    search_type         String // "reference" || "keyword" || "semantic"
+    created_at          DateTime @default(now())
 
-    user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user                User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@index([userId, createdAt])
+    @@index([user_id, created_at])
 }
 
 model ReadingHistory {
     id                  Int @id @default(autoincrement())
-    userId              String
-    bookId              String
-    chapterNumber       Int
-    translationId       String
-    readAt              DateTime @default(now())
+    user_id             String
+    book_id             String
+    chapter_number      Int
+    translation_id      String
+    read_at             DateTime @default(now())
 
-    user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user                User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@index([userId, readAt])
+    @@index([user_id, read_at])
 }

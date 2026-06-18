@@ -7,6 +7,7 @@ import type { Element } from 'domhandler'
 type Token = { type: 'text'; value: string }
     | { type: 'heading'; value: string }
     | { type: 'number'; value : number }
+    | { type: 'line-break' }
 
 function flattenParagraph($p: cheerio.Cheerio<Element>, $: cheerio.CheerioAPI): Token[] {
     const tokens: Token[] = []
@@ -26,7 +27,7 @@ function flattenParagraph($p: cheerio.Cheerio<Element>, $: cheerio.CheerioAPI): 
 
             // line breaks, especially show up in poetry segments
             if (node.tagName === 'br') {
-                tokens.push({ type: 'text', value: '\n' })
+                tokens.push({ type: 'line-break' })
                 return
             }
 
@@ -54,7 +55,8 @@ function flattenParagraph($p: cheerio.Cheerio<Element>, $: cheerio.CheerioAPI): 
 
 type ContentItem = { type: 'heading'; content: string[] }
     | { type: 'inline-heading'; content: string[] }
-    | { type: 'verse'; number: number; content: unknown[] }
+    | { type: 'verse'; number: number; content: string[] }
+    | { type: 'line-break' }
 
 const content: ContentItem[] = []
 let currentNum: number | null = null
@@ -63,13 +65,36 @@ let currentParts: string[] = []
 // helper function to save text of current stream to content
 function flush() {
     if (currentNum !== null) {
-        const text = currentParts.join('').replace(/[^\S\n]+/g, ' ').trim()
+        const verseContents: string[] = []
+        let text = ''
+        for (const i in currentParts) {
+            const part = currentParts[i]
+            if (part === '\n') {
+                // reflect line break by separating text in Verse object
+                if (text.length > 0) {
+                    verseContents.push(text)
+                    text = ''
+                }
+            } else {
+                // combine parts of the same line in the verse
+                text = [text, part].join(' ').replace(/[^\S\n]+/g, ' ').trim()
+            }
+        }
         if (text.length > 0) {
+            verseContents.push(text)
+        }
+        
+        // push parsed verse
+        if (verseContents.length > 0) {
             content.push({
                 type: 'verse',
                 number: currentNum,
-                content: [currentParts.join('').replace(/[^\S\n]+/g, ' ').trim()]
+                content: verseContents
             })
+        }
+        if (currentParts[currentParts.length - 1] === '\n') {
+            // if stream ended with new line, represent with break
+            content.push({ type: 'line-break' })
         }
         currentParts = []
     }
@@ -102,10 +127,14 @@ $('.text-html').first().children().each((_, el) => {
         return
     }
 
-    // if within a verse and have parts to flush, then do it with a new line
-    // handles verses that span multiple paragraphs (e.g. poetry)
-    if (currentNum !== null && currentParts.length > 0) {
+    // new <p> or <div> tag means line break in chapter display
+    if (currentNum !== null) {
         currentParts.push('\n')
+        //flush()
+        //if (content[content.length - 1].type !== 'line-break') {
+            // prevents duplicate line breaks between paragraphs
+        //    content.push({ type: 'line-break' })
+        //}
     }
 
     // else flatten paragraph that may contain multiple verses
@@ -125,6 +154,9 @@ $('.text-html').first().children().each((_, el) => {
         } else if (token.type === 'heading') {
             flush() // flush verse contents
             content.push({ type: 'inline-heading', content: [token.value] })
+        } else if (token.type === 'line-break') {
+            // push line break into working verse stream
+            currentParts.push('\n')
         } else if (currentNum !== null) {
             // else push token contents to working stream in verse
             currentParts.push(token.value)
