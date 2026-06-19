@@ -56,7 +56,7 @@ export const referenceRouter = router({
                 translation_id: translation_id,
                 blocks: chapter.content_blocks.map((block) => ({
                     type: block.block_type,
-                    headingText: block.heading_text,
+                    heading_text: block.heading_text,
                     verse:
                         block.verse_number !== null
                             ? versesByNumber.get(block.verse_number) ?? null
