@@ -15,9 +15,56 @@ export const referenceRouter = router({
         .query(async ({ ctx, input }) => {
             const { book_id, translation_id } = input
 
+            const book = await ctx.db.book.findUnique({
+                where: {
+                    id_translation_id: {
+                        id: book_id,
+                        translation_id: translation_id
+                    }
+                },
+                include: {
+                    chapters: {
+                        include: {
+                            verses: {
+                                orderBy: { number: 'asc' }
+                            },
+                            content_blocks: {
+                                orderBy: { order: 'asc' }
+                            }
+                        },
+                        orderBy: { number: 'asc' }
+                    }
+                }
+            })
 
+            if (!book) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: `Book ${book_id} not found in ${translation_id}`
+                })
+            }
 
-            return {}
+            return {
+                id: book.id,
+                translation_id: book.translation_id,
+                name: book.name,
+                common_name: book.common_name,
+                title: book.title,
+                chapters: book.chapters.map((chapter) => {
+                    const versesByNumber = new Map(chapter.verses.map((v) => [v.number, v]))
+                    return {
+                        number: chapter.number,
+                        blocks: chapter.content_blocks.map((block) => ({
+                            type: block.block_type,
+                            heading_text: block.heading_text,
+                            verse:
+                                block.verse_number !== null
+                                    ? versesByNumber.get(block.verse_number) ?? null
+                                    : null
+                        }))
+                    }
+                })
+            }
         }),
 
     // retrieve an entire chapter at once, with formatted contents
