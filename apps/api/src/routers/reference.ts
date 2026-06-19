@@ -24,7 +24,7 @@ export const referenceRouter = router({
                 },
                 include: {
                     book: true,
-                    contentBlocks: {
+                    content_blocks: {
                         orderBy: { order: 'asc' }
                     }
                 }
@@ -54,12 +54,12 @@ export const referenceRouter = router({
                 book: chapter.book,
                 chapter_number: chapter.number,
                 translation_id: translation_id,
-                blocks: chapter.contentBlocks.map((block) => ({
-                    type: block.blockType,
-                    headingText: block.headingText,
+                blocks: chapter.content_blocks.map((block) => ({
+                    type: block.block_type,
+                    headingText: block.heading_text,
                     verse:
-                        block.verseNumber !== null
-                            ? versesByNumber.get(block.verseNumber) ?? null
+                        block.verse_number !== null
+                            ? versesByNumber.get(block.verse_number) ?? null
                             : null
                 }))
             }
