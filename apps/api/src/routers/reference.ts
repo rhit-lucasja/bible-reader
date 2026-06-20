@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
 import { TRPCError } from '@trpc/server'
+import type { Verse, ChapterContentBlock, Chapter } from '@bible-reader/db'
 
 export const referenceRouter = router({
 
@@ -50,11 +51,11 @@ export const referenceRouter = router({
                 name: book.name,
                 common_name: book.common_name,
                 title: book.title,
-                chapters: book.chapters.map((chapter) => {
-                    const versesByNumber = new Map(chapter.verses.map((v) => [v.number, v]))
+                chapters: book.chapters.map((chapter: Chapter) => {
+                    const versesByNumber = new Map(chapter.verses.map((v: Verse) => [v.number, v]))
                     return {
                         number: chapter.number,
-                        blocks: chapter.content_blocks.map((block) => ({
+                        blocks: chapter.content_blocks.map((block : ChapterContentBlock) => ({
                             type: block.block_type,
                             heading_text: block.heading_text,
                             verse:
@@ -113,13 +114,13 @@ export const referenceRouter = router({
                 }
             })
 
-            const versesByNumber = new Map(verses.map((v) => [v.number, v]))
+            const versesByNumber = new Map(verses.map((v: Verse) => [v.number, v]))
 
             return {
                 book: chapter.book,
                 chapter_number: chapter.number,
                 translation_id: translation_id,
-                blocks: chapter.content_blocks.map((block) => ({
+                blocks: chapter.content_blocks.map((block: ChapterContentBlock) => ({
                     type: block.block_type,
                     heading_text: block.heading_text,
                     verse:
@@ -296,7 +297,7 @@ export const referenceRouter = router({
                 }
             }
             const versesByKey = new Map(
-                verses.map((v) => [`${v.chapter_number}:${v.number}`, v])
+                verses.map((v: Verse) => [`${v.chapter_number}:${v.number}`, v])
             )
 
             return {

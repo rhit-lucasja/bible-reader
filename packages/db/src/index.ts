@@ -1,6 +1,21 @@
 export * from './generated'
 export { PrismaClient } from './generated'
 
+// Explicitly re-export model types — Prisma 5 puts these here
+export type {
+  Verse,
+  Book,
+  Chapter,
+  Translation,
+  ChapterContentBlock,
+  Bookmark,
+  SearchHistory,
+  ReadingHistory,
+  User,
+  Account,
+  Session,
+} from './generated'
+
 import { PrismaClient } from './generated'
 
 declare global {
