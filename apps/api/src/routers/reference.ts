@@ -179,14 +179,14 @@ export const referenceRouter = router({
             z.object({
                 book_id: z.string(),
                 chapter_start: z.number().int().positive(),
-                chapter_end: z.number().int().positive(),
                 verse_start: z.number().int().positive(),
+                chapter_end: z.number().int().positive(),
                 verse_end: z.number().int().positive(),
                 translation_id: z.string().default('NABRE')
             })
         )
         .query(async ({ ctx, input }) => {
-            const { book_id, chapter_start, chapter_end, verse_start, verse_end, translation_id } = input
+            const { book_id, chapter_start, verse_start, chapter_end, verse_end, translation_id } = input
 
             if (chapter_end < chapter_start) {
                 throw new TRPCError({
@@ -250,7 +250,17 @@ export const referenceRouter = router({
                 (_, i) => chapter_start + i
             )
             // fetch all blocks across the chapter range
-            const allBlocks = await ctx.db.chapterContentBlock.findMany({
+            type Block = {
+                id: number,
+                book_id: string,
+                chapter_number: number,
+                translation_id: string,
+                block_type: string,
+                order: number,
+                heading_text: string | null,
+                verse_number: number | null
+            }
+            const allBlocks: Block[] = await ctx.db.chapterContentBlock.findMany({
                 where: {
                     book_id: book_id,
                     translation_id: translation_id,
@@ -262,9 +272,29 @@ export const referenceRouter = router({
                 ]
             })
             // filter blocks to only those within the verse range
-            const filteredBlocks = allBlocks.filter((block) => {
-                return block
-            })
+            const filteredBlocks: Block[] = []
+            let recording = false
+            for (const block of allBlocks) {
+                if (recording) {
+                    // keep scanning until final verse
+                    filteredBlocks.push(block)
+                    if (block.block_type === 'verse' &&
+                        block.chapter_number === chapter_end &&
+                        block.verse_number !== null &&
+                        block.verse_number === verse_end) {
+                            break
+                        }
+                } else {
+                    // start scanning at first verse
+                    if (block.block_type === 'verse' &&
+                        block.chapter_number === chapter_start &&
+                        block.verse_number !== null &&
+                        block.verse_number === verse_start) {
+                            recording = true
+                            filteredBlocks.push(block)
+                        }
+                }
+            }
             const versesByKey = new Map(
                 verses.map((v) => [`${v.chapter_number}:${v.number}`, v])
             )

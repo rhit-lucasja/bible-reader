@@ -61,8 +61,8 @@ async function test_getVerseRange(
         translation_id: string | undefined,
         book_id: string,
         chapter_start: number,
-        chapter_end: number,
         verse_start: number,
+        chapter_end: number,
         verse_end: number,
         opath: string
     ) {
@@ -91,7 +91,7 @@ async function main() {
 
     test_getVerse('NABRE', 'JHN', 3, 16, OV)
     
-    test_getVerseRange('NABRE', 'MAT', 18, 19, 4, 6, OVR)
+    test_getVerseRange('NABRE', 'MAT', 4, 23, 5, 11, OVR)
 
 }
 
