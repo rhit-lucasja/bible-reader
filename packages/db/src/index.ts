@@ -1,7 +1,7 @@
-export * from './generated'
-export { PrismaClient } from './generated'
+export * from '@prisma/client'
+export { PrismaClient } from '@prisma/client'
 
-import { PrismaClient } from './generated'
+import { PrismaClient } from '@prisma/client'
 
 declare global {
     // eslint-disable-next-line no-var

@@ -30,9 +30,6 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Prisma generated client (generated at build time)
-packages/db/src/generated
-
 # generated data file and backup
 nabre*.json
 
