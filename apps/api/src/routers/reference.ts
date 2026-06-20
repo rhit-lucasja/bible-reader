@@ -173,7 +173,7 @@ export const referenceRouter = router({
 
         }),
 
-    // return a range of verses
+    // return a range of verses that may span multiple chapters
     getVerseRange: publicProcedure
         .input(
             z.object({
@@ -204,16 +204,82 @@ export const referenceRouter = router({
                 where: {
                     book_id: book_id,
                     translation_id: translation_id,
-                }
+                    OR: [
+                        ...(chapter_start === chapter_end
+                            ? [{
+                                // single chapter range query
+                                chapter_number: chapter_start,
+                                number: { gte: verse_start, lte: verse_end }
+                            }]
+                            : [
+                                // first chapter in multiple chapter range
+                                {
+                                    chapter_number: chapter_start,
+                                    number: { gte: verse_start }
+                                },
+                                // middle chapters
+                                ...(chapter_end - chapter_end > 1
+                                    ? [{
+                                        chapter_number: { gt: chapter_start, lt: chapter_end }
+                                    }]
+                                    : []),
+                                // last chapter runs until verse_end
+                                {
+                                    chapter_number: chapter_end,
+                                    number: { lte: verse_end }
+                                }
+                            ])
+                    ]
+                },
+                orderBy: [
+                    { chapter_number: 'asc' },
+                    { number: 'asc' }
+                ]
             })
 
             if (verses.length === 0) {
                 throw new TRPCError({
                     code: 'NOT_FOUND',
-                    message: `No verses found for ${book_id} ${chapter_start}:${verse_start} - ${chapter_end}:${verse_end}`
+                    message: `No verses found for ${book_id} ${chapter_start}:${verse_start}-${chapter_end}:${verse_end}`
                 })
             }
 
-            return { error: 'Not yet implemented' }
+            // retrieve formatted content for all verses
+            const chapterNumbers = Array.from(
+                { length: chapter_end - chapter_start + 1 },
+                (_, i) => chapter_start + i
+            )
+            // fetch all blocks across the chapter range
+            const allBlocks = await ctx.db.chapterContentBlock.findMany({
+                where: {
+                    book_id: book_id,
+                    translation_id: translation_id,
+                    chapter_number: { in: chapterNumbers }
+                },
+                orderBy: [
+                    { chapter_number: 'asc' },
+                    { order: 'asc' }
+                ]
+            })
+            // filter blocks to only those within the verse range
+            const filteredBlocks = allBlocks.filter((block) => {
+                return block
+            })
+            const versesByKey = new Map(
+                verses.map((v) => [`${v.chapter_number}:${v.number}`, v])
+            )
+
+            return {
+                blocks: filteredBlocks.map((block) => ({
+                    type: block.block_type,
+                    chapter_number: block.chapter_number,
+                    heading_text: block.heading_text,
+                    verse:
+                        block.verse_number !== null
+                            ? versesByKey.get(`${block.chapter_number}:${block.verse_number}`) ?? null
+                            : null
+                }))
+            }
+
         })
 })
