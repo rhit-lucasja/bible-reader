@@ -188,7 +188,31 @@ export const referenceRouter = router({
         .query(async ({ ctx, input }) => {
             const { book_id, chapter_start, chapter_end, verse_start, verse_end, translation_id } = input
 
-            
+            if (chapter_end < chapter_start) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Last chapter must come after first chapter in range'
+                })
+            } else if (chapter_end === chapter_start && verse_end < verse_start) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Last verse must come after first verse in single-chapter range'
+                })
+            }
+
+            const verses = await ctx.db.verse.findMany({
+                where: {
+                    book_id: book_id,
+                    translation_id: translation_id,
+                }
+            })
+
+            if (verses.length === 0) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: `No verses found for ${book_id} ${chapter_start}:${verse_start} - ${chapter_end}:${verse_end}`
+                })
+            }
 
             return { error: 'Not yet implemented' }
         })
