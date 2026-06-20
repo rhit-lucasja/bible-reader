@@ -190,6 +190,6 @@ export const referenceRouter = router({
 
             
 
-            return {}
+            return { error: 'Not yet implemented' }
         })
 })

@@ -38,3 +38,6 @@ nabre*.json
 
 # Vercel build
 .vercel/
+
+# output files from test-client.ts
+apps/api/test-output
