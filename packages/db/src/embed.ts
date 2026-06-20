@@ -1,5 +1,4 @@
 import { PrismaClient } from './generated'
-import { objectEnumNames } from './generated/runtime/library'
 
 const prisma = new PrismaClient()
 
