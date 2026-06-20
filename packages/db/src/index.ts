@@ -1,21 +1,6 @@
 export * from '@prisma/client'
 export { PrismaClient } from '@prisma/client'
 
-// Explicitly re-export model types — Prisma 5 puts these here
-export type {
-  Verse,
-  Book,
-  Chapter,
-  Translation,
-  ChapterContentBlock,
-  Bookmark,
-  SearchHistory,
-  ReadingHistory,
-  User,
-  Account,
-  Session,
-} from '@prisma/client'
-
 import { PrismaClient } from '@prisma/client'
 
 declare global {
