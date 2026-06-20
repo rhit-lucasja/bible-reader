@@ -1,5 +1,5 @@
-export * from './generated/index'
-export { PrismaClient } from './generated/index'
+export * from '@prisma/client'
+export { PrismaClient } from '@prisma/client'
 
 // Explicitly re-export model types — Prisma 5 puts these here
 export type {
@@ -14,9 +14,9 @@ export type {
   User,
   Account,
   Session,
-} from './generated/index'
+} from '@prisma/client'
 
-import { PrismaClient } from './generated/index'
+import { PrismaClient } from '@prisma/client'
 
 declare global {
     // eslint-disable-next-line no-var

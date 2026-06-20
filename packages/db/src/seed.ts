@@ -1,4 +1,4 @@
-import { PrismaClient } from './generated'
+import { PrismaClient } from '@prisma/client'
 import { HelloaoAdapter } from './seed/sources/helloao'
 import { NabreAdapter } from './seed/sources/nabre'
 import type { SourceAdapter } from './seed/types'
