@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "private": true,
     "main": "./src/index.ts",
+    "type": "commonjs",
     "scripts": {
         "build": "prisma generate && tsc",
         "db:generate": "prisma generate",
