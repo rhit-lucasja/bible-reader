@@ -78,20 +78,43 @@ async function test_getVerseRange(
     writeFileSync(opath, JSON.stringify(result, null, 2))
 }
 
+async function test_listTranslations(
+    opath: string
+) {
+    const result = await client.translation.listTranslations.query()
+    writeFileSync(opath, JSON.stringify(result, null, 2))
+}
+
+async function test_listBooks(
+    translation_id: string,
+    opath: string
+) {
+    const result = await client.translation.listBooks.query({
+        translation_id
+    })
+    writeFileSync(opath, JSON.stringify(result, null, 2))
+}
+
 async function main() {
 
-    const OB = './test-output/book.out'
-    const OC = './test-output/chapter.out'
-    const OV = './test-output/verse.out'
-    const OVR = './test-output/verse-range.out'
+    const OB = './test-output/get-book.out'
+    const OC = './test-output/get-chapter.out'
+    const OV = './test-output/get-verse.out'
+    const OVR = './test-output/get-verse-range.out'
+    const OLT = './test-output/list-translations.out'
+    const OLB = './test-output/list-books.out'
 
-    test_getBook('NABRE', 'LAM', OB)
+    test_getBook('NABRE', 'JUD', OB)
 
     test_getChapter('NABRE', 'PSA', 23, OC)
 
     test_getVerse('NABRE', 'JHN', 3, 16, OV)
     
     test_getVerseRange('NABRE', 'MAT', 4, 23, 5, 11, OVR)
+
+    test_listTranslations(OLT)
+
+    test_listBooks('NABRE', OLB)
 
 }
 
