@@ -7,7 +7,7 @@
         "build": "prisma generate && tsc",
         "db:generate": "prisma generate",
         "db:migrate": "prisma migrate dev",
-        "db:push": "prisma db push",
+        "db:deploy": "prisma migrate deploy",
         "db:seed": "tsx src/seed.ts",
         "db:embed": "tsx src/embed.ts"
     },
