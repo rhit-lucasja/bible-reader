@@ -12,15 +12,13 @@
         "db:embed": "tsx src/embed.ts"
     },
     "devDependencies": {
-        "@prisma/client": "5.22.0",
-        "prisma": "5.22.0",
-        "tsx": "^4.0.0",
         "typescript": "^5.4.0",
         "@types/node": "^20.17.6",
         "cheerio": "^1.0.0"
     },
     "dependencies": {
         "@prisma/client": "5.22.0",
-        "prisma": "5.22.0"
+        "prisma": "5.22.0",
+        "tsx": "^4.0.0"
     }
 }
