@@ -1,3 +1,6 @@
+-- Import "vector" type if not exists
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- CreateTable
 CREATE TABLE "Translation" (
     "id" TEXT NOT NULL,

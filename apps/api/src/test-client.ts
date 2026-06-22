@@ -95,6 +95,42 @@ async function test_listBooks(
     writeFileSync(opath, JSON.stringify(result, null, 2))
 }
 
+async function test_keywordSearch(
+    query: string,
+    translation_id: string,
+    book_id: string | null,
+    limit: number,
+    offset: number | null,
+    opath: string
+) {
+    const result = await client.search.keyword.query({
+        query,
+        translation_id,
+        book_id: book_id ? book_id : undefined,
+        limit,
+        offset: offset ? offset : undefined
+    })
+    writeFileSync(opath, JSON.stringify(result, null, 2))
+}
+
+async function test_semanticSearch(
+    query: string,
+    translation_id: string,
+    book_id: string | null,
+    limit: number,
+    offset: number | null,
+    opath: string
+) {
+    const result = await client.search.semantic.query({
+        query,
+        translation_id,
+        book_id: book_id ? book_id : undefined,
+        limit,
+        offset: offset ? offset : undefined,
+    })
+    writeFileSync(opath, JSON.stringify(result, null, 2))
+}
+
 async function main() {
 
     const OB = './test-output/get-book.out'
@@ -103,6 +139,8 @@ async function main() {
     const OVR = './test-output/get-verse-range.out'
     const OLT = './test-output/list-translations.out'
     const OLB = './test-output/list-books.out'
+    const KS = './test-output/keyword-search.out'
+    const SS = './test-output/semantic-search.out'
 
     test_getBook('NABRE', 'JUD', OB)
 
@@ -115,6 +153,10 @@ async function main() {
     test_listTranslations(OLT)
 
     test_listBooks('NABRE', OLB)
+
+    test_keywordSearch('sow', 'NABRE', null, 10, null, KS)
+    
+    test_semanticSearch('God comforts those who are anxious and afraid', 'NABRE', null, 10, null, SS)
 
 }
 

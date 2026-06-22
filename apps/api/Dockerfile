@@ -27,7 +27,6 @@ RUN adduser --system uid 1001 apiuser
 
 COPY --from=builder --chown=apiuser:nodejs /app/apps/api/dist ./dist
 COPY --from=builder --chown=apiuser:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=apiuser:nodejs /app/packages/db/src/generated ./packages/db/src/generated
 
 USER apiuser
 
