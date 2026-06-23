@@ -2,8 +2,22 @@ import { z } from 'zod'
 import { publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
 import { PrismaClient } from '@bible-reader/db'
-import { id } from 'zod/v4/locales'
-import { number } from 'zod/v4'
+import { resourceLimits } from 'worker_threads'
+
+// for hybrid search results, with RRF score
+interface HybridResult {
+    verse_id: number,
+    book_id: string,
+    book_name: string,
+    chapter_number: number,
+    verse_number: number,
+    text: string,
+    translation_id: string,
+    keyword_rank?: number,
+    semantic_similarity?: number,
+    rrf_score: number,
+    match_type: 'keyword' | 'semantic' | 'both'
+}
 
 async function fetchKeywordSearch(
     query: string,
@@ -294,14 +308,54 @@ export const searchRouter = ({
             const candidate_limit = limit > 25 ? 2 * limit : 50
 
             // retrieve keyword and semantic search results
-            const [keywordResults, semanticResults] = await Promise.all([
+            const [keyword_results, semantic_results] = await Promise.all([
                 fetchKeywordSearch(query, translation_id, book_id, candidate_limit, offset, ctx.db),
                 fetchSemanticSearch(query, translation_id, book_id, candidate_limit, offset, ctx.db)
             ])
 
             // add reciprocal rank fusion to each search result and merge where possible
             const RRF_K = 60
+            // map results from both searches based on verse id
+            const merged = new Map<number, HybridResult>()
 
+            // process keyword results
+            keyword_results.forEach((res, idx) => {
+                const rrf_score = 1 / (RRF_K + idx + 1)
+                merged.set(res.verse_id, {
+                    ...res,
+                    keyword_rank: res.rank,
+                    rrf_score,
+                    match_type: 'keyword'
+                })
+            })
+
+            // process semantic results - may have to add to existing entry
+            semantic_results.forEach((res, idx) => {
+                const rrf_score = 1 / (RRF_K + idx + 1)
+                const existing = merged.get(res.verse_id)
+
+                if (existing) {
+                    // accumulate score and reflect dual match type
+                    merged.set(res.verse_id, {
+                        ...existing,
+                        semantic_similarity: res.similarity,
+                        rrf_score: existing.rrf_score + rrf_score,
+                        match_type: 'both'
+                    })
+                } else {
+                    // create new, semantic-only entry
+                    merged.set(res.verse_id, {
+                        ...res,
+                        semantic_similarity: res.similarity,
+                        rrf_score,
+                        match_type: 'semantic'
+                    })
+                }
+            })
+
+            // sort merged results and return top
+            const sorted = Array.from(merged.values()).sort((a, b) => b.rrf_score - a.rrf_score)
+            
 
         })
 
