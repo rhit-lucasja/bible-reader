@@ -13,6 +13,14 @@ async function fetchKeywordSearch(
     offset: number,
     db: PrismaClient
 ) {
+    // quick input validation
+    if (query.trim().length === 0) {
+        throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Search query cannot be empty'
+        })
+    }
+
     // execute full-text search using a raw postgreSQL text query
     //   ts_rank ranks results by relevance
     //   to_tsvector and plainto_tsquery convert verse/query text
@@ -173,18 +181,7 @@ export const searchRouter = ({
         .query(async ({ ctx, input }) => {
             const { query, translation_id, book_id, limit, offset } = input
 
-            if (query.trim().length === 0) {
-                throw new TRPCError({
-                    code: 'BAD_REQUEST',
-                    message: 'Search query cannot be empty'
-                })
-            }
-
-            // execute full-text search using a raw postgreSQL text query
-            //   ts_rank ranks results by relevance
-            //   plainto_tsvector and plainto_tsquery convert verse/query text
-            //     into searchable tokens, ignoring punctuation and words like 'the',
-            //     and replacing whitespace with ' & ' (match both words in any order)
+            // retrieve basic keyword search results
             const results = await fetchKeywordSearch(query, translation_id, book_id, limit, offset, ctx.db)
 
             if (results.length === 0) {
