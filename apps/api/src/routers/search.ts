@@ -272,20 +272,18 @@ export const searchRouter = ({
             const results = await fetchSemanticSearch(query, translation_id, book_id, limit, offset, ctx.db)
 
             return {
-                results: results.map((r) => {
-                    return {
-                        verse_id: r.verse_id,
-                        reference: {
-                            book_id: r.book_id,
-                            book_name: r.book_name,
-                            chapter_number: r.chapter_number,
-                            verse_number: r.verse_number
-                        },
-                        text: r.text,
-                        translation_id: r.translation_id,
-                        similarity: r.similarity
-                    }
-                }),
+                results: results.map((r) => ({
+                    verse_id: r.verse_id,
+                    reference: {
+                        book_id: r.book_id,
+                        book_name: r.book_name,
+                        chapter_number: r.chapter_number,
+                        verse_number: r.verse_number
+                    },
+                    text: r.text,
+                    translation_id: r.translation_id,
+                    similarity: r.similarity
+                })),
                 total: results.length,
                 query,
                 translation_id
@@ -354,8 +352,28 @@ export const searchRouter = ({
             })
 
             // sort merged results and return top
-            const sorted = Array.from(merged.values()).sort((a, b) => b.rrf_score - a.rrf_score)
-            
+            const sorted = Array.from(merged.values()).sort((a, b) => b.rrf_score - a.rrf_score).slice(0, limit)
+
+            return {
+                results: sorted.forEach((r) => ({
+                    verse_id: r.verse_id,
+                    reference: {
+                        book_id: r.book_id,
+                        book_name: r.book_name,
+                        chapter_number: r.chapter_number,
+                        verse_number: r.verse_number
+                    },
+                    text: r.text,
+                    translation_id: r.translation_id,
+                    keyword_rank: r.keyword_rank,
+                    semantic_similarity: r.semantic_similarity,
+                    rrf_score: r.rrf_score,
+                    match_type: r.match_type
+                })),
+                total: sorted.length,
+                query,
+                translation_id
+            }
 
         })
 
