@@ -131,6 +131,24 @@ async function test_semanticSearch(
     writeFileSync(opath, JSON.stringify(result, null, 2))
 }
 
+async function test_hybridSearch(
+    query: string,
+    translation_id: string,
+    book_id: string | null,
+    limit: number,
+    offset: number | null,
+    opath: string
+) {
+    const result = await client.search.hybrid.query({
+        query,
+        translation_id,
+        book_id: book_id ? book_id : undefined,
+        limit,
+        offset: offset ? offset : undefined,
+    })
+    writeFileSync(opath, JSON.stringify(result, null, 2))
+}
+
 async function main() {
 
     const OB = './test-output/get-book.out'
@@ -141,6 +159,7 @@ async function main() {
     const OLB = './test-output/list-books.out'
     const KS = './test-output/keyword-search.out'
     const SS = './test-output/semantic-search.out'
+    const HS = './test-output/hybrid-search.out'
 
     test_getBook('NABRE', 'JUD', OB)
 
@@ -154,9 +173,11 @@ async function main() {
 
     test_listBooks('NABRE', OLB)
 
-    test_keywordSearch('sow', 'NABRE', null, 10, null, KS)
+    test_keywordSearch('Sowing', 'NABRE', null, 10, null, KS)
     
     test_semanticSearch('God comforts those who are anxious and afraid', 'NABRE', null, 10, null, SS)
+
+    test_hybridSearch('God comforts the anxious and afraid', 'NABRE', null, 20, null, HS)
 
 }
 

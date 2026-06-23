@@ -355,7 +355,7 @@ export const searchRouter = ({
             const sorted = Array.from(merged.values()).sort((a, b) => b.rrf_score - a.rrf_score).slice(0, limit)
 
             return {
-                results: sorted.forEach((r) => ({
+                results: sorted.map((r) => ({
                     verse_id: r.verse_id,
                     reference: {
                         book_id: r.book_id,
