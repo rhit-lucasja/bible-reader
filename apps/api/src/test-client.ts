@@ -177,7 +177,7 @@ async function main() {
     
     test_semanticSearch('God comforts those who are anxious and afraid', 'NABRE', null, 10, null, SS)
 
-    test_hybridSearch('God comforts the anxious and afraid', 'NABRE', null, 20, null, HS)
+    test_hybridSearch('Do not fear', 'NABRE', null, 20, null, HS)
 
 }
 
