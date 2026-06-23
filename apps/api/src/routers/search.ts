@@ -291,12 +291,16 @@ export const searchRouter = ({
         )
         .query(async ({ ctx, input }) => {
             const { query, translation_id, book_id, limit, offset } = input
+            const candidate_limit = limit > 25 ? 2 * limit : 50
 
             // retrieve keyword and semantic search results
-            const keywordResults = fetchKeywordSearch(query, translation_id, book_id, limit, offset, ctx.db)
-            const semanticResults = fetchSemanticSearch(query, translation_id, book_id, limit, offset, ctx.db)
+            const [keywordResults, semanticResults] = await Promise.all([
+                fetchKeywordSearch(query, translation_id, book_id, candidate_limit, offset, ctx.db),
+                fetchSemanticSearch(query, translation_id, book_id, candidate_limit, offset, ctx.db)
+            ])
 
-            //
+            // add reciprocal rank fusion to each search result and merge where possible
+            const RRF_K = 60
 
 
         })
