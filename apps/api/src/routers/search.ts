@@ -1,6 +1,141 @@
 import { z } from 'zod'
 import { publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
+import { PrismaClient } from '@bible-reader/db'
+import { id } from 'zod/v4/locales'
+import { number } from 'zod/v4'
+
+async function fetchKeywordSearch(
+    query: string,
+    translation_id: string,
+    book_id: string | undefined,
+    limit: number,
+    offset: number,
+    db: PrismaClient
+) {
+    // execute full-text search using a raw postgreSQL text query
+    //   ts_rank ranks results by relevance
+    //   to_tsvector and plainto_tsquery convert verse/query text
+    //     into searchable tokens, ignoring punctuation and whatnot,
+    //     and replacing whitespace with ' & ' (match both words in any order)
+    const results = await db.$queryRawUnsafe<
+        {
+            id: number
+            number: number
+            chapter_number: number
+            book_id: string
+            translation_id: string
+            text: string
+            rank: number
+        }[]
+    >(
+        `
+        SELECT v.id, v.number, v.chapter_number, v.book_id, v.translation_id,
+            v.text, ts_rank(to_tsvector('english', v.text), plainto_tsquery('english', $1)) AS rank
+        FROM "Verse" v
+        WHERE v.translation_id = $2
+            ${book_id ? 'AND v.book_id = $5': ''}
+            AND to_tsvector('english', v.text) @@ plainto_tsquery('english', $1)
+        ORDER BY rank DESC
+        LIMIT $3
+        OFFSET $4
+        `,
+        query,
+        translation_id,
+        limit,
+        offset,
+        ...(book_id ? [book_id] : [])
+    )
+    return results
+}
+
+async function fetchSemanticSearch(
+    vector_literal: string,
+    translation_id: string,
+    book_id: string | undefined,
+    limit: number,
+    offset: number,
+    db: PrismaClient
+) {
+    // compare query's vector with pgvector using cosine similarity
+    // <=> is cosine dist operator (0 = identical, 2 = opposite)
+    // similarity score will be 1 - dist
+    const results = await db.$queryRawUnsafe<
+        {
+            id: number
+            number: number
+            chapter_number: number
+            book_id: string
+            translation_id: string
+            text: string
+            similarity: number
+        }[]
+    >(
+        `
+        SELECT v.id, v.number, v.chapter_number, v.book_id, v.translation_id,
+            v.text, 1 - (v.embedding <=> $1::vector) AS similarity
+        FROM "Verse" v
+        WHERE v.embedding IS NOT NULL
+            AND v.translation_id = 'NABRE'
+            ${book_id ? 'AND v.book_id = $4' : ''}
+        ORDER BY v.embedding <=> $1::vector
+        LIMIT $2
+        OFFSET $3
+        `,
+        vector_literal,
+        limit,
+        offset,
+        ...(book_id ? [book_id] : [])
+    )
+
+    if (results.length === 0) {
+        return []
+    }
+
+    // if user's preferred translation is not NABRE then fetch from
+    //   preferred translation (may not exist, e.g. in Protestant texts)
+    const coords = results.map((r) => ({
+        book_id: r.book_id,
+        chapter_number: r.chapter_number,
+        number: r.number
+    }))
+
+    const translation_verses =
+        translation_id !== 'NABRE'
+        ? await db.verse.findMany({
+            where: {
+                translation_id,
+                OR: coords.map((c) => ({
+                    book_id: c.book_id,
+                    chapter_number: c.chapter_number,
+                    number: c.number
+                }))
+            }
+        })
+        : null
+
+    const translation_verse_map = new Map(
+        (translation_verses ?? []).map((v) => [
+            `${v.book_id}:${v.chapter_number}:${v.number}`,
+            v
+        ])
+    )
+
+    return results.map((r) => {
+        const key = `${r.book_id}:${r.chapter_number}:${r.number}`
+        const preferred_verse = translation_verse_map.get(key)
+        return {
+            id: r.id,
+            book_id: r.book_id,
+            chapter_number: r.chapter_number,
+            number: r.number,
+            text: preferred_verse?.text ?? r.text,
+            translation_id: preferred_verse ? translation_id : 'NABRE',
+            similarity: r.similarity
+        }
+    })
+
+}
 
 export const searchRouter = ({
 
@@ -29,34 +164,7 @@ export const searchRouter = ({
             //   plainto_tsvector and plainto_tsquery convert verse/query text
             //     into searchable tokens, ignoring punctuation and words like 'the',
             //     and replacing whitespace with ' & ' (match both words in any order)
-            const results = await ctx.db.$queryRawUnsafe<
-                {
-                    id: number
-                    number: number
-                    chapter_number: number
-                    book_id: string
-                    translation_id: string
-                    text: string
-                    rank: number
-                }[]
-            >(
-                `
-                SELECT v.id, v.number, v.chapter_number, v.book_id, v.translation_id,
-                        v.text, ts_rank(to_tsvector('english', v.text), plainto_tsquery('english', $1)) AS rank
-                FROM "Verse" v
-                WHERE v.translation_id = $2
-                    ${book_id ? 'AND v.book_id = $5': ''}
-                    AND to_tsvector('english', v.text) @@ plainto_tsquery('english', $1)
-                ORDER BY rank DESC
-                LIMIT $3
-                OFFSET $4
-                `,
-                query,
-                translation_id,
-                limit,
-                offset,
-                ...(book_id ? [book_id] : [])
-            )
+            const results = await fetchKeywordSearch(query, translation_id, book_id, limit, offset, ctx.db)
 
             if (results.length === 0) {
                 return { results: [], total: 0, query, translation_id }
@@ -134,66 +242,11 @@ export const searchRouter = ({
             // now compare cosine similarity with pgvector
             // <=> is cosine dist operator (0 = identical, 2 = opposite)
             // similarity score will be 1 - dist
-            const results = await ctx.db.$queryRawUnsafe<
-                {
-                    id: number
-                    number: number
-                    chapter_number: number
-                    book_id: string
-                    translation_id: string
-                    text: string
-                    similarity: number
-                }[]
-            >(
-                `
-                SELECT v.id, v.number, v.chapter_number, v.book_id, v.translation_id,
-                    v.text, 1 - (v.embedding <=> $1::vector) AS similarity
-                FROM "Verse" v
-                WHERE v.embedding IS NOT NULL
-                    AND v.translation_id = 'NABRE'
-                    ${book_id ? 'AND v.book_id = $4' : ''}
-                ORDER BY v.embedding <=> $1::vector
-                LIMIT $2
-                OFFSET $3
-                `,
-                vector_literal,
-                limit,
-                offset,
-                ...(book_id ? [book_id] : [])
-            )
+            const results = await fetchSemanticSearch(vector_literal, translation_id, book_id, limit, offset, ctx.db)
 
             if (results.length === 0) {
                 return { results: [], total: 0, query, translation_id }
             }
-
-            // if user's preferred translation is not NABRE then fetch from
-            //   preferred translation (may not exist, e.g. in Protestant texts)
-            const coords = results.map((r) => ({
-                book_id: r.book_id,
-                chapter_number: r.chapter_number,
-                number: r.number
-            }))
-
-            const translation_verses = 
-                translation_id !== 'NABRE'
-                ? await ctx.db.verse.findMany({
-                    where: {
-                        translation_id,
-                        OR: coords.map((c) => ({
-                            book_id: c.book_id,
-                            chapter_number: c.chapter_number,
-                            number: c.number
-                        }))
-                    }
-                })
-                : null
-
-            const translation_verse_map = new Map(
-                (translation_verses ?? []).map((v) => [
-                    `${v.book_id}:${v.chapter_number}:${v.number}`,
-                    v
-                ])
-            )
 
             // fetch book names for display alongside verse passages
             const book_ids = [...new Set(results.map((r) => r.book_id))]
@@ -212,8 +265,6 @@ export const searchRouter = ({
 
             return {
                 results: results.map((r) => {
-                    const key = `${r.book_id}:${r.chapter_number}:${r.number}`
-                    const preferred_verse = translation_verse_map.get(key)
                     return {
                         verse_id: r.id,
                         reference: {
@@ -222,8 +273,8 @@ export const searchRouter = ({
                             chapter_number: r.chapter_number,
                             verse_number: r.number
                         },
-                        text: preferred_verse?.text ?? r.text,
-                        translation_id: preferred_verse ? translation_id : 'NABRE',
+                        text: r.text,
+                        translation_id: r.translation_id,
                         similarity: r.similarity
                     }
                 }),
