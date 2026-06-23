@@ -1,7 +1,6 @@
 import { z } from 'zod'
-import { publicProcedure, router } from '../trpc'
+import { publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
-import { number, string } from 'zod/v4'
 
 export const searchRouter = ({
 
@@ -247,7 +246,7 @@ export const searchRouter = ({
         )
         .query(async ({ ctx, input }) => {
 
-            
+
 
         })
 
