@@ -50,13 +50,34 @@ async function fetchKeywordSearch(
 }
 
 async function fetchSemanticSearch(
-    vector_literal: string,
+    query: string,
     translation_id: string,
     book_id: string | undefined,
     limit: number,
     offset: number,
     db: PrismaClient
 ) {
+    // embed the query with ollama
+    const ollamaUrl = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'
+    const embeddingResponse = await fetch(`${ollamaUrl}/api/embeddings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            model: 'nomic-embed-text',
+            prompt: query
+        })
+    })
+
+    if (!embeddingResponse.ok) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to generate embedding: ${embeddingResponse.statusText}`
+        })
+    }
+
+    const { embedding } = (await embeddingResponse.json()) as { embedding: number[] }
+    const vector_literal = `[${embedding.join(',')}]`
+
     // compare query's vector with pgvector using cosine similarity
     // <=> is cosine dist operator (0 = identical, 2 = opposite)
     // similarity score will be 1 - dist
@@ -218,31 +239,8 @@ export const searchRouter = ({
         .query(async ({ ctx, input }) => {
             const { query, translation_id, book_id, limit, offset } = input
 
-            // embed the query with ollama
-            const ollamaUrl = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'
-            const embeddingResponse = await fetch(`${ollamaUrl}/api/embeddings`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: 'nomic-embed-text',
-                    prompt: query
-                })
-            })
-
-            if (!embeddingResponse.ok) {
-                throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: `Failed to generate embedding: ${embeddingResponse.statusText}`
-                })
-            }
-
-            const { embedding } = (await embeddingResponse.json()) as { embedding: number[] }
-            const vector_literal = `[${embedding.join(',')}]`
-
-            // now compare cosine similarity with pgvector
-            // <=> is cosine dist operator (0 = identical, 2 = opposite)
-            // similarity score will be 1 - dist
-            const results = await fetchSemanticSearch(vector_literal, translation_id, book_id, limit, offset, ctx.db)
+            // retrieve basic semantic search results
+            const results = await fetchSemanticSearch(query, translation_id, book_id, limit, offset, ctx.db)
 
             if (results.length === 0) {
                 return { results: [], total: 0, query, translation_id }
