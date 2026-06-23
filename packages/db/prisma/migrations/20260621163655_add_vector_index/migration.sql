@@ -1,5 +1,9 @@
--- IVFFlat index for nearest neighbor search on vectors
--- rule of thumb is sqrt(n): so lists=100 is fine for ~31,000 vectors
-CREATE INDEX "verses_embedding_idx" ON "Verse"
-USING ivfflat (embedding vector_cosine_ops)
-WITH (lists = 100);
+-- HNSW index for approximate nearest neighbor search
+-- m=16, ef_construction=64 are fair default settings for dataset size
+-- Should use less working memory unlike IVFFlat
+BEGIN;
+SET LOCAL statement_timeout = '30min';
+CREATE INDEX "verses_embedding_idx" on "Verse"
+USING hnsw (embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 48);
+COMMIT;
