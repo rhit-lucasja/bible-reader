@@ -54,7 +54,32 @@ async function fetchKeywordSearch(
         offset,
         ...(book_id ? [book_id] : [])
     )
-    return results
+    
+    // fetch book names for display alongside verse passages
+    const book_ids = [...new Set(results.map((r) => r.book_id))]
+    const books = await db.book.findMany({
+        where: {
+            id: { in: book_ids },
+            translation_id
+        },
+        select: {
+            id: true,
+            name: true,
+            common_name: true
+        }
+    })
+    const book_map = new Map(books.map((b) => [b.id, b]))
+
+    return results.map((r) => ({
+        verse_id: r.id,
+        book_id: r.book_id,
+        book_name: book_map.get(r.book_id)?.name ?? r.book_id,
+        chapter_number: r.chapter_number,
+        verse_number: r.number,
+        text: r.text,
+        translation_id: r.translation_id,
+        rank: r.rank
+    }))
 }
 
 async function fetchSemanticSearch(
@@ -117,10 +142,6 @@ async function fetchSemanticSearch(
         ...(book_id ? [book_id] : [])
     )
 
-    if (results.length === 0) {
-        return []
-    }
-
     // if user's preferred translation is not NABRE then fetch from
     //   preferred translation (may not exist, e.g. in Protestant texts)
     const coords = results.map((r) => ({
@@ -150,14 +171,30 @@ async function fetchSemanticSearch(
         ])
     )
 
+    // fetch book names for display alongside verse passages
+    const book_ids = [...new Set(results.map((r) => r.book_id))]
+    const books = await db.book.findMany({
+        where: {
+            id: { in: book_ids },
+            translation_id: 'NABRE'
+        },
+        select: {
+            id: true,
+            name: true,
+            common_name: true
+        }
+    })
+    const book_map = new Map(books.map((b) => [b.id, b]))
+
     return results.map((r) => {
         const key = `${r.book_id}:${r.chapter_number}:${r.number}`
         const preferred_verse = translation_verse_map.get(key)
         return {
-            id: r.id,
+            verse_id: r.id,
             book_id: r.book_id,
+            book_name: book_map.get(r.book_id)?.name ?? r.book_id,
             chapter_number: r.chapter_number,
-            number: r.number,
+            verse_number: r.number,
             text: preferred_verse?.text ?? r.text,
             translation_id: preferred_verse ? translation_id : 'NABRE',
             similarity: r.similarity
@@ -184,33 +221,14 @@ export const searchRouter = ({
             // retrieve basic keyword search results
             const results = await fetchKeywordSearch(query, translation_id, book_id, limit, offset, ctx.db)
 
-            if (results.length === 0) {
-                return { results: [], total: 0, query, translation_id }
-            }
-
-            // fetch book names for display alongside verse passages
-            const book_ids = [...new Set(results.map((r) => r.book_id))]
-            const books = await ctx.db.book.findMany({
-                where: {
-                    id: { in: book_ids },
-                    translation_id
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    common_name: true
-                }
-            })
-            const book_map = new Map(books.map((b) => [b.id, b]))
-
             return {
                 results: results.map((r) => ({
-                    verse_id: r.id,
+                    verse_id: r.verse_id,
                     reference: {
                         book_id: r.book_id,
-                        book_name: book_map.get(r.book_id)?.name ?? r.book_id,
+                        book_name: r.book_name,
                         chapter_number: r.chapter_number,
-                        verse_number: r.number
+                        verse_number: r.verse_number
                     },
                     text: r.text,
                     translation_id: r.translation_id,
@@ -239,34 +257,15 @@ export const searchRouter = ({
             // retrieve basic semantic search results
             const results = await fetchSemanticSearch(query, translation_id, book_id, limit, offset, ctx.db)
 
-            if (results.length === 0) {
-                return { results: [], total: 0, query, translation_id }
-            }
-
-            // fetch book names for display alongside verse passages
-            const book_ids = [...new Set(results.map((r) => r.book_id))]
-            const books = await ctx.db.book.findMany({
-                where: {
-                    id: { in: book_ids },
-                    translation_id: 'NABRE'
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    common_name: true
-                }
-            })
-            const book_map = new Map(books.map((b) => [b.id, b]))
-
             return {
                 results: results.map((r) => {
                     return {
-                        verse_id: r.id,
+                        verse_id: r.verse_id,
                         reference: {
                             book_id: r.book_id,
-                            book_name: book_map.get(r.book_id)?.name ?? r.book_id,
+                            book_name: r.book_name,
                             chapter_number: r.chapter_number,
-                            verse_number: r.number
+                            verse_number: r.verse_number
                         },
                         text: r.text,
                         translation_id: r.translation_id,
@@ -291,7 +290,13 @@ export const searchRouter = ({
             })
         )
         .query(async ({ ctx, input }) => {
+            const { query, translation_id, book_id, limit, offset } = input
 
+            // retrieve keyword and semantic search results
+            const keywordResults = fetchKeywordSearch(query, translation_id, book_id, limit, offset, ctx.db)
+            const semanticResults = fetchSemanticSearch(query, translation_id, book_id, limit, offset, ctx.db)
+
+            //
 
 
         })
