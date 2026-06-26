@@ -7,7 +7,10 @@ import { createContext } from './trpc'
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+    origin: process.env.WEB_URL ?? 'http://localhost:3000',
+    credentials: true // required so as to send cookies cross-origin
+}))
 
 app.use(
     '/trpc',
