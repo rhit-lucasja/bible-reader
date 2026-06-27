@@ -110,11 +110,11 @@ model ChapterContentBlock {
 model User {
     id                  String @id @default(cuid())
     email               String @unique
-    email_verified      DateTime?
+    emailVerified       DateTime? @map("email_verified")
     name                String?
     image               String?
-    created_at          DateTime @default(now())
-    updated_at          DateTime @updatedAt
+    createdAt           DateTime @default(now()) @map("created_at")
+    updatedAt           DateTime @updatedAt @map("updated_at")
 
     // User's preferred translation, defaults to NABRE
     preferred_translation_id String @default("NABRE")
