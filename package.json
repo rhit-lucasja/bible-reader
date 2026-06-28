@@ -13,7 +13,7 @@
         "lint": "turbo lint",
         "typecheck": "turbo typecheck",
         "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
-        "vercel-build": "npm run build --workspace=packages/db && npm run build --workspace=apps/web"
+        "vercel-build": "npm install --workspace=apps/web && npm run build --workspace=packages/db && npm run build --workspace=apps/web"
     },
     "devDependencies": {
         "turbo": "^2.0.0",
