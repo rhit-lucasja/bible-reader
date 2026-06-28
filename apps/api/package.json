@@ -28,5 +28,13 @@
   "devDependencies": {
     "@bible-reader/config": "*",
     "eslint": "^8.0.0"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/routers/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/routers/index.ts",
+      "default": "./dist/index.js"
+    }
   }
 }
