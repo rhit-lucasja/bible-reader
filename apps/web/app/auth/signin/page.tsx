@@ -1,11 +1,11 @@
 import { signIn } from '@/auth'
 
 interface SignInPageProps {
-    searchParams: { callbackUrl?: string }
+    searchParams: Promise<{ callbackUrl?: string }>
 }
 
-export default function SignInPage({ searchParams }: SignInPageProps) {
-    const callbackUrl = searchParams.callbackUrl ?? '/'
+export default async function SignInPage({ searchParams }: SignInPageProps) {
+    const { callbackUrl = '/' } = await searchParams
     
     return (
         <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem' }}>
