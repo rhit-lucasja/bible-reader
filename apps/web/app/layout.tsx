@@ -1,4 +1,4 @@
-import React from "react"
+import { TRPCProvider } from '@/lib/trpc/provider'
 
 export default function RootLayout({
     children,
@@ -7,7 +7,11 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body>{children}</body>
+            <body>
+                <TRPCProvider>
+                    {children}
+                </TRPCProvider>
+            </body>
         </html>
     )
 }

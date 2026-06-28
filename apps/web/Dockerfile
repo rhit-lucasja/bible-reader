@@ -16,6 +16,9 @@ COPY --from=pruner /app/out/full/ .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Generate Prisma client before building
+RUN cd packages/db && npx prisma generate
+
 RUN npm run build --workspace=apps/web
 
 FROM node:20-alpine AS runner
