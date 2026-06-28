@@ -50,8 +50,9 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./apps/api/src:/app/apps/api/src
+      - ./apps/api:/app/apps/api
       - ./packages:/app/packages
+      - /app/apps/api/node_modules
     depends_on:
       db:
         condition: service_healthy
@@ -76,9 +77,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./apps/web/app:/app/apps/web/app
-      - ./apps/web/components:/app/apps/web/components
+      - ./apps/web:/app/apps/web
       - ./packages:/app/packages
+      - /app/apps/web/node_modules
+      - /app/apps/web/.next
     depends_on:
       - api
 
