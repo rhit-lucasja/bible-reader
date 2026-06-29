@@ -16,8 +16,8 @@
         "vercel-build": "npm run build --workspace=packages/db && npm run build --workspace=apps/web"
     },
     "devDependencies": {
-        "turbo": "^2.0.0",
         "prettier": "^3.0.0",
+        "turbo": "^2.0.0",
         "typescript": "^5.4.0"
     },
     "engines": {
