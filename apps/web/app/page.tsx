@@ -9,8 +9,8 @@ export default async function Home() {
     const translations = await trpc.translation.listTranslations.query()
 
     return (
-        <main style={{ padding: '2rem' }}>
-            <h1>Ignis Divinus</h1>
+        <main className="p-4 space-y-4">
+            <h1 className="text-3xl text-red-600 font-bold underline">Ignis Divinus</h1>
 
             {session ? (
                 <div>
@@ -29,7 +29,7 @@ export default async function Home() {
                 <a href="/auth/signin">Sign in</a>
             )}
 
-            <h2>Available Translations</h2>
+            <h2 className="text-lg text-red-600 underline">Available Translations</h2>
             <ul>
                 {translations.map((t) => (
                     <li key={t.id}>{t.english_name} ({t.id})</li>
