@@ -1,4 +1,4 @@
-import '@/app/globals.css';
+import './globals.css';
 import { TRPCProvider } from '@/lib/trpc/provider'
 
 export default function RootLayout({
