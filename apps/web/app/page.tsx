@@ -11,8 +11,8 @@ export default async function Home() {
 
     return (
         <>
-            <Navbar></Navbar>
-            <main className="p-4 space-y-4">
+            <Navbar />
+            <main className="mt-10 p-4 space-y-4">
                 <h1 className="text-3xl text-red-600 font-bold underline">Ignis Divinus</h1>
 
                 {session ? (
