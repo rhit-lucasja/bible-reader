@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import './globals.css';
+import './globals.css'
 import { TRPCProvider } from '@/lib/trpc/provider'
 import Navbar from '@/components/layout/navbar'
 
