@@ -9,7 +9,7 @@ export default function NotFound() {
             <body className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center">
                 <div className="text-center space-y-4">
                     <Flame className="h-12 w-12 mx-auto text-zinc-400" />
-                    <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+                    <h1 className="text-2xl text-zinc-900 dark:text-zinc-100">
                         Page Not Found
                     </h1>
                     <p className="text-zinc-500">
