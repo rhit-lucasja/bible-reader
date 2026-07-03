@@ -1,32 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import { UserMenu } from '@/components/ui/user-menu'
+import { SearchBar } from '@/components/ui/search-bar'
 import { Flame, BookOpenText } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-// prevent UserMenu from prerendering during static pages (SSR)
-// because useSession requires browser context
-import dynamic from 'next/dynamic'
-const UserMenu = dynamic(
-    () => import('@/components/ui/user-menu').then((mod) => mod.UserMenu),
-    {
-        ssr: false,
-        loading: () => (
-            <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
-        )
-    }
-)
-
-// similar SSR prevention logic for SearchBar, uses useRouter()
-const SearchBar = dynamic(
-    () => import ('@/components/ui/search-bar').then((mod) => mod.SearchBar),
-    {
-        ssr: false,
-        loading: () => (
-            <div className="w-full max-w-sm h-8 rounded-lg bg-zinc-100 animate-pulse hidden md:block" />
-        )
-    }
-)
 
 export default function Navbar() {
     return (
