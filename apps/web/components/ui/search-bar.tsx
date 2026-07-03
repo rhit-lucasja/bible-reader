@@ -64,10 +64,10 @@ export function SearchBar({
                         setExpanded(true)
                         setTimeout(() => inputRef.current?.focus(), 0)
                     }}
-                        className="p-2 rounded-lg text-zinc-100 hover:opacity-80 transition-opacity hover:border hover:border-zinc-400 cursor-pointer"
+                        className="rounded-lg text-zinc-100 hover:opacity-80 transition-opacity cursor-pointer"
                         aria-label="Open search"
                     >
-                        <Search className="h-5 w-5" />
+                        <Search className="h-full w-auto" />
                     </button>
                 )}
             </div>

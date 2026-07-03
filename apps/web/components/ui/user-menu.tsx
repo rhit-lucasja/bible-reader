@@ -13,7 +13,7 @@ export function UserMenu() {
     // if user status still loading, display empty circle
     if (status === 'loading') {
         return (
-            <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
+            <div className="h-8 w-8 rounded-full bg-zinc-400 dark:bg-zinc-700 animate-pulse" />
         )
     }
 
@@ -22,14 +22,12 @@ export function UserMenu() {
         return (
             <button onClick={() => router.push('/auth/signin')}
                 className={cn(
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium',
-                    'bg-zinc-900 dark:bg-zinc-100',
-                    'text-white dark:text-zinc-900',
-                    'hover:bg-zinc-700 dark:hover:bg-zinc-300',
-                    'transition-colors'
+                    'flex items-center gap-1 px-3 py-1.5 rounded-lg text-lg',
+                    'bg-transparent text-zinc-100',
+                    'hover:opacity-80 transition-opacity cursor-pointer',
                 )}
             >
-                <User className="h-4 w-4" />
+                <User className="h-6 w-6" />
                 <span>Sign In</span>
             </button>
         )

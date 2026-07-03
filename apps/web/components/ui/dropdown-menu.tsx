@@ -68,7 +68,7 @@ export function DropdownMenu({
                     <div className={cn(
                         'absolute top-full mt-2 z-50 min-w-48',
                         'bg-white dark:bg-zinc-900',
-                        'border border-zinc-200 dark:border-zinc-700',
+                        'border border-zinc-400 dark:border-zinc-700',
                         'rounded-lg shadow-lg py-1',
                         align === 'right' ? 'right-0' : 'left-0',
                         className
@@ -101,7 +101,7 @@ export function DropdownItem({
         <button className={cn(
             'w-full text-left px-4 py-2 text-sm',
             'hover:bg-zinc-100 dark:hover:bg-zinc-800',
-            'transition-colors duration-100',
+            'transition-colors duration-100 cursor-pointer',
             destructive ? 'text-red-600 dark:text-red-400' : 'text-zinc-700 dark:text-zinc-300',
             className
         )}
@@ -115,7 +115,7 @@ export function DropdownItem({
 export function DropdownLabel({ children, className }: {children: ReactNode; className?: string }) {
     return (
         <div className={cn(
-            'px-4 py-2 text-xs text-zinc-500 dark:text-zinc-400 border-b border-zinc-100 dark:border-zinc-800 mb-1',
+            'px-4 py-2 text-xs text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-800 mb-1',
             className
         )}>
             {children}
@@ -125,5 +125,5 @@ export function DropdownLabel({ children, className }: {children: ReactNode; cla
 
 // visual divider between dropdown menu items
 export function DropdownSeparator() {
-    return <hr className="my-1 border-zinc-100 dark:border-zinc-800" />
+    return <hr className="my-1 border-zinc-200 dark:border-zinc-800" />
 }
