@@ -21,12 +21,15 @@ export default function Navbar() {
                     <span className="hidden sm:inline text-lg">
                         Ignis Divinus
                     </span>
+                    <span className="inline sm:hidden text-lg">
+                        ID
+                    </span>
                 </Link>
 
                 {/* reading navigational link */}
                 <Link href="/read/GEN/1" className="flex items-center gap-2 text-zinc-100 hover:opacity-80 transition-opacity">
                     <BookOpenText className="h-8 w-auto" />
-                    <span className="hidden sm:inline text-lg">
+                    <span className="text-lg">
                         Read
                     </span>
                 </Link>
