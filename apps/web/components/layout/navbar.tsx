@@ -10,7 +10,7 @@ export default function Navbar() {
     return (
         <header className={cn(
             'sticky top-0 z-50 w-full',
-            'border-b border-zinc-800 dark:border-zinc-700',
+            'border-b border-zinc-700',
             'bg-blue-950 dark:bg-blue-950/90',
             'backdrop-blur supports-[backdrop-filter]:bg-blue-950/90'
         )}>

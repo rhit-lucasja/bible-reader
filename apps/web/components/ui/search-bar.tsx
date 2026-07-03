@@ -54,14 +54,17 @@ export function SearchBar({
                             className="bg-transparent text-sm outline-none w-40 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400"
                         />
                         <button onClick={() => { setQuery(''); setExpanded(false) }}
-                            className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                            className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
                         >
                             <X className="h-3.5 w-3.5" />
                         </button>
                     </div>
                 ) : (
-                    <button onClick={() => { setExpanded(true); setTimeout(() => inputRef.current?.focus(), 0) }}
-                        className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-300"
+                    <button onClick={() => {
+                        setExpanded(true)
+                        setTimeout(() => inputRef.current?.focus(), 0)
+                    }}
+                        className="p-2 rounded-lg text-zinc-100 hover:opacity-80 transition-opacity hover:border hover:border-zinc-400 cursor-pointer"
                         aria-label="Open search"
                     >
                         <Search className="h-5 w-5" />
@@ -75,15 +78,15 @@ export function SearchBar({
     return (
         <form onSubmit={handleSubmit} className={cn('relative flex items-center', className)}>
             <Search className="absolute left-3 h-4 w-4 text-zinc-400 pointer-events-none" />
-            <input ref={inputRef} type="texT" value={query} onChange={(e) => setQuery(e.target.value)}
+            <input ref={inputRef} type="text" value={query} onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown} placeholder="Search passage or topic..."
                 className={cn(
                     'w-full pl-9 pr-4 py-1.5 text-sm rounded-lg',
                     'bg-zinc-100 dark:bg-zinc-800',
                     'text-zinc-900 dark:text-zinc-100',
                     'placeholder:text-zinc-400',
-                    'border border-transparent',
-                    'focus:outline-none focus:border-zinc-300 dark:focus:border-zinc-600',
+                    'border border-transparent border-zinc-700',
+                    'focus:outline-none focus:border-zinc-400',
                     'transition-colors'
                 )}
             />
