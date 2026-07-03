@@ -47,7 +47,7 @@ export function SearchBar({
         return (
             <div className={cn('relative flex items-center', className)}>
                 {expanded ? (
-                    <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg px-3 py-1.5">
+                    <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg px-3 py-1.5 border border-transparent border-zinc-700">
                         <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                         <input ref={inputRef} autoFocus type="text" value={query} onChange={(e) => setQuery(e.target.value)}
                             onKeyDown={handleKeyDown} placeholder="Search..."
