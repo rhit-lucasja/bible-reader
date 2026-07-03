@@ -1,32 +1,43 @@
-import { auth, signOut } from '@/auth';
-import { BookOpenTextIcon, FlameIcon, SearchIcon } from 'lucide-react';
+import Link from 'next/link'
+import { Flame, BookOpenText } from 'lucide-react'
+import { SearchBar } from '@/components/ui/search-bar'
+import { UserMenu } from '@/components/ui/user-menu'
+import { cn } from '@/lib/utils'
 
-export default async function Navbar() {
-    const session = await auth()
-
+export default function Navbar() {
     return (
-        <nav className="fixed top-0 left-0 w-full h-12 bg-blue-900 text-white text-2xl font-bold flex gap-8 pl-2 py-2 z-50">
-            <a href="/" className="flex gap-2">
-                <FlameIcon className="h-8 w-auto" />
-                Ignis Divinus
-            </a>
-            <a href="/read/GEN/1" className="flex gap-2">
-                <BookOpenTextIcon className="h-9 w-auto" />
-                Read
-            </a>
-            <a href="/search" className="flex gap-2">
-                <SearchIcon className="h-7 w-auto" />
-                Search
-            </a>
-            {session ? (
-                <form action={async () => { 'use server'; await signOut({ redirectTo: '/' }) }}>
-                    <button type="submit">Sign out</button>
-                </form>
-            ) : (
-                <a href="/auth/signin">
-                    Sign In
-                </a>
-            )}
-        </nav>
+        <header className={cn(
+            'sticky top-0 z-50 w-full',
+            'border-b border-zinc-200 dark:border-zinc-800',
+            'bg-white/95 dark:bg-zinc-950/95',
+            'backdrop-blur supports-[backdrop-filter]:bg-white/80'
+        )}>
+            <nav className="mx-auto max-w-7xl px-4 h-14 flex items-center gap-4">
+                {/* Home direct - abbreviated on small screens */}
+                <Link href="/" className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity shrink-0">
+                    <Flame className="h-5 w-5" />
+                    <span className="hidden sm:inline font-semibold text-sm">
+                        Ignis Divinus
+                    </span>
+                </Link>
+
+                {/* reading navigational link */}
+                <Link href="/read/GEN/1" className="flex items-center gap-1">Read</Link>
+            
+                {/* search bar/icon */}
+                <div className="flex-1 flex justify-center px-2">
+                    {/* full bar on larger screens */}
+                    <SearchBar variant="full" className="hidden md:flex w-full max-w-sm" />
+                    {/* icon only on mobile */}
+                    <SearchBar variant="icon" className="flex md:hidden ml-auto" />
+                </div>
+
+                {/* user avatar / menu */}
+                <div className="flex items-center gap-2 shrink-0">
+                    <UserMenu />
+                </div>
+            
+            </nav>
+        </header>
     )
 }
