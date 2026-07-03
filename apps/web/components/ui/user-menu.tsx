@@ -40,11 +40,12 @@ export function UserMenu() {
         <button className={cn(
             'flex items-center justify-center',
             'h-8 w-8 rounded-full',
-            'bg-zinc-800 dark:bg-zinc-200',
-            'text-white dark:text-zinc-900',
-            'text-xs font-semibold',
+            'bg-zinc-400 dark:bg-zinc-700',
+            'text-zinc-900 dark:text-zinc-100',
+            'text-md',
             'hover:opacity-80 transition-opacity',
-            'focus:outline-none focus:ring-2 focus:ring-zinc-400'
+            'focus:outline-none focus:ring-2 focus:ring-zinc-400',
+            'cursor-pointer'
         )}
             aria-label="User menu"
         >
@@ -62,7 +63,7 @@ export function UserMenu() {
         <DropdownMenu trigger={trigger} align="right">
             {/* Label for current user */}
             <DropdownLabel>
-                <p className="font-medium text-zinc-800 dark:text-zinc-200">
+                <p>
                     {session.user?.name}
                 </p>
                 <p className="text-zinc-400 mt-0.5">
