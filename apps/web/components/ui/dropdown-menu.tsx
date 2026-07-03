@@ -80,3 +80,50 @@ export function DropdownMenu({
         </DropdownContext.Provider>
     )
 }
+
+// individual menu item - closes dropdown when clicked
+interface DropdownItemProps {
+    children: ReactNode
+    onClick?: () => void
+    className?: string
+    destructive?: boolean
+}
+
+export function DropdownItem({
+    children,
+    onClick,
+    className,
+    destructive = false
+}: DropdownItemProps) {
+    const { close } = useContext(DropdownContext)
+
+    return (
+        <button className={cn(
+            'w-full text-left px-4 py-2 text-sm',
+            'hover:bg-zinc-100 dark:hover:bg-zinc-800',
+            'transition-colors duration-100',
+            destructive ? 'text-red-600 dark:text-red-400' : 'text-zinc-700 dark:text-zinc-300',
+            className
+        )}
+        onClick={() => { onClick?.(); close() }}>
+            {children}
+        </button>
+    )
+}
+
+// non-interactive label in dropdown
+export function DropdownLabel({ children, className }: {children: ReactNode; className?: string }) {
+    return (
+        <div className={cn(
+            'px-4 py-2 text-xs text-zinc-500 dark:text-zinc-400 border-b border-zinc-100 dark:border-zinc-800 mb-1',
+            className
+        )}>
+            {children}
+        </div>
+    )
+}
+
+// visual divider between dropdown menu items
+export function DropdownSeparator() {
+    return <hr className="my-1 border-zinc-100 dark:border-zinc-800" />
+}
