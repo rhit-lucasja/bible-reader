@@ -14,16 +14,12 @@ interface Book {
 
 interface ReaderShellProps {
     books: Book[]
-    currentBookId: string
-    currentChapter: number
     translationId: string
     children: React.ReactNode
 }
 
 export function ReaderShell({
     books,
-    currentBookId,
-    currentChapter,
     translationId,
     children
 }: ReaderShellProps) {
@@ -40,8 +36,7 @@ export function ReaderShell({
             )}>
                 {/* Only render contents when open to avoid tab click stuff */}
                 {sidebarOpen && (
-                    <BookSidebar books={books} currentBookId={currentBookId}
-                        currentChapter={currentChapter} translationId={translationId} />
+                    <BookSidebar books={books} translationId={translationId} />
                 )}
             </aside>
 
