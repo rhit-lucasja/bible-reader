@@ -37,7 +37,7 @@ export function BookSidebarItem({
             <button onClick={onToggle} className={cn(
                 'w-full flex items-center justify-between',
                 'px-3 py-2 text-md rounded-md',
-                'hover:bg-zinc-100 dark:hover:bg-zinc-800',
+                'hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer',
                 'transition-colors text-left',
                 isOpen ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-600 dark:text-zinc-400'
             )}>
@@ -50,7 +50,7 @@ export function BookSidebarItem({
 
             {/* Chapter list (only rendered when open} */}
             {isOpen && (
-                <div className="mt-0.5 mb-1 ml-3 pl-2 border-l border-zinc-200 dark:border-zinc-700">
+                <div className="mt-0.5 mb-1 ml-3 pl-2 border-l border-zinc-300 dark:border-zinc-700">
                     <div className="flex flex-wrap gap-0.5 py-1 pr-2">
                         {Array.from({ length: book.num_chapters }, (_, i) => i + 1).map((ch) => {
                             const isActive = ch === currentChapter
@@ -58,9 +58,9 @@ export function BookSidebarItem({
                                 <button key={ch} onClick={() => navigateToChapter(ch)}
                                     className={cn(
                                         'h-7 w-7 text-sm rounded-md flex items-center justify-center',
-                                        'transition-colors',
-                                        isActive ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
-                                            : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100'
+                                        'transition-colors cursor-pointer',
+                                        isActive ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100'
+                                            : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100'
                                     )}
                                 >
                                     {ch}

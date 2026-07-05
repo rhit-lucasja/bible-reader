@@ -43,7 +43,7 @@ export function BookSidebar({
             <div className="flex-1 overflow-y-auto py-3 px-2">
                 {books.map((book) => (
                     <BookSidebarItem key={book.id} book={book} isOpen={openBookId === book.id}
-                        onToggle={() => handleToggle(book.id)} currentChapter={(openBookId === book.id && currentChapter) ? currentChapter : undefined }
+                        onToggle={() => handleToggle(book.id)} currentChapter={(currentBookId === book.id && currentChapter) ? currentChapter : undefined }
                         translationId={translationId} />
                 ))}
             </div>

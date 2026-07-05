@@ -26,13 +26,15 @@ export function ReaderShell({
     const [sidebarOpen, setSidebarOpen] = useState(true)
 
     return (
-        <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
+        <div className={cn('flex h-[calc(100vh-3.5rem)] overflow-hidden',
+            'border-x border-zinc-200 dark:border-zinc-800')}
+        >
             {/* Sidebar */}
             <aside className={cn(
-                'shrink-0 border-r border-zinc-200 dark:border-zinc-800',
-                'bg-white dark:bg-zinc-950',
+                'shrink-0 bg-white dark:bg-zinc-900',
                 'transition-all duration-300 ease-in-out overflow-hidden',
-                sidebarOpen ? 'w-56' : 'w-0'
+                'scrollbar-track-transparent scrollbar-thumb-neutral-400',
+                sidebarOpen ? 'w-56 border-r border-zinc-200 dark:border-zinc-800' : 'w-0 border-none'
             )}>
                 {/* Only render contents when open to avoid tab click stuff */}
                 {sidebarOpen && (
@@ -48,7 +50,7 @@ export function ReaderShell({
                         className={cn(
                             'p-1.5 rounded-md transition-colors',
                             'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200',
-                            'hoer:bg-zinc-100 dark:hover:bg-zinc-800'
+                            'hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer'
                         )} aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
                     >
                         {sidebarOpen
