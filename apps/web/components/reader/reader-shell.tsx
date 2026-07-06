@@ -15,12 +15,14 @@ interface Book {
 interface ReaderShellProps {
     books: Book[]
     translationId: string
+    toolbar?: React.ReactNode
     children: React.ReactNode
 }
 
 export function ReaderShell({
     books,
     translationId,
+    toolbar,
     children
 }: ReaderShellProps) {
     const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -60,7 +62,9 @@ export function ReaderShell({
                     </button>
 
                     {/* Chapter nav and translation switcher */}
-                    <div className="flex-1" id="reader-toolbar" />
+                    <div className="flex-1 min-w-0">
+                        {toolbar}
+                    </div>
                 </div>
 
                 {/* Scrollable passage content */}
