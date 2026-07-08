@@ -58,7 +58,7 @@ export function TranslationSwitcher({
             {open && (
                 <div className={cn(
                     'absolute right-0 top-full mt-1 z-50',
-                    'w-56 rounded-lg shadow-lg py-1',
+                    'rounded-lg shadow-lg py-1',
                     'bg-white dark:bg-zinc-900',
                     'border border-zinc-200 dark:border-zinc-700'
                 )}>
@@ -69,21 +69,23 @@ export function TranslationSwitcher({
                                 setOpen(false)
                             }}
                             className={cn(
-                                'w-full flex items-center justify-between px-3 py-2 text-sm',
-                                'hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors',
-                                t.id === currentTranslationId
-                                    ? 'text-zinc-900 dark:text-zinc-100'
-                                    : 'text-zinc-600 dark:text-zinc-400'
+                                'w-full flex items-center justify-between px-3 py-2',
+                                'hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer',
                             )}
                         >
-                            <div className="flex items-center gap-2.5">
-                                <span className="w-10 text-xs text-zinc-400">
+                            <div className="flex items-center gap-1.5">
+                                <span className={cn(
+                                    'text-sm',
+                                    t.id === currentTranslationId
+                                        ? 'text-zinc-300'
+                                        : 'text-zinc-400'
+                                )}>
                                     {t.short_name}
                                 </span>
+                                {t.id === currentTranslationId && (
+                                    <Check className="h-3.5 w-3.5 text-zinc-300" />
+                                )}
                             </div>
-                            {t.id === currentTranslationId && (
-                                <Check className="h-3.5 w-3.5 text-zinc-500" />
-                            )}
                         </button>
                     ))}
                 </div>

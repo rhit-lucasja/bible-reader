@@ -75,11 +75,11 @@ export function ReaderToolbar({
                 </NavButton>
 
                 {/* Label for current page */}
-                <div className="px-4 py-1 min-w-36 text-center">
+                <div className="px-4 py-1 min-w-24 text-center">
                     <span className="text-sm text-zinc-800 dark:text-zinc-200">
                         {currentBook.name}
                     </span>
-                    <span className="text-sm text-zinc-500 dark:text-zinc-400 ml-1.5">
+                    <span className="text-sm text-zinc-800 dark:text-zinc-200 ml-1.5">
                         {currentChapter}
                     </span>
                 </div>
@@ -120,8 +120,8 @@ function NavButton({ onClick, disabled, title, children }: NavButtonProps) {
             className={cn(
                 'p-1.5 rounded-md transition-colors',
                 disabled
-                    ? 'text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
-                    : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer'
+                    ? 'text-zinc-300 dark:text-zinc-600 cursor-not-allowed'
+                    : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer'
             )}
         >
             {children}
