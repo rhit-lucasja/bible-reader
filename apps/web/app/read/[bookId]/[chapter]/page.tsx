@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { createServerClient } from '@/lib/trpc/server'
 import { notFound } from 'next/navigation'
+import { ChapterReader } from '@/components/reader/chapter-reader'
 import { ReaderShell } from '@/components/reader/reader-shell'
 import { ReaderToolbar } from '@/components/reader/reader-toolbar'
 
@@ -24,7 +25,15 @@ export default async function ReadPage({ params, searchParams }: ReadPageProps) 
 
     const trpc = await createServerClient()
 
-    const books = await trpc.translation.listBooks.query({ translation_id: translation })
+    const [chapterData, books] = await Promise.all([
+        trpc.reference.getChapter.query({
+            book_id: bookId,
+            chapter_number: chapterNum,
+            translation_id: translation
+        }).catch(() => null),
+        trpc.translation.listBooks.query({ translation_id: translation })
+    ])
+    if (!chapterData) notFound()
     const currentBook = books.find((b) => b.id === bookId)
     if (!currentBook) notFound()
 
@@ -36,11 +45,9 @@ export default async function ReadPage({ params, searchParams }: ReadPageProps) 
 
     return (
         <ReaderShell books={books} translationId={translation} toolbar={toolbar}>
-            <div className="p-8">
-                <p className="text-zinc-400 text-sm">
-                    {currentBook.name} | Chapter {chapterNum} | {translation}
-                </p>
-            </div>
+            <ChapterReader blocks={chapterData.blocks} bookId={bookId}
+                chapterNum={chapterNum} bookName={currentBook.name} translationId={translation}
+            />
         </ReaderShell>
     )
 }
