@@ -42,20 +42,6 @@ export function VerseActionBar({
                 <Bookmark className="h-3.5 w-3.5" />
                 Bookmark
             </button>
-
-            {/* Annotation option */}
-            <button onClick={() => {
-                // TODO: open note dialog
-            }} title="Annotate this verse"
-                className={cn(
-                    'flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm',
-                    'hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer',
-                    'text-zinc-600 dark:text-zinc-300'
-                )}
-            >
-                <StickyNote className="h-3.5 w-3.5" />
-                Annotate
-            </button>
             <span className="w-px h-4 bg-zinc-300 dark:bg-zinc-600" />
 
             {/* Dismiss action bar */}
