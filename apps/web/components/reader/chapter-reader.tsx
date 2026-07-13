@@ -79,6 +79,12 @@ export function ChapterReader({
                     )
                 }
 
+                if (group.type === 'line-break') {
+                    return (
+                        <div className="h-2" />
+                    )
+                }
+
                 if (group.type === 'paragraph') {
                     return (
                         <p key={groupIndex} className={cn(
@@ -109,6 +115,7 @@ export function ChapterReader({
 // headings become single-block groups of their own
 type ParagraphGroup = { type: 'paragraph'; blocks: ContentBlock[] }
     | { type: 'heading'; headingText: string }
+    | { type: 'line-break' }
 
 function groupIntoParagraphs(blocks: ContentBlock[]): ParagraphGroup[] {
     const groups: ParagraphGroup[] = []
@@ -125,6 +132,7 @@ function groupIntoParagraphs(blocks: ContentBlock[]): ParagraphGroup[] {
         if (block.type === 'line-break') {
             // end current paragraph
             flushParagraph()
+            groups.push({ type: 'line-break' })
         } else if (block.type === 'heading') {
             // heading ends current paragraph, uses its own
             flushParagraph()
