@@ -37,15 +37,15 @@ export function VerseBlock({
                     'cursor-pointer rounded px-0.5 -mx-0.5',
                     'transition-colors duration-100',
                     isSelected
-                        ? 'bg-amber-100 dark:bg-amber-900/30'
-                        : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/50'
+                        ? 'bg-amber-200 dark:bg-yellow-200/20'
+                        : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 )}
             >
                 {/* Superscript verse number */}
                 <sup className={cn(
                     'text-xs mr-0.5 select-none',
                     isSelected
-                        ? 'text-amber-600 dark:text-amber-300'
+                        ? 'text-amber-600 dark:text-amber-400'
                         : 'text-zinc-400 dark:text-zinc-500'
                 )}>
                     {verse.number}
@@ -59,7 +59,7 @@ export function VerseBlock({
                         </span>
                     )
                 })}
-                
+
             </span>
 
             {/* action bar floats below selected verse */}
