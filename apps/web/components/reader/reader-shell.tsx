@@ -28,7 +28,7 @@ export function ReaderShell({
     const [sidebarOpen, setSidebarOpen] = useState(true)
 
     return (
-        <div className={cn('flex h-[calc(100vh-3.5rem)] overflow-hidden',
+        <div className={cn('flex h-[calc(100vh-3.6rem)] overflow-hidden',
             'border-x border-zinc-200 dark:border-zinc-800')}
         >
             {/* Sidebar */}
@@ -68,7 +68,10 @@ export function ReaderShell({
                 </div>
 
                 {/* Scrollable passage content */}
-                <div className="flex-1 overflow-y-auto">
+                <div className={cn(
+                    'flex-1 overflow-y-auto',
+                    'scrollbar-track-transparent scrollbar-thumb-neutral-400'
+                )}>
                     {children}
                 </div>
             </div>

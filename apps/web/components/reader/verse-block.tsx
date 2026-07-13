@@ -8,9 +8,9 @@ interface Verse {
     id: number
     number: number
     text: string
-    chapterNum: number
-    bookId: string
-    translationId: string
+    chapter_number: number
+    book_id: string
+    translation_id: string
 }
 
 interface VerseBlockProps {
@@ -59,9 +59,8 @@ export function VerseBlock({
                     onClick={(e) => e.stopPropagation()}
                 >
                     <span className="absolute left-0 top-1 z-50">
-                        <VerseActionBar verseNum={verse.number} bookId={verse.bookId}
-                            chapterNum={verse.chapterNum} translationId={verse.translationId}
-                            onDismiss={onDeselect}
+                        <VerseActionBar verseNum={verse.number} bookId={verse.book_id}
+                            chapterNum={verse.chapter_number} onDismiss={onDeselect}
                         />
                     </span>
                 </span>

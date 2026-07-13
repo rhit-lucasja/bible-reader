@@ -7,7 +7,6 @@ interface VerseActionBarProps {
     verseNum: number
     bookId: string
     chapterNum: number
-    translationId: string
     onDismiss: () => void
 }
 
@@ -15,7 +14,6 @@ export function VerseActionBar({
     verseNum,
     bookId,
     chapterNum,
-    translationId,
     onDismiss
 }: VerseActionBarProps) {
     return (
@@ -26,7 +24,7 @@ export function VerseActionBar({
             'text-zinc-900 dark:text-white'
         )}>
             <span className="text-xs px-2 text-zinc-500 dark:text-zinc-400 select-none">
-                v{verseNum}
+                {bookId}&nbsp;{chapterNum}:{verseNum}
             </span>
             <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-600" />
 
@@ -55,7 +53,7 @@ export function VerseActionBar({
                 )}
             >
                 <StickyNote className="h-3.5 w-3.5" />
-                Leave a Note
+                Annotate
             </button>
 
             <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-600" />

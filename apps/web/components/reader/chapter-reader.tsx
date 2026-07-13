@@ -8,15 +8,14 @@ interface Verse {
     id: number
     number: number
     text: string
-    chapterNum: number
-    bookId: string
-    translationId: string
+    chapter_number: number
+    book_id: string
+    translation_id: string
 }
 
 export interface ContentBlock {
     type: string
-    headingText: string | null
-    chapterNum?: number
+    heading_text: string | null
     verse: Verse | null
 }
 
@@ -82,7 +81,7 @@ export function ChapterReader({
                             'text-base leading-8',
                             'text-zinc-800 dark:text-zinc-200'
                         )}>
-                            {group.blocks.map((block, blockIndex) => {
+                            {group.blocks.map((block) => {
                                 if (block.type === 'verse' && block.verse) {
                                     return (
                                         <VerseBlock key={block.verse.number} verse={block.verse}
@@ -96,7 +95,6 @@ export function ChapterReader({
                         </p>
                     )
                 }
-
                 return null
             })}
         </div>
@@ -126,7 +124,7 @@ function groupIntoParagraphs(blocks: ContentBlock[]): ParagraphGroup[] {
         } else if (block.type === 'heading') {
             // heading ends current paragraph, uses its own
             flushParagraph()
-            groups.push({ type: 'heading', headingText: block.headingText ?? '' })
+            groups.push({ type: 'heading', headingText: block.heading_text ?? '' })
         } else if (block.type === 'verse') {
             currentParagraph.push(block)
         }
