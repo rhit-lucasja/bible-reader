@@ -36,7 +36,8 @@ export function ReaderShell({
                 'shrink-0 bg-white dark:bg-zinc-900',
                 'transition-all duration-300 ease-in-out overflow-hidden',
                 'scrollbar-track-transparent scrollbar-thumb-neutral-400',
-                sidebarOpen ? 'w-56 border-r border-zinc-200 dark:border-zinc-800' : 'w-0 border-none'
+                'w-0 sm:w-auto',
+                sidebarOpen ? 'sm:w-56 border-r border-zinc-200 dark:border-zinc-800' : 'sm:w-0 border-none'
             )}>
                 {/* Only render contents when open to avoid tab click stuff */}
                 {sidebarOpen && (
@@ -50,6 +51,7 @@ export function ReaderShell({
                 <div className="shrink-0 px-4 py-2 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-3">
                     <button onClick={() => setSidebarOpen((prev) => !prev)}
                         className={cn(
+                            'hidden sm:flex',
                             'p-1.5 rounded-md transition-colors',
                             'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200',
                             'hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer'
