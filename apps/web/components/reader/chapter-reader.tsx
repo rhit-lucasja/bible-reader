@@ -81,7 +81,7 @@ export function ChapterReader({
 
                 if (group.type === 'line-break') {
                     return (
-                        <div className="h-2" />
+                        <div key={groupIndex} className="h-2" />
                     )
                 }
 
