@@ -31,7 +31,22 @@ export function VerseBlock({
 
     return (
         <span className="relative">
-            {/* verse contents itself */}
+            {/* action bar floats above selected verse */}
+            {isSelected && (
+                <span ref={actionBarRef} className="relative"
+                    // prevent clicks from bubbling up to verse deselect
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <span className="absolute left-0 bottom-6 z-50">
+                        <VerseActionBar verseNum={verse.number} bookId={verse.book_id}
+                            chapterNum={verse.chapter_number} translationId={verse.translation_id}
+                            onDismiss={onDeselect}
+                        />
+                    </span>
+                </span>
+            )}
+
+            {/* verse contents */}
             <span id={`verse-${verse.number}`} onClick={() => isSelected ? onDeselect() : onSelect(verse.number)}
                 className={cn(
                     'cursor-pointer rounded px-0.5 -mx-0.5',
@@ -61,21 +76,6 @@ export function VerseBlock({
                 })}
 
             </span>
-
-            {/* action bar floats below selected verse */}
-            {isSelected && (
-                <span ref={actionBarRef} className="inline-block relative"
-                    // prevent clicks from bubbling up to verse deselect
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <span className="absolute left-0 top-1 z-50">
-                        <VerseActionBar verseNum={verse.number} bookId={verse.book_id}
-                            chapterNum={verse.chapter_number} translationId={verse.translation_id}
-                            onDismiss={onDeselect}
-                        />
-                    </span>
-                </span>
-            )}
         </span>
     )
 }
