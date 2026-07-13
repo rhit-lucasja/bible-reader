@@ -70,7 +70,8 @@ export function VerseBlock({
                 >
                     <span className="absolute left-0 top-1 z-50">
                         <VerseActionBar verseNum={verse.number} bookId={verse.book_id}
-                            chapterNum={verse.chapter_number} onDismiss={onDeselect}
+                            chapterNum={verse.chapter_number} translationId={verse.translation_id}
+                            onDismiss={onDeselect}
                         />
                     </span>
                 </span>
