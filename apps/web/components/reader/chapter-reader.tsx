@@ -8,6 +8,7 @@ interface Verse {
     id: number
     number: number
     text: string
+    content: string[]
     chapter_number: number
     book_id: string
     translation_id: string
@@ -53,11 +54,14 @@ export function ChapterReader({
     const paragraphs = groupIntoParagraphs(blocks)
 
     return (
-        <div className="px-8 py-8 max-w-2xl mx-auto" onClick={handleBackgroundClick}>
+        <div className="px-8 py-8 max-w-3xl mx-auto" onClick={handleBackgroundClick}>
             {/* Chapter heading */}
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-8">
-                {bookName} {chapterNum}
+            <h1 className="text-2xl uppercase text-center font-bold text-zinc-900 dark:text-zinc-100">
+                {bookName}
             </h1>
+            <h2 className="text-xl text-center text-zinc-900 dark:text-zinc-100 mb-8">
+                Chapter {chapterNum}
+            </h2>
 
             {/* Render paragraph content groups */}
             {paragraphs.map((group, groupIndex) => {

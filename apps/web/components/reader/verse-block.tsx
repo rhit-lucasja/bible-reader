@@ -8,6 +8,7 @@ interface Verse {
     id: number
     number: number
     text: string
+    content: string[]
     chapter_number: number
     book_id: string
     translation_id: string
@@ -49,7 +50,16 @@ export function VerseBlock({
                 )}>
                     {verse.number}
                 </sup>
-                {verse.text}{' '}
+
+                {/* Verse contents */}
+                {verse.content.map((text, idx) => {
+                    return (
+                        <span key={verse.number * 10 + idx}>
+                            {idx > 0 ? <br /> : null}{text}{' '}
+                        </span>
+                    )
+                })}
+                
             </span>
 
             {/* action bar floats below selected verse */}
