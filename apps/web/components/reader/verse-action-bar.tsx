@@ -20,13 +20,14 @@ export function VerseActionBar({
 }: VerseActionBarProps) {
     return (
         <span className={cn(
-            'flex items-center gap-1 px-2 py-2 rounded-lg',
+            'flex items-center gap-1 px-2 py-1 rounded-lg',
             'bg-zinc-100 dark:bg-zinc-800 shadow-lg',
             'text-zinc-900 dark:text-white'
         )}>
             <span className="text-sm px-2 text-zinc-500 dark:text-zinc-400 select-none">
                 {bookId}&nbsp;{chapterNum}:{verseNum}
             </span>
+            <span className="w-px h-4 bg-zinc-300 dark:bg-zinc-600" />
 
             {/* Bookmark option */}
             <button onClick={() => {
@@ -55,6 +56,7 @@ export function VerseActionBar({
                 <StickyNote className="h-3.5 w-3.5" />
                 Annotate
             </button>
+            <span className="w-px h-4 bg-zinc-300 dark:bg-zinc-600" />
 
             {/* Dismiss action bar */}
             <button onClick={onDismiss} title="Dismiss"
