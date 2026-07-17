@@ -76,7 +76,7 @@ export function ReaderShell({
                             'flex sm:hidden',
                             'p-1.5 rounded-md transition-colors shrink-0',
                             'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200',
-                            'hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                            'hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer'
                         )}
                         aria-label="Open book list"
                     >

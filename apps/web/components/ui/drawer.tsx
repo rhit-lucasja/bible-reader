@@ -47,10 +47,10 @@ export function Drawer({ open, onClose, children, title }: DrawerProps) {
             <div className={cn(
                 'fixed top-0 left-0 z-50 h-full w-64',
                 'bg-white dark:bg-zinc-900',
-                'border-r border-zinc-200 dark:border-zinc-800',
                 'shadow-xl sm:hidden',
+                'scrollbar-track-transparent scrollbar-thumb-neutral-400',
                 'transition-transform duration-300 ease-in-out',
-                open ? 'translate-x-0' : '-translate-x-full'
+                open ? 'translate-x-0 border-r border-zinc-200 dark:border-zinc-800' : '-translate-x-full border-none'
             )}
             >
                 {/* drawer header */}
@@ -59,7 +59,7 @@ export function Drawer({ open, onClose, children, title }: DrawerProps) {
                         {title ?? 'Books'}
                     </span>
                     <button onClick={onClose}
-                        className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                        className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                         aria-label="Close menu"
                     >
                         <X className="h-4 w-4" />
