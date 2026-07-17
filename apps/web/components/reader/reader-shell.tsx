@@ -1,8 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { PanelLeftClose, PanelLeftOpen, Menu } from 'lucide-react'
 import { BookSidebar } from './book-sidebar'
+import { Drawer } from '@/components/ui/drawer'
 import { cn } from '@/lib/utils'
 
 interface Book {
@@ -26,6 +27,7 @@ export function ReaderShell({
     children
 }: ReaderShellProps) {
     const [sidebarOpen, setSidebarOpen] = useState(true)
+    const [drawerOpen, setDrawerOpen] = useState(false)
 
     return (
         <div className={cn('flex h-[calc(100vh-3.6rem)] overflow-hidden',
@@ -45,6 +47,11 @@ export function ReaderShell({
                 )}
             </aside>
 
+            {/* mobile drawer */}
+            <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Books">
+                <BookSidebar books={books} translationId={translationId} />
+            </Drawer>
+
             {/* Main content area */}
             <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Sidebar toggle button sits above passage */}
@@ -61,6 +68,19 @@ export function ReaderShell({
                             ? <PanelLeftClose className="h-4 w-4" />
                             : <PanelLeftOpen className="h-4 w-4" />
                         }
+                    </button>
+
+                    {/* mobile hamburger button hidden on desktop */}
+                    <button onClick={() => setDrawerOpen(true)}
+                        className={cn(
+                            'flex sm:hidden',
+                            'p-1.5 rounded-md transition-colors shrink-0',
+                            'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200',
+                            'hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer'
+                        )}
+                        aria-label="Open book list"
+                    >
+                        <Menu className="h-4 w-4" />
                     </button>
 
                     {/* Chapter nav and translation switcher */}
