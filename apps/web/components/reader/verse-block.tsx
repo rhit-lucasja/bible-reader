@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useState, useLayoutEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { VerseActionBar } from './verse-action-bar'
 
@@ -27,51 +27,36 @@ export function VerseBlock({
     onSelect,
     onDeselect
 }: VerseBlockProps) {
-    const anchorRef = useRef<HTMLSpanElement>(null)
-    const barRef = useRef<HTMLSpanElement>(null)
-    const [barOffset, setBarOffset] = useState(0)
+    const verseRef = useRef<HTMLSpanElement>(null)
+    const actionBarRef = useRef<HTMLSpanElement>(null)
+    const [isOffScreen, setIsOffScreen] = useState(false)
 
-    useEffect(() => {
-        if (!isSelected) {
-            setBarOffset(0)
-            return
-        }
+    useLayoutEffect(() => {
+        if (!isSelected || !verseRef.current || !actionBarRef.current) return
 
-        // small delay to ensure bar is fully painted
-        const timer = setTimeout(() => {
-            if (!anchorRef.current || !barRef.current) return
+        const verseRect = verseRef.current.getBoundingClientRect()
+        const barWidth = actionBarRef.current.offsetWidth
+        const MARGIN = 16 // hard-coded px away from right edge of screen
+        
+        const fitsRight = verseRect.left + barWidth + MARGIN <= window.innerWidth
+        setIsOffScreen(!fitsRight)
 
-            const MARGIN = 16
-            const anchorRect = anchorRef.current.getBoundingClientRect()
-            const barRect = barRef.current.getBoundingClientRect()
-            const vpw = window.innerWidth
-
-            // where the bar's right edge would be if aligned with start of verse normally
-            const projRight = anchorRect.left + barRect.width
-
-            if (projRight + MARGIN > vpw) {
-                const overflow = projRight + MARGIN - vpw
-                setBarOffset(-overflow)
-            } else {
-                setBarOffset(0)
-            }
-        }, 0)
-
-        return () => clearTimeout(timer)
     }, [isSelected])
 
     return (
         <span className="relative">
             {/* action bar floats above selected verse */}
             {isSelected && (
-                <span className="absolute left-0 bottom-6 z-50"
-                    style={{ transform: `translateX(${barOffset}px)` }}
+                <span className="relative"
                     // prevent clicks from bubbling up to verse deselect
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* invisible anchor to measure left edge of verse start */}
-                    <span ref={anchorRef} />
-                    <span ref={barRef} className="inline-flex whitespace-nowrap">
+                    <span ref={actionBarRef} 
+                        className={cn(
+                            'absolute bottom-6 z-50',
+                            isOffScreen ? 'right-0' : 'left-0'
+                        )}
+                    >
                         <VerseActionBar verseNum={verse.number} bookId={verse.book_id}
                             chapterNum={verse.chapter_number} translationId={verse.translation_id}
                             onDismiss={onDeselect}
@@ -81,7 +66,7 @@ export function VerseBlock({
             )}
 
             {/* verse contents */}
-            <span id={`verse-${verse.number}`} onClick={() => isSelected ? onDeselect() : onSelect(verse.number)}
+            <span ref={verseRef} id={`verse-${verse.number}`} onClick={() => isSelected ? onDeselect() : onSelect(verse.number)}
                 className={cn(
                     'cursor-pointer rounded px-0.5 -mx-0.5',
                     'transition-colors duration-100',
