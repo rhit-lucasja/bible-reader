@@ -1,6 +1,6 @@
 'use client'
 
-import { Bookmark, StickyNote, X } from 'lucide-react'
+import { Bookmark, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface VerseActionBarProps {
