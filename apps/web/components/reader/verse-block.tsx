@@ -1,6 +1,5 @@
 'use client'
 
-import { useRef, useState, useLayoutEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { VerseActionBar } from './verse-action-bar'
 
@@ -27,22 +26,6 @@ export function VerseBlock({
     onSelect,
     onDeselect
 }: VerseBlockProps) {
-    const verseRef = useRef<HTMLSpanElement>(null)
-    const actionBarRef = useRef<HTMLSpanElement>(null)
-    const [isOffScreen, setIsOffScreen] = useState(false)
-
-    useLayoutEffect(() => {
-        if (!isSelected || !verseRef.current || !actionBarRef.current) return
-
-        const verseRect = verseRef.current.getBoundingClientRect()
-        const barWidth = actionBarRef.current.offsetWidth
-        const MARGIN = 16 // hard-coded px away from right edge of screen
-        
-        const fitsRight = verseRect.left + barWidth + MARGIN <= window.innerWidth
-        setIsOffScreen(!fitsRight)
-
-    }, [isSelected])
-
     return (
         <span className="relative">
             {/* action bar floats above selected verse */}
@@ -51,12 +34,7 @@ export function VerseBlock({
                     // prevent clicks from bubbling up to verse deselect
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <span ref={actionBarRef} 
-                        className={cn(
-                            'absolute bottom-6 z-50',
-                            isOffScreen ? 'right-0' : 'left-0'
-                        )}
-                    >
+                    <span className="absolute left-0 bottom-6 z-50">
                         <VerseActionBar verseNum={verse.number} bookId={verse.book_id}
                             chapterNum={verse.chapter_number} translationId={verse.translation_id}
                             onDismiss={onDeselect}
@@ -66,7 +44,7 @@ export function VerseBlock({
             )}
 
             {/* verse contents */}
-            <span ref={verseRef} id={`verse-${verse.number}`} onClick={() => isSelected ? onDeselect() : onSelect(verse.number)}
+            <span id={`verse-${verse.number}`} onClick={() => isSelected ? onDeselect() : onSelect(verse.number)}
                 className={cn(
                     'cursor-pointer rounded px-0.5 -mx-0.5',
                     'transition-colors duration-100',
