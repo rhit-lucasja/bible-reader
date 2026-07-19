@@ -1,6 +1,5 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { VerseActionBar } from './verse-action-bar'
 
@@ -27,17 +26,15 @@ export function VerseBlock({
     onSelect,
     onDeselect
 }: VerseBlockProps) {
-    const actionBarRef = useRef<HTMLDivElement>(null)
-
     return (
         <span className="relative">
             {/* action bar floats above selected verse */}
             {isSelected && (
-                <span ref={actionBarRef} className="relative"
+                <span className="relative block xl:inline"
                     // prevent clicks from bubbling up to verse deselect
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <span className="absolute left-0 bottom-6 z-50">
+                    <span className="absolute left-0 bottom-0 xl:bottom-6 z-50">
                         <VerseActionBar verseNum={verse.number} bookId={verse.book_id}
                             chapterNum={verse.chapter_number} translationId={verse.translation_id}
                             onDismiss={onDeselect}
