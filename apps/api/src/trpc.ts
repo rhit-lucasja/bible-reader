@@ -32,9 +32,6 @@ async function getUserIdFromRequest(
 
         if (!decoded) return null
 
-        console.log('JWT DEBUG: decoded payload keys:', Object.keys(decoded))
-        console.log('JWT DEBUG: decoded sub:', decoded.sub)
-
         return decoded.sub ?? null
     } catch (err) {
         // invalid or expired token
