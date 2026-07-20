@@ -2,7 +2,7 @@ import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express'
 import { db } from '@bible-reader/db'
-import * as jose from 'jose'
+import { decode } from '@auth/core/jwt'
 
 async function getUserIdFromRequest(
     req: CreateExpressContextOptions['req']
@@ -13,7 +13,7 @@ async function getUserIdFromRequest(
         const cookies = Object.fromEntries(
             cookieHeader.split(';').map((c) => {
                 const [key, ...val] = c.trim().split('=')
-                return [key.trim(), val.join('=')]
+                return [key.trim(), decodeURIComponent(val.join('='))]
             })
         )
 
@@ -24,13 +24,21 @@ async function getUserIdFromRequest(
 
         if (!token) return null
 
-        const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!)
-        
-        const { payload } = await jose.jwtVerify(token, secret)
+        const decoded = await decode({
+            token,
+            secret: process.env.NEXTAUTH_SECRET!,
+            salt: 'authjs.session-token'
+        })
 
-        return (payload.userId as string) ?? null
-    } catch {
+        if (!decoded) return null
+
+        console.log('JWT DEBUG: decoded payload keys:', Object.keys(decoded))
+        console.log('JWT DEBUG: decoded sub:', decoded.sub)
+
+        return decoded.sub ?? null
+    } catch (err) {
         // invalid or expired token
+        console.error('JWT DEBUG: decrypt failed:', err)
         return null
     }
 }

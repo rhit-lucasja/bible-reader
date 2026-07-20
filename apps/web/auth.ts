@@ -21,6 +21,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async jwt({ token, user }) {
             if (user) {
                 token.userId = user.id
+                token.sub = user.id // ensure sub is set explicitly
             }
             return token
         },
