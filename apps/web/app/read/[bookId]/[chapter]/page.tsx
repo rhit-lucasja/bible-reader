@@ -6,6 +6,8 @@ import { ChapterReader } from '@/components/reader/chapter-reader'
 import { ReaderShell } from '@/components/reader/reader-shell'
 import { ReaderToolbar } from '@/components/reader/reader-toolbar'
 
+const DEFAULT_TRANSLATION = 'NABRE'
+
 interface ReadPageProps {
     params: Promise<{
         bookId: string
@@ -18,12 +20,23 @@ interface ReadPageProps {
 
 export default async function ReadPage({ params, searchParams }: ReadPageProps) {
     const { bookId, chapter } = await params
-    const { translation = 'NABRE' } = await searchParams
+    const { translation: translationParam } = await searchParams
     const chapterNum = parseInt(chapter, 10)
 
     if (isNaN(chapterNum) || chapterNum < 1) notFound()
 
     const trpc = await createServerClient()
+
+    // resolve translation preference - URL param, then user preference, then default fallback
+    let translation: string
+    if (translationParam) {
+        // URL param was given - use this one without affect user default
+        translation = translationParam
+    } else {
+        // no param provided - check user preference if logged in
+        const prefs = await trpc.user.getPreferences.query()
+        translation = prefs?.preferred_translation_id ?? DEFAULT_TRANSLATION
+    }
 
     const [chapterData, books] = await Promise.all([
         trpc.reference.getChapter.query({
