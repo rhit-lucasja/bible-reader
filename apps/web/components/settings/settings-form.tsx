@@ -23,26 +23,41 @@ export function SettingsForm({
     initTranslationId,
     translations
 }: SettingsFormProps) {
+    const utils = trpc.useUtils()
+
+    // local form state - what the user has typed/selected
     const [name, setName] = useState(initName)
     const [translationId, setTranslationId] = useState(initTranslationId)
-    const [translationOpen, setTranslationOpen] = useState(false)
 
-    // track save state per section
+    // stored state - what the database currently holds
+    const [storedName, setStoredName] = useState(initName)
+    const [storedTranslationId, setStoredTranslationId] = useState(initTranslationId)
+
+    // saving state - if input was recently saved to db
     const [nameSaved, setNameSaved] = useState(false)
     const [translationSaved, setTranslationSaved] = useState(false)
 
     // API hooks to mutate stored info
     const updateName = trpc.user.updateName.useMutation({
-        onSuccess: () => {
+        onSuccess: (data) => {
+            // update the stored baseline so button disables again
+            setStoredName(data.name ?? '')
+            // sync the form in case server trimmed/modified in some way
+            setName(data.name ?? '')
+            // display saved changes
             setNameSaved(true)
             setTimeout(() => setNameSaved(false), 2000)
+            // invalidate preferences cache in case other components read it
+            utils.user.getPreferences.invalidate()
         }
     })
 
     const updateTranslation = trpc.user.updatePreferredTranslation.useMutation({
-        onSuccess: () => {
+        onSuccess: (data) => {
+            setStoredTranslationId(data.preferred_translation_id)
             setTranslationSaved(true)
             setTimeout(() => setTranslationSaved(false), 2000)
+            utils.user.getPreferences.invalidate()
         }
     })
 
@@ -82,7 +97,7 @@ export function SettingsForm({
                     <button onClick={() => updateName.mutate({ name: name.trim() })}
                         disabled={
                             updateName.isPending ||
-                            name.trim() === initName ||
+                            name.trim() === storedName ||
                             name.trim().length === 0
                         }
                         className={cn(
@@ -141,7 +156,7 @@ export function SettingsForm({
                     <button onClick={() => updateTranslation.mutate({ translation_id: translationId })}
                         disabled={
                             updateTranslation.isPending ||
-                            translationId === initTranslationId
+                            translationId === storedTranslationId
                         }
                         className={cn(
                             'px-4 py-2 rounded-lg text-sm transition-colors shrink-0 cursor-pointer',
