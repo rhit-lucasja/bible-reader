@@ -55,11 +55,11 @@ export function SettingsForm({
                 'rounded-xl border border-zinc-200 dark:border-zinc-800',
                 'bg-white dark:bg-zinc-900 p-6'
             )}>
-                <h2 className="text-sm text-zinc-900 dark:text-zinc-100 mb-1">
+                <h2 className="text-md text-zinc-900 dark:text-zinc-100 mb-1">
                     Display Name
                 </h2>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4">
-                    This is how your name appears across Ignis Divinus.
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                    How your name appears across Ignis Divinus
                 </p>
 
                 <div className="flex gap-3">
@@ -87,9 +87,9 @@ export function SettingsForm({
                         className={cn(
                             'px-4 py-2 rounded-lg text-sm transition-colors cursor-pointer',
                             nameSaved
-                                ? 'bg-green-100 dark:bg-gren-900/30 text-green-700 dark:text-green-400'
-                                : 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900',
-                            'hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed',
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-700 dark:border-green-400'
+                                : 'bg-blue-950 dark:bg-blue-950/90 text-zinc-100 border border-zinc-700',
+                            'hover:opacity-80 disabled:opacity-60 disabled:cursor-not-allowed',
                             'flex items-center gap-1.5'
                         )}
                     >
@@ -107,7 +107,7 @@ export function SettingsForm({
                 </div>
 
                 {updateName.isError && (
-                    <p className="mt-2 text-xs text-red-500">
+                    <p className="mt-2 text-sm text-red-500">
                         {updateName.error.message}
                     </p>
                 )}
@@ -118,16 +118,16 @@ export function SettingsForm({
                 'rounded-xl border border-zinc-200 dark:border-zinc-800',
                 'bg-white dark:bg-zinc-900 p-6'
             )}>
-                <h2 className="text-sm text-zinc-900 dark:text-zinc-100 mb-1">
+                <h2 className="text-md text-zinc-900 dark:text-zinc-100 mb-1">
                     Preferred Translation
                 </h2>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4">
-                    The translation used by default when opening a passage or searching for verses.
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                    The default translation used when you read a passage or search something
                 </p>
 
                 <div className="flex gap-3 items-start">
                     {/* Translation dropdown */}
-
+                    
 
                     {/* Save button */}
                     <button onClick={() => updateTranslation.mutate({ translation_id: translationId })}
@@ -138,9 +138,9 @@ export function SettingsForm({
                         className={cn(
                             'px-4 py-2 rounded-lg text-sm transition-colors shrink-0 cursor-pointer',
                             translationSaved
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                : 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900',
-                            'hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed',
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-700 dark:border-green-400'
+                                : 'bg-blue-950 dark:bg-blue-950/90 text-zinc-100 border border-zinc-700',
+                            'hover:opacity-80 disabled:opacity-60 disabled:cursor-not-allowed',
                             'flex items-center gap-1.5'
                         )}
                     >
@@ -169,12 +169,12 @@ export function SettingsForm({
                 'rounded-xl border border-zinc-200 dark:border-zinc-800',
                 'bg-zinc-50 dark:bg-zinc-900/50 p-6'
             )}>
-                <h2 className="text-sm text-zinc-900 dark:text-zinc-100 mb-4">
+                <h2 className="text-md text-zinc-900 dark:text-zinc-100 mb-4">
                     Account Information
                 </h2>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     Signed in with Google. To change your email or profile photo, update
-                    you Google account directly.
+                    your Google account directly.
                 </p>
             </section>
         </div>

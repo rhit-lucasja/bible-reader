@@ -16,12 +16,12 @@ export default async function SettingsPage() {
     const translations = await trpc.translation.listTranslations.query()
 
     return (
-        <div className="max-w-2xl mx-auto px-6 py-12">
+        <div className="max-w-3xl mx-auto px-6 py-12 border-x border-zinc-200 dark:border-zinc-800">
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
                     Account Settings
                 </h1>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                <p className="text-md text-zinc-500 dark:text-zinc-400 mt-1">
                     Manage your display name and reading preferences
                 </p>
             </div>
