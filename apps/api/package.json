@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@auth/core": "^0.41.2",
     "@bible-reader/db": "*",
     "@bible-reader/types": "*",
     "@trpc/client": "^11.18.0",

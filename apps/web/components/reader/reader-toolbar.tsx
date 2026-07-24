@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-r
 import { cn } from '@/lib/utils'
 import { TranslationSwitcher } from './translation-switcher'
 import React from 'react'
+import { trpc } from '@/lib/trpc/client'
 
 interface Book {
     id: string
@@ -48,11 +49,29 @@ export function ReaderToolbar({
         router.push(buildUrl(bookId, chapter, currentTranslationId))
     }
 
+    // for refreshing preferred translation cache after change
+    const utils = trpc.useUtils()
+    // mutation hook
+    const updatePreferredTranslation = trpc.user.updatePreferredTranslation.useMutation()
     function handleTranslationSwitch(translationId: string) {
         // update URL immediately to render passage with new translation
         router.push(buildUrl(currentBook.id, currentChapter, translationId))
-        // TODO: update user's preferred translation to match switch
-        // trpc.user.updatePreferredTranslation.mutate({ translationId })
+
+        // update user's preferred translation if logged in
+        // don't block the UI reload though
+        updatePreferredTranslation.mutate(
+            { translation_id: translationId },
+            {
+                onSuccess: () => {
+                    // invalidate preferences cache so settings page reflects change
+                    utils.user.getPreferences.invalidate()
+                },
+                onError: (err) => {
+                    // silently fail - shouldn't break the reader component
+                    console.warn('Failed to update preferred translation:', err.message)
+                }
+            }
+        )
     }
 
     return (
