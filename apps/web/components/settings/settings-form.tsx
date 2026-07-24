@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, ChevronDown, Loader2 } from 'lucide-react'
+import { Check, Loader2 } from 'lucide-react'
+import { TranslationDropdown } from '@/components/ui/translation-dropdown'
 import { cn } from '@/lib/utils'
 import { trpc } from '@/lib/trpc/client'
 
@@ -127,7 +128,14 @@ export function SettingsForm({
 
                 <div className="flex gap-3 items-start">
                     {/* Translation dropdown */}
-                    
+                    <div className="flex-1">
+                        <TranslationDropdown currentTranslationId={translationId}
+                            translations={translations}
+                            onSwitch={(id) => setTranslationId(id)}
+                            variant="full"
+                            align="left"
+                        />
+                    </div>
 
                     {/* Save button */}
                     <button onClick={() => updateTranslation.mutate({ translation_id: translationId })}
