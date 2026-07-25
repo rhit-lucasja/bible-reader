@@ -21,12 +21,10 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
         trpc.createClient({
             links: [
                 httpBatchLink({
-                    url: `${process.env.NEXT_PUBLIC_API_URL}/trpc`,
+                    url: `/api/trpc`,
                     transformer: superjson,
-                    // include cookies so protected procedures work from client components
-                    fetch(url, options) {
-                        return fetch(url, { ...options, credentials: 'include' })
-                    }
+                    // no cross-site credentials needed
+                    // same origin req will auto include cookies
                 })
             ]
         })
