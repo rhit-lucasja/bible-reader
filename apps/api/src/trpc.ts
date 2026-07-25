@@ -22,6 +22,8 @@ async function getUserIdFromRequest(
             cookies['authjs.session-token'] ??
             cookies['__Secure-authjs.session-token'] // for https
 
+        console.log('JWT DEBUG: all cookie names:', Object.keys(cookies))
+
         if (!token) return null
 
         const decoded = await decode({

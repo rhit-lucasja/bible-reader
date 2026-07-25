@@ -6,13 +6,6 @@ export default auth((req) => {
     const { nextUrl, auth: session } = req
     const isLoggedIn = !!session
 
-    console.log('Middleware:', {
-        pathname: nextUrl.pathname,
-        isLoggedIn,
-        hasSession: !!session,
-        userId: session?.user?.id,
-    })
-
     // define which paths require authentication
     const isProtectedRoute = 
         nextUrl.pathname.startsWith('/bookmarks') ||
