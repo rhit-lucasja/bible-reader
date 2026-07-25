@@ -13,7 +13,9 @@ export function TranslationSwitcher({
     currentTranslationId,
     onSwitch
 }: TranslationSwitcherProps) {
-    const { data: translations = [] } = trpc.translation.listTranslations.useQuery()
+    const { data: translations = [], isLoading, isError, error } = trpc.translation.listTranslations.useQuery()
+
+    console.log(`TranslationSwitcher: ${{ isLoading, isError, count: translations.length, error }}`)
 
     return (
         <TranslationDropdown
