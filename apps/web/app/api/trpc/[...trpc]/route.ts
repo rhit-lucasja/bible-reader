@@ -31,7 +31,7 @@ async function handler(req: NextRequest) {
         headers,
         body: req.method !== 'GET' ? req.body : undefined,
         // duplex required for streaming request bodies in Node
-        // @ts-ignore
+        // @ts-expect-error
         duplex: 'half'
     })
 
