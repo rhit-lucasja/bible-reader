@@ -3,6 +3,8 @@ import Google from 'next-auth/providers/google'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { db } from '@bible-reader/db'
 
+const useSecureCookies = process.env.NODE_ENV === 'production'
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(db),
     providers: [
@@ -14,6 +16,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     session: {
         strategy: 'jwt',
         maxAge: 30 * 24 * 60 * 60 // 30 day limit on sessions
+    },
+    cookies: {
+        sessionToken: {
+            name: useSecureCookies
+                ? '__Secure-authjs.session-token'
+                : 'authjs.session-token',
+            options: {
+                httpOnly: true,
+                sameSite: useSecureCookies ? 'none' : 'lax',
+                path: '/',
+                secure: useSecureCookies
+            }
+        }
     },
     callbacks: {
         // runs when JWT is created or updated
