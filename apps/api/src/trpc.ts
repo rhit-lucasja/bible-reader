@@ -18,16 +18,22 @@ async function getUserIdFromRequest(
         )
 
         // Auth.js v5 users cookie name for JWT sessions
-        const token =
-            cookies['authjs.session-token'] ??
-            cookies['__Secure-authjs.session-token'] // for https
+        const secureCookieName = '__Secure-authjs.session-token'
+        const regularCookieName = 'authjs.session-token'
 
-        if (!token) return null
+        const isSecure = secureCookieName in cookies
+        const cookieName = isSecure ? secureCookieName : regularCookieName
+        const token = cookies[cookieName]
+
+        if (!token) {
+            console.log('JWT DEBUG: no session token cookie found')
+            return null
+        }
 
         const decoded = await decode({
             token,
             secret: process.env.NEXTAUTH_SECRET!,
-            salt: 'authjs.session-token'
+            salt: cookieName
         })
 
         if (!decoded) return null

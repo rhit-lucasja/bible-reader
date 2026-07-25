@@ -181,7 +181,7 @@ export function SettingsForm({
                 </div>
 
                 {updateTranslation.isError && (
-                    <p className="mt-2 text-xs text-red-500">
+                    <p className="mt-2 text-sm text-red-500">
                         {updateTranslation.error.message}
                     </p>
                 )}

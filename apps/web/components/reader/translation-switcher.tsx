@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { trpc } from '@/lib/trpc/client'
 import { TranslationDropdown } from '@/components/ui/translation-dropdown'
 
@@ -13,7 +12,7 @@ export function TranslationSwitcher({
     currentTranslationId,
     onSwitch
 }: TranslationSwitcherProps) {
-    const { data: translations = [] } = trpc.translation.listTranslations.useQuery()
+    const { data: translations = [], isLoading, isError, error } = trpc.translation.listTranslations.useQuery()
 
     return (
         <TranslationDropdown
