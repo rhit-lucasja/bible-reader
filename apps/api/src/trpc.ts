@@ -8,6 +8,12 @@ async function getUserIdFromRequest(
     req: CreateExpressContextOptions['req']
 ): Promise<string | null> {
     try {
+
+        console.log('JWT DEBUG: raw cookie header:', req.headers.cookie)
+        console.log('JWT DEBUG: x-forwarded-for:', req.headers['x-forwarded-for'])
+        console.log('JWT DEBUG: origin:', req.headers.origin)
+        console.log('JWT DEBUG: host:', req.headers.host)
+
         // Auth.js stores session token in a cookie
         const cookieHeader = req.headers.cookie ?? ''
         const cookies = Object.fromEntries(
