@@ -1,24 +1,27 @@
 import { createTRPCClient, httpBatchLink } from '@trpc/client'
 import superjson from 'superjson'
 import type { AppRouter } from '@bible-reader/api'
-import { cookies } from 'next/headers'
+import { auth } from '@/auth'
+
+const INTERNAL_API_URL = process.env.INTERNAL_API_URL ?? 'https://bible-reader-api.onrender.com'
+const PROXY_SECRET = process.env.PROXY_SECRET ?? ''
 
 export async function createServerClient() {
-    const cookieStore = await cookies()
-    // use internal Docker URL for server-side calls
-    // fall back to NEXT_PUBLIC_API_URL for non-Docker environments (prod)
-    const apiUrl = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
+    const session = await auth()
 
     return createTRPCClient<AppRouter>({
         links: [
             httpBatchLink({
-                url: `${apiUrl}/trpc`,
+                url: `${INTERNAL_API_URL}/trpc`,
                 transformer: superjson,
                 headers() {
-                    // forward the auth cookie so the API can verify session
-                    return {
-                        cookie: cookieStore.toString()
+                    const headers: Record<string, string> = {
+                        'x-proxy-secret': PROXY_SECRET
                     }
+                    if (session?.user?.id) {
+                        headers['x-verified-user-id'] = session.user.id
+                    }
+                    return headers
                 }
             })
         ]

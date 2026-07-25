@@ -17,19 +17,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         strategy: 'jwt',
         maxAge: 30 * 24 * 60 * 60 // 30 day limit on sessions
     },
-    cookies: {
-        sessionToken: {
-            name: useSecureCookies
-                ? '__Secure-authjs.session-token'
-                : 'authjs.session-token',
-            options: {
-                httpOnly: true,
-                sameSite: useSecureCookies ? 'none' : 'lax',
-                path: '/',
-                secure: useSecureCookies
-            }
-        }
-    },
     callbacks: {
         // runs when JWT is created or updated
         // persists userId into the token so API can read that value
