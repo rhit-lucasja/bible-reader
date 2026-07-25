@@ -14,7 +14,7 @@ export default auth((req) => {
     })
 
     // define which paths require authentication
-    const isProtectedRoute = nextUrl.pathname.startsWith('/dashboard') ||
+    const isProtectedRoute = 
         nextUrl.pathname.startsWith('/bookmarks') ||
         nextUrl.pathname.startsWith('/history') ||
         nextUrl.pathname.startsWith('/settings')
