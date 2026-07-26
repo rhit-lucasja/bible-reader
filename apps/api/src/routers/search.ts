@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
 import { PrismaClient } from '@bible-reader/db'
-import { resourceLimits } from 'worker_threads'
 
 // for hybrid search results, with RRF score
 interface HybridResult {
