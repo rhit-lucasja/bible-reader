@@ -28,10 +28,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 'min-h-[calc(100vh-3.6rem)]'
             )}>
                 <SearchControls query="" searchType={searchType} />
-                <p className="text-red-500 text-2xl md:hidden">
+                <p className="text-red-500 text-2xl md:hidden mt-8">
                     Click the search icon to begin typing.
                 </p>
-                <p className="text-red-500 text-2xl hidden md:block">
+                <p className="text-red-500 text-2xl hidden md:block mt-8">
                     Click the search bar to begin typing.
                 </p>
             </div>
@@ -99,7 +99,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <SearchControls query={q} searchType={searchType} />
 
             {error ? (
-                <p className="text-red-500 text-2xl">{error}</p>
+                <p className="text-red-500 text-2xl mt-8">{error}</p>
             ) : (
                 <SearchResults
                     results={results}
