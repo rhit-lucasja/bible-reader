@@ -96,7 +96,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             'border-x border-zinc-200 dark:border-zinc-800',
             'min-h-[calc(100vh-3.6rem)]'
         )}>
-            <SearchControls query={q} searchType={searchType} />
+            <SearchControls query={q} searchType={searchType} numResults={results.length} />
 
             {error ? (
                 <p className="text-red-500 text-2xl mt-8">{error}</p>

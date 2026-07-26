@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 interface SearchControlsProps {
     query: string
     searchType: 'hybrid' | 'keyword' | 'semantic'
+    numResults: number
 }
 
 const SEARCH_TYPES = [
@@ -26,7 +27,7 @@ const SEARCH_TYPES = [
     }
 ] as const
 
-export function SearchControls({ query, searchType }: SearchControlsProps) {
+export function SearchControls({ query, searchType, numResults }: SearchControlsProps) {
     const router = useRouter()
 
     function switchType(type: string) {
@@ -40,7 +41,7 @@ export function SearchControls({ query, searchType }: SearchControlsProps) {
             {query && (
                 <div>
                     <p className="text-md text-zinc-600 dark:text-zinc-300 uppercase tracking-wider mb-1">
-                        Showing __ results for
+                        Showing <span className="text-xl">{numResults}</span> results for
                     </p>
                     <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
                         "{query}"
