@@ -18,6 +18,7 @@ interface SearchResultCardProps {
     query: string
 }
 
+// TODO: styling edits on match type labels
 const MATCH_TYPE_LABELS = {
     keyword: {
         label: 'Keyword match',
@@ -40,9 +41,7 @@ export function SearchResultCard({ result, query }: SearchResultCardProps) {
     // link to the chapter, anchored at verse
     const href = `/read/${reference.bookId}/${reference.chapterNumber}?translation=${translationId}#verse-${reference.verseNumber}`
 
-    // highlight query terms in verse text
-    const highlightedText = highlightTerms(text, query)
-
+    // TODO: styling edits on these cards
     return (
         <Link href={href}
             className={cn(
@@ -72,29 +71,9 @@ export function SearchResultCard({ result, query }: SearchResultCardProps) {
             </div>
 
             {/* verse text */}
-            <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300"
-                dangerouslySetInnerHTML={{ __html: highlightedText }}
-            />
+            <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                {text}
+            </p>
         </Link>
-    )
-}
-
-// highlights query items in verse text by wrapping with <mark> tags
-// only used for keyword/hybrid where exact terms appear
-function highlightTerms(text: string, query: string): string {
-    if (!query.trim()) return text
-
-    const terms = query
-        .trim()
-        .split(/\s+/)
-        .filter((t) => t.length > 2) // skip very short words
-        .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) // escape regex special chars
-
-    if (terms.length === 0) return text
-
-    const pattern = new RegExp(`(${terms.join('|')})`, 'gi')
-    return text.replace(
-        pattern,
-        '<mark class="bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 rounded px-0.5">$1</mark>'
     )
 }
