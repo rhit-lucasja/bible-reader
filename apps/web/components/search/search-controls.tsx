@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 interface SearchControlsProps {
     query: string
     searchType: 'hybrid' | 'keyword' | 'semantic'
-    numResults: number
+    numResults?: number
 }
 
 const SEARCH_TYPES = [
@@ -27,7 +27,7 @@ const SEARCH_TYPES = [
     }
 ] as const
 
-export function SearchControls({ query, searchType, numResults }: SearchControlsProps) {
+export function SearchControls({ query, searchType, numResults = 0 }: SearchControlsProps) {
     const router = useRouter()
 
     function switchType(type: string) {

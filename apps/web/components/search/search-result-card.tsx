@@ -3,17 +3,17 @@ import { cn } from '@/lib/utils'
 
 interface SearchResultCardProps {
     result: {
-        verseId: number
+        verse_id: number
         reference: {
-            bookId: string
-            bookName: string
-            chapterNumber: number
-            verseNumber: number
+            book_id: string
+            book_name: string
+            chapter_number: number
+            verse_number: number
         }
         text: string
-        translationId: string
-        matchType: 'keyword' | 'semantic' | 'both'
-        rrfScore?: number
+        translation_id: string
+        match_type: 'keyword' | 'semantic' | 'both'
+        rrf_score: number
     }
     query: string
 }
@@ -35,11 +35,11 @@ const MATCH_TYPE_LABELS = {
 }
 
 export function SearchResultCard({ result, query }: SearchResultCardProps) {
-    const { reference, text, translationId, matchType } = result
-    const badge = MATCH_TYPE_LABELS[matchType]
+    const { reference, text, translation_id, match_type } = result
+    const badge = MATCH_TYPE_LABELS[match_type]
 
     // link to the chapter, anchored at verse
-    const href = `/read/${reference.bookId}/${reference.chapterNumber}?translation=${translationId}#verse-${reference.verseNumber}`
+    const href = `/read/${reference.book_id}/${reference.chapter_number}?translation=${translation_id}#verse-${reference.verse_number}`
 
     // TODO: styling edits on these cards
     return (
@@ -56,10 +56,10 @@ export function SearchResultCard({ result, query }: SearchResultCardProps) {
             <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
                     <span className="text-sm text-zinc-900 dark:text-zinc-100 truncate">
-                        {reference.bookName} {reference.chapterNumber}:{reference.verseNumber}
+                        {reference.book_name} {reference.chapter_number}:{reference.verse_number}
                     </span>
                     <span className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0">
-                        {translationId}
+                        {translation_id}
                     </span>
                 </div>
                 <span className={cn(

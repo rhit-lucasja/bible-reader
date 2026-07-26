@@ -2,17 +2,17 @@ import { SearchResultCard } from './search-result-card'
 
 interface SearchResultsProps {
     results: {
-        verseId: number
+        verse_id: number
         reference: {
-            bookId: string
-            bookName: string
-            chapterNumber: number
-            verseNumber: number
+            book_id: string
+            book_name: string
+            chapter_number: number
+            verse_number: number
         }
         text: string
-        translationId: string
-        matchType: 'keyword' | 'semantic' | 'both'
-        rrfScore?: number
+        translation_id: string
+        match_type: 'keyword' | 'semantic' | 'both'
+        rrf_score: number
     }[]
     query: string
     searchType: 'hybrid' | 'keyword' | 'semantic'
@@ -40,7 +40,7 @@ export function SearchResults({ results, query, searchType }: SearchResultsProps
             {/* Result cards */}
             {results.map((result) => (
                 <SearchResultCard
-                    key={result.verseId}
+                    key={result.verse_id}
                     result={result}
                     query={query}
                 />

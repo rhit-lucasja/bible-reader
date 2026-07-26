@@ -27,11 +27,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 'border-x border-zinc-200 dark:border-zinc-800',
                 'min-h-[calc(100vh-3.6rem)]'
             )}>
-                <SearchControls query="" searchType={searchType} />
-                <p className="text-red-500 text-2xl md:hidden mt-8">
+                <p className="text-red-500 text-2xl md:hidden">
                     Click the search icon to begin typing.
                 </p>
-                <p className="text-red-500 text-2xl hidden md:block mt-8">
+                <p className="text-red-500 text-2xl hidden md:block">
                     Click the search bar to begin typing.
                 </p>
             </div>
@@ -65,10 +64,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             // extend blank semantic matching fields
             results = data.results.map((r) => ({
                 ...r,
-                matchType: 'keyword' as const,
-                rrfScore: r.rank,
-                semanticSimilarity: undefined,
-                keywordRank: r.rank
+                match_type: 'keyword' as const,
+                rrf_score: r.rank,
+                semantic_similarity: undefined,
+                keyword_rank: r.rank
             }))
         } else {
             // semantic search only
@@ -80,10 +79,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             // extend blank keyword matching fields
             results = data.results.map((r) => ({
                 ...r,
-                matchType: 'semantic' as const,
-                rrfScore: r.similarity,
-                keywordRank: undefined,
-                semanticSimilarity: r.similarity
+                match_type: 'semantic' as const,
+                rrf_score: r.similarity,
+                keyword_rank: undefined,
+                semantic_similarity: r.similarity
             }))
         }
     } catch (err) {
