@@ -20,15 +20,14 @@ interface SearchResultsProps {
 
 export function SearchResults({ results, query, searchType }: SearchResultsProps) {
     if (results.length === 0) {
-        // TODO: styling edits to this part
         return (
-            <div className="mt-8 text-center py-12">
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+            <div className="mt-8 text-center">
+                <p className="text-zinc-900 dark:text-zinc-100 text-lg">
                     No results found for "{query}" using {searchType} search.
                 </p>
                 {searchType === 'keyword' && (
-                    <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-2">
-                        Try using Semantic or Hybrid search for concept-based results.
+                    <p className="text-zinc-600 dark:text-zinc-300 text-sm mt-2">
+                        Try using semantic or hybrid search for meaning-based results.
                     </p>
                 )}
             </div>
@@ -36,7 +35,7 @@ export function SearchResults({ results, query, searchType }: SearchResultsProps
     }
 
     return (
-        <div className="mt-6">
+        <div className="mt-6 border-x border-zinc-200 dark:border-zinc-800">
             {/* Result cards */}
             {results.map((result) => (
                 <SearchResultCard
