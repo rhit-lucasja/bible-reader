@@ -23,7 +23,7 @@ export function SearchResults({ results, query, searchType }: SearchResultsProps
         return (
             <div className="mt-8 text-center">
                 <p className="text-zinc-900 dark:text-zinc-100 text-lg">
-                    No results found for "{query}" using {searchType} search.
+                    No results found for &quot;{query}&quot; using {searchType} search.
                 </p>
                 {searchType === 'keyword' && (
                     <p className="text-zinc-600 dark:text-zinc-300 text-sm mt-2">

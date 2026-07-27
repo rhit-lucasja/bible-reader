@@ -44,7 +44,7 @@ export function SearchControls({ query, searchType, numResults = 0 }: SearchCont
                         Showing <span className="text-xl">{numResults}</span> results for
                     </p>
                     <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-                        "{query}"
+                        &quot;{query}&quot;
                     </h1>
                 </div>
             )}
