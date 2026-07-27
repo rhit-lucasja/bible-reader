@@ -15,7 +15,6 @@ interface SearchResultCardProps {
         match_type: 'keyword' | 'semantic' | 'both'
         rrf_score: number
     }
-    query: string
 }
 
 const MATCH_TYPE_LABELS = {
@@ -33,7 +32,7 @@ const MATCH_TYPE_LABELS = {
     }
 }
 
-export function SearchResultCard({ result, query }: SearchResultCardProps) {
+export function SearchResultCard({ result }: SearchResultCardProps) {
     const { reference, text, translation_id, match_type } = result
     const badge = MATCH_TYPE_LABELS[match_type]
 

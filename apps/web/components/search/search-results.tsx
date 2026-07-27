@@ -41,7 +41,6 @@ export function SearchResults({ results, query, searchType }: SearchResultsProps
                 <SearchResultCard
                     key={result.verse_id}
                     result={result}
-                    query={query}
                 />
             ))}
         </div>
