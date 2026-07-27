@@ -13,7 +13,6 @@ async function getNomicEmbedding(text: string): Promise<number[]> {
     const token = process.env.NOMIC_API_KEY
     if (!token) throw new Error('NOMIC_API_KEY is not set')
     
-    console.log('getNomicEmbedding for:', text, 'with key:', token)
     const response = await fetch(NOMIC_API_URL, {
         method: 'POST',
         headers: {
@@ -31,15 +30,17 @@ async function getNomicEmbedding(text: string): Promise<number[]> {
         }),
         signal: AbortSignal.timeout(15000) // 15s timeout
     })
-    console.log(response)
 
     if (!response.ok) {
         const error = await response.text()
         throw new Error(`Nomic Atlas embedding failed (${response.status}): ${error}`)
     }
 
-    const data = await response.json() as number[]
-    return data
+    const data = await response.json() as { embeddings: number[][] }
+    if (!data.embeddings || data.embeddings.length === 0) {
+        throw new Error(`Data response contains no embeddings: ${data}`)
+    }
+    return data.embeddings[0]
 }
 
 async function getOllamaEmbedding(text: string): Promise<number[]> {
