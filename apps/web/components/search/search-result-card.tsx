@@ -20,15 +20,15 @@ interface SearchResultCardProps {
 const MATCH_TYPE_LABELS = {
     keyword: {
         label: 'Keyword',
-        className: 'bg-blue-300 dark:bg-blue-700/60 text-blue-700 dark:text-blue-400 border border-blue-700 dark:border-blue-400'
+        className: 'bg-purple-300 dark:bg-purple-700/60 text-purple-700 dark:text-purple-300 border border-purple-700 dark:border-purple-300'
     },
     semantic: {
         label: 'Semantic',
-        className: 'bg-amber-300 dark:bg-amber-700/60 text-amber-700 dark:text-amber-400 border border-amber-700 dark:border-amber-400'
+        className: 'bg-amber-300 dark:bg-amber-700/60 text-amber-700 dark:text-amber-300 border border-amber-700 dark:border-amber-300'
     },
     both: {
         label: 'Strong Match',
-        className: 'bg-green-300 dark:bg-green-700/60 text-green-700 dark:text-green-400 border border-green-700 dark:border-green-400'
+        className: 'bg-green-300 dark:bg-green-700/60 text-green-700 dark:text-green-300 border border-green-700 dark:border-green-300'
     }
 }
 
