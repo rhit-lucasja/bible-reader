@@ -39,7 +39,7 @@ async function embedBatch(verses: { id: number; text: string }[]) {
 
         await Promise.all(
             chunk.map(async (verse) => {
-                const embedding = await getEmbedding(verse.text)
+                const embedding = await getEmbedding(`search_document: ${verse.text}`)
                 const vectorLiteral = toVectorLiteral(embedding)
 
                 // raw SQL required since Prisma client can't write to Unsupported("vector(768)") naturally

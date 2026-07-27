@@ -1,40 +1,46 @@
-const HF_API_URL = 'https://router.huggingface.co/hf-inference/models/nomic-ai/nomic-embed-text-v1'
+const NOMIC_API_URL = 'https://api-atlas.nomic.ai/v1/embedding/text'
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'
-const EMBEDDING_PROVIDER = process.env.EMBEDDING_PROVIDER ?? 'huggingface'
-
-// whether to use task prefixes (technically required)
-const USE_PREFIXES = false
+const EMBEDDING_PROVIDER = process.env.EMBEDDING_PROVIDER ?? 'nomic'
 
 export async function getQueryEmbedding(query: string): Promise<number[]> {
-    const text = USE_PREFIXES ? `search_query: ${query}` : query
-
     if (EMBEDDING_PROVIDER === 'ollama') {
-        return getOllamaEmbedding(text)
+        return getOllamaEmbedding(`search_query: ${query}`)
     }
-    return getHuggingFaceEmbedding(text)
+    return getNomicEmbedding(query)
 }
 
-async function getHuggingFaceEmbedding(text: string): Promise<number[]> {
-    const token = process.env.HF_API_TOKEN
-    if (!token) throw new Error('HF_API_TOKEN is not set')
+async function getNomicEmbedding(text: string): Promise<number[]> {
+    const token = process.env.NOMIC_API_KEY
+    if (!token) throw new Error('NOMIC_API_KEY is not set')
     
-    const response = await fetch(HF_API_URL, {
+    const response = await fetch(NOMIC_API_URL, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         },
-        body: JSON.stringify({ inputs: text }),
+        body: JSON.stringify({
+            texts: [
+                text
+            ],
+            model: 'nomic-embed-text-v1',
+            task_type: 'search_query',
+
+        }),
         signal: AbortSignal.timeout(15000) // 15s timeout
     })
 
     if (!response.ok) {
         const error = await response.text()
-        throw new Error(`HuggingFace embedding failed (${response.status}): ${error}`)
+        throw new Error(`Nomic Atlas embedding failed (${response.status}): ${error}`)
     }
 
-    const data = await response.json() as number[]
-    return data
+    const data = await response.json() as { embeddings: number[][] }
+    if (!data.embeddings || data.embeddings.length === 0) {
+        throw new Error(`Data response contains no embeddings: ${data}`)
+    }
+    return data.embeddings[0]
 }
 
 async function getOllamaEmbedding(text: string): Promise<number[]> {

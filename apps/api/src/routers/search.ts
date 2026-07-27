@@ -111,13 +111,6 @@ async function fetchSemanticSearch(
         embedding = await getQueryEmbedding(query)
     } catch (err) {
         const msg = err instanceof Error ? err.message : 'Unknown error'
-        // HuggingFace responds status 503 if model is still loading
-        if (msg.includes('503') || msg.includes('loading')) {
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Embedding model is spinning up, please try again in a moment.'
-            })
-        }
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: `Failed to generate embedding: ${msg}`

@@ -46,7 +46,7 @@ services:
       WEB_URL: ${WEB_URL}
       PROXY_SECRET: ${PROXY_SECRET}
       EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER}
-      HF_API_TOKEN: ${HF_API_TOKEN}
+      NOMIC_API_KEY: ${NOMIC_API_KEY}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
