@@ -41,7 +41,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
     // fetch user preferences for default translation
     const prefs = await trpc.user.getPreferences.query()
-    const translationId = prefs?.preferredTranslationId ?? 'NABRE'
+    const translationId = prefs?.preferred_translation_id ?? 'NABRE'
 
     // run the appropriate search type
     let results: Awaited<ReturnType<typeof trpc.search.hybrid.query>>['results'] = []

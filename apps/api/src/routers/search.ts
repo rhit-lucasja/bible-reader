@@ -2,6 +2,8 @@ import { z } from 'zod'
 import { publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
 import { PrismaClient } from '@bible-reader/db'
+import { getQueryEmbedding } from '../lib/embeddings'
+import { octetInputParser } from '@trpc/server/unstable-core-do-not-import'
 
 // for hybrid search results, with RRF score
 interface HybridResult {
@@ -103,25 +105,24 @@ async function fetchSemanticSearch(
     offset: number,
     db: PrismaClient
 ) {
-    // embed the query with ollama
-    const ollamaUrl = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'
-    const embeddingResponse = await fetch(`${ollamaUrl}/api/embeddings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            model: 'nomic-embed-text',
-            prompt: query
-        })
-    })
-
-    if (!embeddingResponse.ok) {
+    // embed the query
+    let embedding: number[]
+    try {
+        embedding = await getQueryEmbedding(query)
+    } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Unknown error'
+        // HuggingFace responds status 503 if model is still loading
+        if (msg.includes('503') || msg.includes('loading')) {
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Embedding model is spinning up, please try again in a moment.'
+            })
+        }
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to generate embedding: ${embeddingResponse.statusText}`
+            message: `Failed to generate embedding: ${msg}`
         })
     }
-
-    const { embedding } = (await embeddingResponse.json()) as { embedding: number[] }
     const vector_literal = `[${embedding.join(',')}]`
 
     // compare query's vector with pgvector using cosine similarity
