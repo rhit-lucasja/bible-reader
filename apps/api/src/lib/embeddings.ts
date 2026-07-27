@@ -2,22 +2,18 @@ const NOMIC_API_URL = 'https://api-atlas.nomic.ai/v1/embedding/text'
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'
 const EMBEDDING_PROVIDER = process.env.EMBEDDING_PROVIDER ?? 'nomic'
 
-// whether to use task prefixes (technically required)
-const USE_PREFIXES = true
-
 export async function getQueryEmbedding(query: string): Promise<number[]> {
-    const text = USE_PREFIXES ? `search_query: ${query}` : query
-
     if (EMBEDDING_PROVIDER === 'ollama') {
-        return getOllamaEmbedding(text)
+        return getOllamaEmbedding(`search_query: ${query}`)
     }
-    return getNomicEmbedding(text)
+    return getNomicEmbedding(query)
 }
 
 async function getNomicEmbedding(text: string): Promise<number[]> {
-    const token = process.env.NOMIC_API_TOKEN
-    if (!token) throw new Error('NOMIC_API_TOKEN is not set')
+    const token = process.env.NOMIC_API_KEY
+    if (!token) throw new Error('NOMIC_API_KEY is not set')
     
+    console.log('getNomicEmbedding for:', text, 'with key:', token)
     const response = await fetch(NOMIC_API_URL, {
         method: 'POST',
         headers: {
@@ -35,6 +31,7 @@ async function getNomicEmbedding(text: string): Promise<number[]> {
         }),
         signal: AbortSignal.timeout(15000) // 15s timeout
     })
+    console.log(response)
 
     if (!response.ok) {
         const error = await response.text()
