@@ -35,7 +35,7 @@ export function HistoryPageClient({
 
     const clearHistory = trpc.history.clearHistory.useMutation({
         onSuccess: () => {
-            router.refresh()
+            router.push('/history')
             setConfirmClear(false)
         }
     })
@@ -49,23 +49,21 @@ export function HistoryPageClient({
     const startEntry = (currentPage - 1) * limit + 1
     const endEntry = Math.min(currentPage * limit, total)
 
-    // TODO: styling empty history page 
     if (entries.length === 0 && currentPage === 1) {
         return (
-            <div className="text-center py-16">
-                <p className="text-zinc-400 dark:text-zinc-500 text-sm">
-                    No reading history yet.
+            <div className="mt-8 text-center">
+                <p className="text-zinc-700 dark:text-zinc-300 text-lg">
+                    No reading history yet
                 </p>
-                <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-1">
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">
                     Chapters you read will appear here.
                 </p>
             </div>
         )
     }
 
-    // TODO: styling regular history results page
     return (
-        <div className="space-y-6">
+        <div className="mt-6">
 
             {/* Top controls */}
             <div className="flex items-center justify-between">
@@ -86,26 +84,26 @@ export function HistoryPageClient({
                 <div className="flex items-center gap-2">
                     {confirmClear ? (
                         <>
-                            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                            <span className="text-sm text-zinc-500 dark:text-zinc-400">
                                 Are you sure?
                             </span>
                             <button onClick={() => clearHistory.mutate()}
                                 disabled={clearHistory.isPending}
                                 className={cn(
-                                    'text-xs px-3 py-1.5 rounded-lg',
-                                    'bg-red-600 hover:bg-red-700 text-white',
-                                    'transition-colors disabled:opacity-50'
+                                    'text-sm px-3 py-1.5 rounded-lg',
+                                    'bg-red-600 hover:bg-red-700 text-zinc-100',
+                                    'cursor-pointer transition-colors disabled:opacity-50'
                                 )}
                             >
                                 {clearHistory.isPending ? 'Clearing...' : 'Yes, clear all'}
                             </button>
                             <button onClick = {() => setConfirmClear(false)}
                                 className={cn(
-                                    'text-xs px-3 py-1.5 rounded-lg',
-                                    'bg-zinc-100 dark:bg-zinc-800',
+                                    'text-sm px-3 py-1.5 rounded-lg',
+                                    'bg-zinc-200 dark:bg-zinc-800',
                                     'text-zinc-600 dark:text-zinc-400',
-                                    'hover:bg-zinc-200 dark:hover:bg-zinc-700',
-                                    'transition-colors'
+                                    'hover:bg-zinc-300 dark:hover:bg-zinc-700',
+                                    'cursor-pointer transition-colors'
                                 )}
                             >
                                 Cancel
@@ -114,14 +112,14 @@ export function HistoryPageClient({
                     ) : (
                         <button onClick={() => setConfirmClear(true)}
                             className={cn(
-                                'flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg',
+                                'flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg',
                                 'text-zinc-400 dark:text-zinc-500',
                                 'hover:text-red-500 dark:hover:text-red-400',
                                 'hover:bg-zinc-100 dark:hover:bg-zinc-800',
-                                'transition-colors'
+                                'cursor-pointer transition-colors'
                             )}
                         >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-4 w-4" />
                             Clear history
                         </button>
                     )}
@@ -129,7 +127,7 @@ export function HistoryPageClient({
             </div>
 
             {/* History entries */}
-            <div className="space-y-2">
+            <div className="my-2 border-x border-zinc-200 dark:border-zinc-800">
                 {entries.map((entry) => (
                     <HistoryEntryCard key={entry.id} entry={entry} />
                 ))}
@@ -176,24 +174,23 @@ function PaginationControls({
     onPrev,
     onNext
 }: PaginationControlsProps) {
-    // TODO: style the page controls too
     return (
-        <div className="flext items-center gap-3">
+        <div className="flex items-center gap-1">
             <button onClick={onPrev}
                 disabled={!hasPrev}
                 className={cn(
                     'p-1.5 rounded-md transition-colors',
                     hasPrev
-                        ? 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                        : 'text-zinc-300 dark:text-zinc-700 cursor-not-allowed',
+                        ? 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer'
+                        : 'text-zinc-300 dark:text-zinc-600 cursor-not-allowed',
                 )}
                 aria-label="Previous page"
             >
                 <ChevronLeft className="h-4 w-4" />
             </button>
 
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                {startEntry}-{endEntry} of {total}
+            <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                {startEntry} - {endEntry} of {total}
             </span>
 
             <button onClick={onNext}
@@ -201,8 +198,8 @@ function PaginationControls({
                 className={cn(
                     'p-1.5 rounded-md transition-colors',
                     hasNext
-                        ? 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                        : 'text-zinc-300 dark:text-zinc-700 cursor-not-allowed',
+                        ? 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer'
+                        : 'text-zinc-300 dark:text-zinc-600 cursor-not-allowed',
                 )}
                 aria-label="Next page"
             >

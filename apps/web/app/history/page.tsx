@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { redirect } from 'next/navigation'
 import { createServerClient } from '@/lib/trpc/server'
 import { HistoryPageClient } from '@/components/history/history-page-client'
+import { cn } from '@/lib/utils'
 
 interface HistoryPageProps {
     searchParams: Promise<{ page?: string }>
@@ -28,19 +29,18 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
 
     const totalPages = Math.ceil(total / limit)
 
-    // TODO: styling adjustments as needed
     return (
-        <div className="max-w-3xl mx-auto px-6 py-12">
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-                        Reading History
-                    </h1>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                        {total} chapter{total !== 1 ? 's' : ''} read
-                    </p>
-                </div>
-            </div>
+        <div className={cn(
+            'max-w-3xl mx-auto px-6 py-8',
+            'border-x border-zinc-200 dark:border-zinc-800',
+            'min-h-[calc(100vh-3.6rem)]'
+        )}>
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+                Reading History
+            </h1>
+            <p className="text-md text-zinc-500 dark:text-zinc-400 mt-1">
+                View chapters you've recently read
+            </p>
 
             <HistoryPageClient
                 entries={entries}
