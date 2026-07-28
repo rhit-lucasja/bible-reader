@@ -3,12 +3,14 @@ import { referenceRouter } from './reference'
 import { translationRouter } from './translation'
 import { searchRouter } from './search'
 import { userRouter } from './user'
+import { historyRouter } from './history'
 
 export const appRouter = router({
     reference: referenceRouter,
     translation: translationRouter,
     search: searchRouter,
-    user: userRouter
+    user: userRouter,
+    history: historyRouter,
 })
 
 export type AppRouter = typeof appRouter
