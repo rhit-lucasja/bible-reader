@@ -39,7 +39,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
                 Reading History
             </h1>
             <p className="text-md text-zinc-500 dark:text-zinc-400 mt-1">
-                View chapters you've recently read
+                View chapters you&apos;ve recently read
             </p>
 
             <HistoryPageClient
