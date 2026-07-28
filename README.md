@@ -29,7 +29,7 @@ DATABASE_URL="..." npx prisma migrate deploy --schema=prisma/schema.prisma
 DATABASE_URL="..." npx tsx src/seed.ts
 ~~~
 
-### Embedding with Ollama
+### Embedding Locally with Ollama
 ~~~
 // .../bible-reader/packages/db
 ollama serve

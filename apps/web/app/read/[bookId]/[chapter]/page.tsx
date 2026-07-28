@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { ChapterReader } from '@/components/reader/chapter-reader'
 import { ReaderShell } from '@/components/reader/reader-shell'
 import { ReaderToolbar } from '@/components/reader/reader-toolbar'
+import { HistoryTracker } from '@/components/reader/history-tracker'
 
 const DEFAULT_TRANSLATION = 'NABRE'
 
@@ -61,6 +62,7 @@ export default async function ReadPage({ params, searchParams }: ReadPageProps) 
             <ChapterReader blocks={chapterData.blocks} bookId={bookId}
                 chapterNum={chapterNum} bookName={currentBook.name} translationId={translation}
             />
+            <HistoryTracker bookId={bookId} chapterNumber={chapterNum} translationId={translation} />
         </ReaderShell>
     )
 }
