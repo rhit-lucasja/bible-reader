@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 interface HistoryEntry {
     id: number
     book_id: string
+    book_name: string
     chapter_number: number
     translation_id: string
     read_at: Date
@@ -29,7 +30,7 @@ export function HistoryEntryCard({ entry }: HistoryEntryCardProps) {
             <div className="flex items-center gap-3 min-w-0">
                 <BookOpen className="h-6 w-6 text-zinc-400 shrink-0" />
                 <span className="text-lg text-zinc-900 dark:text-zinc-100 truncate">
-                    {entry.book_id} {entry.chapter_number}
+                    {entry.book_name} {entry.chapter_number}
                 </span>
                 <span className="text-sm text-zinc-400 shrink-0">
                     {entry.translation_id}

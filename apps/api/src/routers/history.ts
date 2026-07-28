@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { router, protectedProcedure } from '../trpc'
+import e from 'express'
 
 const HISTORY_MAX_ENTRIES = 250
 const HISTORY_MAX_DAYS = 90
@@ -106,11 +107,31 @@ export const historyRouter = router({
                 }
             })
 
+            // helpful to count how many entries exist
             const total = await ctx.db.readingHistory.count({
                 where: { user_id: ctx.userId },
             })
 
-            return { entries, total }
+            // fetch book names for each historical entry
+            const book_ids = [...new Set(entries.map((e) => e.book_id))]
+            const books = await ctx.db.book.findMany({
+                where: { id: { in: book_ids }},
+                select: {
+                    id: true,
+                    name: true,
+                    translation_id: true,
+                }
+            })
+            const book_map = new Map(books.map((b) => [`${b.id}:${b.translation_id}`, b.name]))
+            const results = entries.map((e) => {
+                const key = `${e.book_id}:${e.translation_id}`
+                return {
+                    ...e,
+                    book_name: book_map.get(key) ?? e.book_id
+                }
+            })
+
+            return { results, total }
         }),
 
     // clear all history for a user

@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 interface HistoryEntry {
     id: number
     book_id: string
+    book_name: string
     chapter_number: number
     translation_id: string
     read_at: Date

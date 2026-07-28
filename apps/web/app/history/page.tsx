@@ -22,7 +22,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
         redirect('/auth/signin?callbackUrl=/history')
     }
 
-    const { entries, total } = await trpc.history.getHistory.query({
+    const { results: entries, total } = await trpc.history.getHistory.query({
         limit,
         offset
     })
