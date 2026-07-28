@@ -76,6 +76,7 @@ services:
       AUTH_GOOGLE_SECRET: ${AUTH_GOOGLE_SECRET}
       INTERNAL_API_URL: ${INTERNAL_API_URL}
       PROXY_SECRET: ${PROXY_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
     ports:
       - "3000:3000"
     volumes:
