@@ -39,13 +39,13 @@ export function VerseActionBar({
                     'flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs',
                     'hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer',
                     isBookmarked
-                        ? 'text-amber-500 dark:text-amber-400'
+                        ? 'text-blue-500 dark:text-blue-400'
                         : 'text-zinc-600 dark:text-zinc-300',
                 )}
             >
                 <Bookmark className={cn(
                     'h-3.5 w-3.5 transition-colors',
-                    isBookmarked && 'fill-amber-500 dark:fill-amber-400s',
+                    isBookmarked && 'fill-blue-500 dark:fill-blue-400',
                 )} />
                 Bookmark
             </button>
