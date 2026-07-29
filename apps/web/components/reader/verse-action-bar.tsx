@@ -8,6 +8,8 @@ interface VerseActionBarProps {
     bookId: string
     chapterNum: number
     translationId: string
+    isBookmarked: boolean
+    onBookmark: () => void
     onDismiss: () => void
 }
 
@@ -16,6 +18,8 @@ export function VerseActionBar({
     bookId,
     chapterNum,
     translationId,
+    isBookmarked,
+    onBookmark,
     onDismiss
 }: VerseActionBarProps) {
     return (
@@ -24,22 +28,27 @@ export function VerseActionBar({
             'bg-zinc-100 dark:bg-zinc-800 shadow-lg',
             'text-zinc-900 dark:text-white'
         )}>
+            {/* Reference label */}
             <span className="text-xs px-2 text-zinc-500 dark:text-zinc-400 select-none">
                 {bookId}&nbsp;{chapterNum}:{verseNum}
             </span>
             <span className="w-px h-4 bg-zinc-300 dark:bg-zinc-600" />
 
             {/* Bookmark option */}
-            <button onClick={() => {
-                // TODO: trpc.bookmark.add.mutate({ bookId, chapterNum, verseNum, translationId })
-            }} title="Bookmark this verse"
+            <button onClick={onBookmark}
+                title={isBookmarked ? 'Edit bookmark' : 'Bookmark this verse'}
                 className={cn(
                     'flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs',
                     'hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer',
-                    'text-zinc-600 dark:text-zinc-300'
+                    isBookmarked
+                        ? 'text-amber-500 dark:text-amber-400'
+                        : 'text-zinc-600 dark:text-zinc-300',
                 )}
             >
-                <Bookmark className="h-3.5 w-3.5" />
+                <Bookmark className={cn(
+                    'h-3.5 w-3.5 transition-colors',
+                    isBookmarked && 'fill-amber-500 dark:fill-amber-400s',
+                )} />
                 Bookmark
             </button>
             <span className="w-px h-4 bg-zinc-300 dark:bg-zinc-600" />

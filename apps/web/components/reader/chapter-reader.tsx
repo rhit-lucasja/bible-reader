@@ -94,9 +94,12 @@ export function ChapterReader({
                             {group.blocks.map((block) => {
                                 if (block.type === 'verse' && block.verse) {
                                     return (
-                                        <VerseBlock key={block.verse.number} verse={block.verse}
+                                        <VerseBlock key={block.verse.number}
+                                            verse={block.verse}
+                                            book_name={bookName}
                                             isSelected={selectedVerse === block.verse.number}
-                                            onSelect={handleSelect} onDeselect={handleDeselect}
+                                            onSelect={handleSelect}
+                                            onDeselect={handleDeselect}
                                         />
                                     )
                                 }
