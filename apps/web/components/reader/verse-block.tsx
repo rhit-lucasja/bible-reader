@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { VerseActionBar } from './verse-action-bar'
 import { BookmarkModal } from './bookmark-modal'
