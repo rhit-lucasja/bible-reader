@@ -7,7 +7,6 @@ interface VerseActionBarProps {
     verseNum: number
     bookId: string
     chapterNum: number
-    translationId: string
     isBookmarked: boolean
     onBookmark: () => void
     onDismiss: () => void
@@ -17,7 +16,6 @@ export function VerseActionBar({
     verseNum,
     bookId,
     chapterNum,
-    translationId,
     isBookmarked,
     onBookmark,
     onDismiss

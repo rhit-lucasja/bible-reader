@@ -85,7 +85,6 @@ export function VerseBlock({
                             verseNum={verse.number}
                             bookId={verse.book_id}
                             chapterNum={verse.chapter_number}
-                            translationId={verse.translation_id}
                             isBookmarked={isBookmarked}
                             onBookmark={handleBookmarkClick}
                             onDismiss={onDeselect}
