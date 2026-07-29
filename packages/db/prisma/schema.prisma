@@ -78,6 +78,7 @@ model Verse {
     embedding           Unsupported("vector(768)")?
 
     chapter             Chapter @relation(fields: [chapter_number, book_id, translation_id], references: [number, book_id, translation_id], onDelete: Cascade)
+    bookmarks           Bookmark[]
 
     @@unique([number, chapter_number, book_id, translation_id])
     @@index([book_id, translation_id])
@@ -175,6 +176,7 @@ model Bookmark {
     created_at          DateTime @default(now())
 
     user                User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    verse               Verse @relation(fields: [verse_id], references: [id], onDelete: Cascade)
 
     @@unique([user_id, verse_id, translation_id])
 }
