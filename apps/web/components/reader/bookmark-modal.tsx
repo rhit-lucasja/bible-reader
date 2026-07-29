@@ -135,13 +135,13 @@ export function BookmarkModal({
     return (
         <>
             {/* Backdrop overlay */}
-            <div ref={overlayRef}
+            <span ref={overlayRef}
                 onClick={(e) => {
                     if (e.target === overlayRef.current) onClose()
                 }}
                 className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
             >
-                <div className={cn(
+                <span className={cn(
                     'relative w-full max-w-md rounded-xl shadow-xl',
                     'bg-white dark:bg-zinc-900',
                     'border border-zinc-200 dark:border-zinc-800',
@@ -150,8 +150,8 @@ export function BookmarkModal({
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
-                        <div className="flex items-center gap-2">
+                    <span className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
+                        <span className="flex items-center gap-2">
                             <Bookmark className={cn(
                                 'h-4 w-4',
                                 existing
@@ -161,13 +161,13 @@ export function BookmarkModal({
                             <span className="text-sm text-zinc-900 dark:text-zinc-100">
                                 {existing ? 'Edit Bookmark' : 'Add Bookmark'}
                             </span>
-                        </div>
+                        </span>
                         <button onClick={onClose}
                             className="p-1 rounded-md text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                         >
                             <X className="h-4 w-4" />
                         </button>
-                    </div>
+                    </span>
 
                     {/* Body */}
                     {!session ? (
@@ -195,8 +195,8 @@ export function BookmarkModal({
                             error={addBookmark.error?.message ?? updateNote.error?.message ?? deleteBookmark.error?.message ?? null}
                         />
                     )}
-                </div>
-            </div>
+                </span>
+            </span>
         </>
     )
 
@@ -214,15 +214,15 @@ function SignedOutContent({
     onClose: () => void
 }) {
     return (
-        <div className="px-5 py-6 space-y-4">
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <span className="px-5 py-6 space-y-4">
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">
                 Sign in to bookmark{' '}
                 <span className="text-zinc-900 dark:text-zinc-100">
                     {referenceLabel}
                 </span>{' '}
                 and save notes.
-            </p>
-            <div className="flex gap-2 justify-end">
+            </span>
+            <span className="flex gap-2 justify-end">
                 <button onClick={onClose}
                     className={cn(
                         'px-4 py-2 rounded-lg text-sm',
@@ -245,8 +245,8 @@ function SignedOutContent({
                     <LogIn className="h-3.5 w-3.5" />
                     Sign In
                 </button>
-            </div>
-        </div>
+            </span>
+        </span>
     )
 }
 
@@ -280,14 +280,14 @@ function SignedInContent({
     error: string | null
 }) {
     return (
-        <div className="px-5 py-4 space-y-4">
+        <span className="px-5 py-4 space-y-4">
             {/* Reference label */}
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">
+            <span className="text-xs text-zinc-400 dark:text-zinc-500">
                 {referenceLabel}
-            </p>
+            </span>
 
             {/* Note text box */}
-            <div>
+            <span>
                 <label className="text-xs text-zinc-600 dark:text-zinc-400 block mb-1.5">
                     Note{' '}
                     <span className="text-zinc-400 dark:text-zinc-500">
@@ -310,22 +310,22 @@ function SignedInContent({
                         'transition-colors',
                     )}
                 />
-                <p className="text-xs text-zinc-400 mt-1 text-right">
+                <span className="text-xs text-zinc-400 mt-1 text-right">
                     {note.length}/1000
-                </p>
-            </div>
+                </span>
+            </span>
 
             {error && (
-                <p className="text-xs text-red-500">{error}</p>
+                <span className="text-xs text-red-500">{error}</span>
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-between">
+            <span className="flex items-center justify-between">
                 {/* Delete - only shown for existing bookmarks */}
-                <div>
+                <span>
                     {existing && (
                         confirmDelete ? (
-                            <div className="flex items-center gap-2">
+                            <span className="flex items-center gap-2">
                                 <span className="text-xs text-zinc-500">Remove bookmark?</span>
                                 <button onClick={onDelete}
                                     disabled={isPending}
@@ -338,7 +338,7 @@ function SignedInContent({
                                 >
                                     Cancel
                                 </button>
-                            </div>
+                            </span>
                         ) : (
                             <button onClick={() => setConfirmDelete(true)}
                                 className="text-xs text-zinc-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
@@ -347,10 +347,10 @@ function SignedInContent({
                             </button>
                         )
                     )}
-                </div>
+                </span>
 
                 {/* Save / Cancel */}
-                <div className="flex gap-2">
+                <span className="flex gap-2">
                     <button onClick={onClose}
                         className={cn(
                             'px-4 py-2 rounded-lg text-sm',
@@ -379,8 +379,8 @@ function SignedInContent({
                                 ? 'Update'
                                 : 'Save'}
                     </button>
-                </div>
-            </div>
-        </div>
+                </span>
+            </span>
+        </span>
     )
 }
