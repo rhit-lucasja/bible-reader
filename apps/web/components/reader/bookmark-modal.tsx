@@ -131,39 +131,33 @@ export function BookmarkModal({
 
     if (!isOpen) return null
 
-    // TODO: styling on the modal and overlay
     return (
         <>
             {/* Backdrop overlay */}
             <span ref={overlayRef}
-                onClick={(e) => {
-                    if (e.target === overlayRef.current) onClose()
-                }}
+                onClick={(e) => e.stopPropagation()}
                 className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
             >
                 <span className={cn(
                     'relative w-full max-w-md rounded-xl shadow-xl',
-                    'bg-white dark:bg-zinc-900',
-                    'border border-zinc-200 dark:border-zinc-800',
-                )}
-                    // prevent clicks inside modal from closing it
-                    onClick={(e) => e.stopPropagation()}
-                >
+                    'bg-white dark:bg-zinc-800',
+                    'border border-zinc-200 dark:border-zinc-700',
+                )}>
                     {/* Header */}
-                    <span className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
+                    <span className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-700">
                         <span className="flex items-center gap-2">
                             <Bookmark className={cn(
-                                'h-4 w-4',
+                                'h-5 w-5',
                                 existing
-                                    ? 'fill-amber-400 text-amber-400'
-                                    : 'text-zinc-400',
+                                    ? 'text-blue-500 dark:text-blue-400 fill-blue-500 dark:fill-blue-400'
+                                    : 'text-zinc-600 dark:text-zinc-300',
                             )} />
-                            <span className="text-sm text-zinc-900 dark:text-zinc-100">
+                            <span className="text-md text-zinc-900 dark:text-zinc-100">
                                 {existing ? 'Edit Bookmark' : 'Add Bookmark'}
                             </span>
                         </span>
                         <button onClick={onClose}
-                            className="p-1 rounded-md text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            className="p-1 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                         >
                             <X className="h-4 w-4" />
                         </button>
