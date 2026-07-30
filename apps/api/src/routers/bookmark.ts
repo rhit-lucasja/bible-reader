@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { router, protectedProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
+import { getDataTransformer } from '@trpc/server/unstable-core-do-not-import'
 
 export const bookmarkRouter = router({
 
@@ -31,6 +32,7 @@ export const bookmarkRouter = router({
             }
 
             // upsert bookmark/note for this verse + user
+            // TODO: modify created_at if update and not insert
             const bookmark = await ctx.db.bookmark.upsert({
                 where: {
                     user_id_verse_id_translation_id: {
@@ -76,67 +78,41 @@ export const bookmarkRouter = router({
             return bookmark ?? null
         }),
 
-    // retrieve bookmarks filtered by book, chapter, and verse
-    getBookmarksByReference: protectedProcedure
-        .input(
-            z.object({
-                book_id: z.string(),
-                chapter_number: z.number().int().positive().optional(),
-                verse_number: z.number().int().positive().optional(),
-                translation_id: z.string().optional()
-            }).refine(
-                (data) => {
-                    // verse num requires chapter num, chapter num requires book id
-                    if (data.verse_number && !data.chapter_number) return false
-                    if (data.chapter_number && !data.book_id) return false
-                    return true
-                },
-                { message: 'verse_number requires chapter_number, chapter_number requires boook_id' }
-            )
-        )
-        .query(async ({ ctx, input }) => {
-            const { book_id, chapter_number, verse_number, translation_id } = input
-
-            const bookmarks = await ctx.db.bookmark.findMany({
-                where: {
-                    user_id: ctx.userId,
-                    ...(translation_id && { translation_id }),
-                    verse: {
-                        ...(book_id && { book_id }),
-                        ...(chapter_number && { chapter_number }),
-                        ...(verse_number && { number: verse_number }),
-                    }
-                },
-                include: {
-                    verse: {
-                        select: {
-                            id: true,
-                            number: true,
-                            chapter_number: true,
-                            book_id: true,
-                            translation_id: true,
-                            text: true,
-                        }
-                    }
-                },
-                orderBy: { created_at: 'desc' }
-            })
-
-            return bookmarks
-        }),
-
-    // paginated list of all bookmarks for a user
+    // paginated list of bookmarks for a user, with optional filters applied
     getBookmarks: protectedProcedure
         .input(
             z.object({
+                book_id: z.string().optional(),
+                chapter_number: z.number().int().positive().optional(),
+                verse_number: z.number().int().positive().optional(),
+                translation_id: z.string().optional(),
                 limit: z.number().int().min(1).max(100).default(50),
                 offset: z.number().int().min(0).default(0)
-            })
+            }).refine(
+                (data) => {
+                    // verse num requires chapter num, chapter num requires book id, book id requires translation
+                    if (data.verse_number && !data.chapter_number) return false
+                    if (data.chapter_number && !data.book_id) return false
+                    if (data.book_id && !data.translation_id) return false
+                    return true
+                },
+                { message: 'verse requires chapter, chapter requires book, book requires translation' }
+            )
         )
         .query(async ({ ctx, input }) => {
+            const { book_id, chapter_number, verse_number, translation_id, limit, offset } = input
+
             const [bookmarks, total] = await Promise.all([
                 ctx.db.bookmark.findMany({
-                    where: { user_id: ctx.userId },
+                    where: {
+                        user_id: ctx.userId,
+                        ...(translation_id && { translation_id }),
+                        verse: {
+                            ...(book_id && { book_id }),
+                            ...(chapter_number && { chapter_number }),
+                            ...(verse_number && { number: verse_number }),
+                        }
+                    },
                     include: {
                         verse: {
                             select: {
@@ -154,7 +130,15 @@ export const bookmarkRouter = router({
                     skip: input.offset
                 }),
                 ctx.db.bookmark.count({
-                    where: { user_id: ctx.userId }
+                    where: {
+                        user_id: ctx.userId,
+                        ...(translation_id && { translation_id }),
+                        verse: {
+                            ...(book_id && { book_id }),
+                            ...(chapter_number && { chapter_number }),
+                            ...(verse_number && { number: verse_number }),
+                        }
+                    }
                 })
             ])
 
@@ -163,19 +147,20 @@ export const bookmarkRouter = router({
             const books = await ctx.db.book.findMany({
                 where: {
                     id: { in: book_ids },
-                    translation_id: 'NABRE'
+                    ...(translation_id && {translation_id})
                 },
                 select: {
                     id: true,
-                    name: true
+                    name: true,
+                    translation_id: true,
                 }
             })
-            const book_map = new Map(books.map((b) => [b.id, b.name]))
+            const book_map = new Map(books.map((b) => [`${b.id}:${b.translation_id}`, b.name]))
 
             return {
                 bookmarks: bookmarks.map((b) => ({
                     ...b,
-                    book_name: book_map.get(b.verse.book_id) ?? b.verse.book_id,
+                    book_name: book_map.get(`${b.verse.book_id}:${b.translation_id}`) ?? b.verse.book_id,
                 })),
                 total
             }
@@ -212,7 +197,10 @@ export const bookmarkRouter = router({
 
             return ctx.db.bookmark.update({
                 where: { id: input.bookmark_id },
-                data: { note: input.note }
+                data: {
+                    note: input.note,
+                    // TODO: updating a note should update created_at
+                }
             })
         }),
 
