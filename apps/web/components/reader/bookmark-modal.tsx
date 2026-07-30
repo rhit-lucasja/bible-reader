@@ -196,7 +196,6 @@ export function BookmarkModal({
 
 }
 
-// TODO: style the signed out modal contents
 // prompt for if the user tries to bookmark without being signed in
 function SignedOutContent({
     referenceLabel,
@@ -208,22 +207,21 @@ function SignedOutContent({
     onClose: () => void
 }) {
     return (
-        <span className="px-5 py-6 space-y-4">
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+        <span className="p-4 flex flex-col gap-2">
+            <span className="text-md text-center text-zinc-600 dark:text-zinc-400">
                 Sign in to bookmark{' '}
                 <span className="text-zinc-900 dark:text-zinc-100">
                     {referenceLabel}
-                </span>{' '}
-                and save notes.
+                </span>.
             </span>
             <span className="flex gap-2 justify-end">
                 <button onClick={onClose}
                     className={cn(
                         'px-4 py-2 rounded-lg text-sm',
-                        'bg-zinc-100 dark:bg-zinc-800',
-                        'text-zinc-600 dark:text-zinc-400',
-                        'hover:bg-zinc-200 dark:hover:bg-zinc-700',
-                        'transition-colors',
+                        'text-zinc-600 dark:text-zinc-300',
+                        'bg-zinc-200 dark:bg-zinc-700',
+                        'hover:bg-zinc-300 dark:hover:bg-zinc-600',
+                        'transition-colors cursor-pointer',
                     )}
                 >
                     Cancel
@@ -233,10 +231,10 @@ function SignedOutContent({
                         'flex items-center gap-2 px-4 py-2 rounded-lg text-sm',
                         'bg-zinc-900 dark:bg-zinc-100',
                         'text-white dark:text-zinc-900',
-                        'hover:opacity-80 transition-opacity',
+                        'hover:opacity-80 transition-opacity cursor-pointer',
                     )}
                 >
-                    <LogIn className="h-3.5 w-3.5" />
+                    <LogIn className="h-4 w-4" />
                     Sign In
                 </button>
             </span>
