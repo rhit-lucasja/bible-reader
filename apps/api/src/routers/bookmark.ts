@@ -240,7 +240,7 @@ export const bookmarkRouter = router({
         }),
 
     // clear all bookmarks for the user
-    deleteAllBookmarks: protectedProcedure.mutation(async ({ ctx }) => {
+    deleteAll: protectedProcedure.mutation(async ({ ctx }) => {
         await ctx.db.bookmark.deleteMany({
             where: { user_id: ctx.userId }
         })
