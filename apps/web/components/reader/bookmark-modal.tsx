@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { X, Bookmark, LogIn } from 'lucide-react'
+import { X, Bookmark, LogIn, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { trpc } from '@/lib/trpc/client'
 import { useSession } from 'next-auth/react'
@@ -53,6 +53,7 @@ export function BookmarkModal({
         if (isOpen && session && textAreaRef.current) {
             setTimeout(() => textAreaRef.current?.focus(), 50)
         }
+        setConfirmDelete(false)
     }, [isOpen, session])
 
     // close on escape
@@ -98,6 +99,7 @@ export function BookmarkModal({
 
     // functions to actually call mutation hooks
     function handleSave() {
+        setConfirmDelete(false) // close delete confirmation if saving
         const trimmedNote = note.trim() || null
         if (existing) {
             // update existing bookmark's note
@@ -242,7 +244,6 @@ function SignedOutContent({
     )
 }
 
-// TODO: style the signed in modal contents
 // signed-in bookmark form
 function SignedInContent({
     referenceLabel,
@@ -272,14 +273,14 @@ function SignedInContent({
     error: string | null
 }) {
     return (
-        <span className="px-5 py-4 space-y-4">
+        <span className="p-4 flex flex-col gap-2">
             {/* Reference label */}
-            <span className="text-xs text-zinc-400 dark:text-zinc-500">
+            <span className="text-md text-zinc-900 dark:text-zinc-100">
                 {referenceLabel}
             </span>
 
             {/* Note text box */}
-            <span>
+            <span className="flex flex-col gap-1">
                 <label className="text-xs text-zinc-600 dark:text-zinc-400 block mb-1.5">
                     Note{' '}
                     <span className="text-zinc-400 dark:text-zinc-500">
@@ -294,15 +295,15 @@ function SignedInContent({
                     rows={4}
                     className={cn(
                         'w-full px-3 py-2 text-sm rounded-lg resize-none',
-                        'bg-zinc-50 dark:bg-zinc-800',
-                        'border border-zinc-200 dark:border-zinc-700',
+                        'bg-zinc-50 dark:bg-zinc-700/60',
+                        'border border-zinc-200 dark:border-zinc-600',
                         'text-zinc-900 dark:text-zinc-100',
                         'placeholder:text-zinc-400',
                         'focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-500',
                         'transition-colors',
                     )}
                 />
-                <span className="text-xs text-zinc-400 mt-1 text-right">
+                <span className="text-xs text-zinc-400 text-right">
                     {note.length}/1000
                 </span>
             </span>
@@ -318,24 +319,43 @@ function SignedInContent({
                     {existing && (
                         confirmDelete ? (
                             <span className="flex items-center gap-2">
-                                <span className="text-xs text-zinc-500">Remove bookmark?</span>
+                                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                    Are you sure?
+                                </span>
                                 <button onClick={onDelete}
                                     disabled={isPending}
-                                    className="text-xs px-2.5 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition-colors disabled:opacity-50"
+                                    className={cn(
+                                        'text-xs px-2 py-1 rounded-md',
+                                        'text-zinc-100 bg-red-600',
+                                        'hover:bg-red-700 dark:hover:bg-red-500',
+                                        'transition-colors cursor-pointer disabled:opacity-50',
+                                    )}
                                 >
-                                    {isPending ? 'Removing...' : 'Remove'}
+                                    {isPending ? 'Removing...' : 'Yes'}
                                 </button>
                                 <button onClick={() => setConfirmDelete(false)}
-                                    className="text-xs px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                    className={cn(
+                                        'text-xs px-2 py-1 rounded-md',
+                                        'text-zinc-600 dark:text-zinc-300',
+                                        'bg-zinc-200 dark:bg-zinc-700',
+                                        'hover:bg-zinc-300 dark:hover:bg-zinc-600',
+                                        'transition-colors cursor-pointer',
+                                    )}
                                 >
-                                    Cancel
+                                    No
                                 </button>
                             </span>
                         ) : (
                             <button onClick={() => setConfirmDelete(true)}
-                                className="text-xs text-zinc-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                                className={cn(
+                                    'flex px-4 py-2 gap-1.5 items-center rounded-lg',
+                                    'text-sm text-zinc-100 bg-red-600',
+                                    'hover:bg-red-700 dark:hover:bg-red-500',
+                                    'transition-colors cursor-pointer'
+                                )}
                             >
-                                Remove bookmark
+                                <Trash2 className="h-4 w-4" />
+                                Remove
                             </button>
                         )
                     )}
@@ -346,10 +366,10 @@ function SignedInContent({
                     <button onClick={onClose}
                         className={cn(
                             'px-4 py-2 rounded-lg text-sm',
-                            'bg-zinc-100 dark:bg-zinc-800',
-                            'text-zinc-600 dark:text-zinc-400',
-                            'hover:bg-zinc-200 dark:hover:bg-zinc-700',
-                            'transition-colors'
+                            'text-zinc-600 dark:text-zinc-300',
+                            'bg-zinc-200 dark:bg-zinc-700',
+                            'hover:bg-zinc-300 dark:hover:bg-zinc-600',
+                            'transition-colors cursor-pointer'
                         )}
                     >
                         Cancel
@@ -361,7 +381,7 @@ function SignedInContent({
                             'bg-zinc-900 dark:bg-zinc-100',
                             'text-white dark:text-zinc-900',
                             'hover:opacity-80 disabled:opacity-50',
-                            'transition-opacity',
+                            'transition-opacity cursor-pointer',
                         )}
                     >
                         <Bookmark className="h-3.5 w-3.5" />
