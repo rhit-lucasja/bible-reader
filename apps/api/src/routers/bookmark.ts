@@ -84,14 +84,12 @@ export const bookmarkRouter = router({
             z.object({
                 book_id: z.string().optional(),
                 chapter_number: z.number().int().positive().optional(),
-                verse_number: z.number().int().positive().optional(),
                 translation_id: z.string().optional(),
                 limit: z.number().int().min(1).max(100).default(50),
                 offset: z.number().int().min(0).default(0)
             }).refine(
                 (data) => {
-                    // verse num requires chapter num, chapter num requires book id, book id requires translation
-                    if (data.verse_number && !data.chapter_number) return false
+                    // chapter num requires book id, book id requires translation
                     if (data.chapter_number && !data.book_id) return false
                     if (data.book_id && !data.translation_id) return false
                     return true
@@ -100,18 +98,19 @@ export const bookmarkRouter = router({
             )
         )
         .query(async ({ ctx, input }) => {
-            const { book_id, chapter_number, verse_number, translation_id, limit, offset } = input
+            const { book_id, chapter_number, translation_id, limit, offset } = input
 
             const [bookmarks, total] = await Promise.all([
                 ctx.db.bookmark.findMany({
                     where: {
                         user_id: ctx.userId,
                         ...(translation_id && { translation_id }),
-                        verse: {
-                            ...(book_id && { book_id }),
-                            ...(chapter_number && { chapter_number }),
-                            ...(verse_number && { number: verse_number }),
-                        }
+                        ...((book_id || chapter_number) &&
+                            { verse: {
+                                ...(book_id && { book_id }),
+                                ...(chapter_number && { chapter_number }),
+                            }}
+                        )
                     },
                     include: {
                         verse: {
@@ -126,18 +125,19 @@ export const bookmarkRouter = router({
                         }
                     },
                     orderBy: { created_at: 'desc' },
-                    take: input.limit,
-                    skip: input.offset
+                    take: limit,
+                    skip: offset
                 }),
                 ctx.db.bookmark.count({
                     where: {
                         user_id: ctx.userId,
                         ...(translation_id && { translation_id }),
-                        verse: {
-                            ...(book_id && { book_id }),
-                            ...(chapter_number && { chapter_number }),
-                            ...(verse_number && { number: verse_number }),
-                        }
+                        ...((book_id || chapter_number) &&
+                            { verse: {
+                                ...(book_id && { book_id }),
+                                ...(chapter_number && { chapter_number }),
+                            }}
+                        )
                     }
                 })
             ])
