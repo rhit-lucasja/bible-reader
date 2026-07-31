@@ -47,7 +47,6 @@ interface Filters {
     translation_id: string | null
     book_id: string | null
     chapter_number: number | null
-    verse_number: number | null
 }
 
 export function BookmarksPageClient({
@@ -65,22 +64,19 @@ export function BookmarksPageClient({
         translation_id: null,
         book_id: null,
         chapter_number: null,
-        verse_number: null
     })
 
     // use client-side fetch when filters are active
     // else use initBookmarks, fetched from server
     const isFiltered = filters.translation_id !== null ||
         filters.book_id !== null ||
-        filters.chapter_number !== null ||
-        filters.verse_number !== null
+        filters.chapter_number !== null
 
     const filteredQuery = trpc.bookmark.getBookmarks.useQuery(
         {
             translation_id: filters.translation_id ?? undefined,
             book_id: filters.book_id ?? undefined,
-            chapter_number: filters.chapter_number ?? undefined,
-            verse_number: filters.verse_number ?? undefined
+            chapter_number: filters.chapter_number ?? undefined
         },
         {
             enabled: isFiltered

@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { ChevronDown, X } from 'lucide-react'
 import { trpc } from '@/lib/trpc/client'
 import { cn } from '@/lib/utils'
@@ -15,7 +14,6 @@ interface Filters {
     translation_id: string | null
     book_id: string | null
     chapter_number: number | null
-    verse_number: number | null
 }
 
 interface BookmarkFiltersProps {
@@ -29,10 +27,13 @@ export function BookmarkFilters({
     filters,
     onFiltersChange
 }: BookmarkFiltersProps) {
+
     // fetch books for selected translation
-    const { data: books = [] } = trpc.translation.listBooks.useQuery(
-        { translation_id: filters.translation_id }
-    )
+    const books = filters.translation_id
+        ? trpc.translation.listBooks.useQuery(
+            { translation_id: filters.translation_id }
+        ).data || []
+        : []
 
     const selectedBook = books.find((b) => b.id === filters.book_id)
 
@@ -47,7 +48,6 @@ export function BookmarkFilters({
             translation_id: id,
             book_id: null,
             chapter_number: null,
-            verse_number: null
         })
     }
 
@@ -56,7 +56,6 @@ export function BookmarkFilters({
             ...filters,
             book_id: id,
             chapter_number: null,
-            verse_number: null
         })
     }
 
@@ -64,14 +63,6 @@ export function BookmarkFilters({
         onFiltersChange({
             ...filters,
             chapter_number: num,
-            verse_number: null
-        })
-    }
-
-    function setVerse(num: number | null) {
-        onFiltersChange({
-            ...filters,
-            verse_number: num
         })
     }
 
@@ -80,14 +71,12 @@ export function BookmarkFilters({
             translation_id: null,
             book_id: null,
             chapter_number: null,
-            verse_number: null
         })
     }
 
     const hasActiveFilters = filters.translation_id !== null ||
         filters.book_id !== null ||
-        filters.chapter_number !== null ||
-        filters.verse_number !== null
+        filters.chapter_number !== null
 
     return (
         // TODO: styling spacing between filters
@@ -128,20 +117,6 @@ export function BookmarkFilters({
                     options={chapters.map((n) => ({
                         value: n.toString(),
                         label: `Chapter ${n}`,
-                    }))}
-                />
-
-                {/* Verse - only enabled when chapter is selected */}
-                <FilterSelect
-                    label="Verse"
-                    value={filters.verse_number?.toString() ?? ''}
-                    onChange={(v) => setVerse(v ? parseInt(v, 10) : null)}
-                    placeholder="All verses"
-                    disabled={!filters.chapter_number}
-                    // in practice only valid verse numbers will have bookmarks
-                    options={Array.from({ length: 200 }, (_, i) => i + 1).map((n) => ({
-                        value: n.toString(),
-                        label: `Verse ${n}`
                     }))}
                 />
 
