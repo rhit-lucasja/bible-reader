@@ -49,7 +49,6 @@ export default async function BookmarksPage({ searchParams }: BookmarksPageProps
                 totalPages={totalPages}
                 limit={limit}
                 translations={translations}
-                preferredTranslationId={prefs.preferred_translation_id}
             />
         </div>
     )

@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { trpc } from '@/lib/trpc/client'
 import { BookmarkCard } from './bookmark-card'
 import { BookmarkFilters } from './bookmark-filters'
+import { PaginationControls } from '@/components/ui/pagination-controls'
 import { cn } from '@/lib/utils'
 
 interface Verse {
@@ -40,7 +41,6 @@ interface BookmarksPageClientProps {
     totalPages: number
     limit: number
     translations: Translation[]
-    preferredTranslationId: string
 }
 
 interface Filters {
@@ -57,7 +57,6 @@ export function BookmarksPageClient({
     totalPages,
     limit,
     translations,
-    preferredTranslationId,
 }: BookmarksPageClientProps) {
     const router = useRouter()
     const [confirmClear, setConfirmClear] = useState(false)
@@ -69,16 +68,16 @@ export function BookmarksPageClient({
         verse_number: null
     })
 
-    // when filters are active use getFiltered, otherwise use server-fetched
-    // init bookmarks for the unfiltered paginated view
-    const isFiltered = filters.book_id !== null ||
+    // use client-side fetch when filters are active
+    // else use initBookmarks, fetched from server
+    const isFiltered = filters.translation_id !== null ||
+        filters.book_id !== null ||
         filters.chapter_number !== null ||
-        filters.verse_number !== null ||
-        filters.translation_id !== preferredTranslationId
+        filters.verse_number !== null
 
-    const filteredQuery = trpc.bookmark.getBookmarksByReference.useQuery(
+    const filteredQuery = trpc.bookmark.getBookmarks.useQuery(
         {
-            translation_id: filters.translation_id,
+            translation_id: filters.translation_id ?? undefined,
             book_id: filters.book_id ?? undefined,
             chapter_number: filters.chapter_number ?? undefined,
             verse_number: filters.verse_number ?? undefined
@@ -90,17 +89,17 @@ export function BookmarksPageClient({
 
     const deleteAll = trpc.bookmark.deleteAll.useMutation({
         onSuccess: () => {
-            router.refresh()
+            router.push('/bookmarks')
             setConfirmClear(false)
         }
     })
 
     const displayBookmarks = isFiltered
-        ? (filteredQuery.data ?? [])
+        ? (filteredQuery.data?.bookmarks ?? [])
         : initBookmarks
         
     const displayTotal = isFiltered
-        ? (filteredQuery.data?.length ?? 0)
+        ? (filteredQuery.data?.bookmarks.length ?? 0)
         : total
 
     function goToPage(page: number) {
@@ -113,6 +112,7 @@ export function BookmarksPageClient({
     const endEntry = Math.min(currentPage * limit, total)
 
     return (
+        // TODO: style spacing here if needed
         <div className="space-y-6">
 
             {/* Filters */}
@@ -139,6 +139,7 @@ export function BookmarksPageClient({
                         onNext={() => goToPage(currentPage + 1)}
                     />
                 ) : (
+                    // TODO: styling the delay part
                     <p className="text-xs text-zinc-400 dark:text-zinc-500">
                         {isFiltered && filteredQuery.isLoading
                             ? 'Searching...'
@@ -147,6 +148,7 @@ export function BookmarksPageClient({
                 )}
 
                 {/* Clear all bookmarks */}
+                {/* TODO: styling here */}
                 {total > 0 && (
                     <div className="flex items-center gap-2">
                         {confirmClear ? (
@@ -233,6 +235,7 @@ function EmptyState({
     isFiltered: boolean
     isLoading: boolean
 }) {
+    // TODO: styling stuff
     if (isLoading) {
         return (
             <div className="space-y-3">
@@ -257,64 +260,6 @@ function EmptyState({
                     Select a verse while reading to add a bookmark.
                 </p>
             )}
-        </div>
-    )
-}
-
-interface PaginationControlsProps {
-    currentPage: number
-    totalPages: number
-    hasPrev: boolean
-    hasNext: boolean
-    startEntry: number
-    endEntry: number
-    total: number
-    onPrev: () => void
-    onNext: () => void
-}
-
-function PaginationControls({
-    currentPage,
-    totalPages,
-    hasPrev,
-    hasNext,
-    startEntry,
-    endEntry,
-    total,
-    onPrev,
-    onNext
-}: PaginationControlsProps) {
-    return (
-        <div className="flex items-center gap-1">
-            <button onClick={onPrev}
-                disabled={!hasPrev}
-                className={cn(
-                    'p-1.5 rounded-md transition-colors',
-                    hasPrev
-                        ? 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer'
-                        : 'text-zinc-300 dark:text-zinc-600 cursor-not-allowed',
-                )}
-                aria-label="Previous page"
-            >
-                <ChevronLeft className="h-4 w-4" />
-            </button>
-
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                {startEntry} - {endEntry} of {total}
-            </span>
-
-            <button onClick={onNext}
-                disabled={!hasNext}
-                className={cn(
-                    'p-1.5 rounded-md transition-colors',
-                    hasNext
-                        ? 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer'
-                        : 'text-zinc-300 dark:text-zinc-600 cursor-not-allowed',
-                )}
-                aria-label="Next page"
-            >
-                <ChevronRight className="h-4 w-4" />
-            </button>
         </div>
     )
 }
