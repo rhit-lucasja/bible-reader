@@ -102,14 +102,18 @@ export function BookmarksPageClient({
         ? (filteredQuery.data?.bookmarks.length ?? 0)
         : total
 
+    const displayTotalPages = isFiltered
+        ? Math.ceil(displayTotal / limit)
+        : totalPages
+
     function goToPage(page: number) {
         router.push(`/bookmarks?page=${page}`)
     }
 
     const hasPrev = currentPage > 1
-    const hasNext = currentPage < totalPages
+    const hasNext = currentPage < displayTotalPages
     const startEntry = (currentPage - 1) * limit + 1
-    const endEntry = Math.min(currentPage * limit, total)
+    const endEntry = Math.min(currentPage * limit, displayTotal)
 
     return (
         // TODO: style spacing here if needed
@@ -121,57 +125,57 @@ export function BookmarksPageClient({
                 filters={filters}
                 onFiltersChange={(updated) => {
                     setFilters(updated)
+                    goToPage(1)
                 }}
             />
 
             {/* Top pagination controls */}
             <div className="flex items-center justify-between">
-                {!isFiltered && total > limit ? (
+                {/* switch between pages of results */}
+                {isFiltered && filteredQuery.isLoading ? (
+                    // TODO: styling the delay part
+                    <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                        Searching...
+                    </p>
+                ) : (
                     <PaginationControls
                         currentPage={currentPage}
-                        totalPages={totalPages}
+                        totalPages={displayTotalPages}
                         hasPrev={hasPrev}
                         hasNext={hasNext}
                         startEntry={startEntry}
                         endEntry={endEntry}
-                        total={total}
+                        total={displayTotal}
                         onPrev={() => goToPage(currentPage - 1)}
                         onNext={() => goToPage(currentPage + 1)}
                     />
-                ) : (
-                    // TODO: styling the delay part
-                    <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                        {isFiltered && filteredQuery.isLoading
-                            ? 'Searching...'
-                            : `${displayTotal} bookmark${displayTotal !== 1 ? 's' : ''}`}
-                    </p>
                 )}
 
                 {/* Clear all bookmarks */}
-                {/* TODO: styling here */}
                 {total > 0 && (
                     <div className="flex items-center gap-2">
                         {confirmClear ? (
                             <>
-                                <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                                    Clear all bookmarks?
+                                <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                                    Are you sure?
                                 </span>
                                 <button onClick={() => deleteAll.mutate()}
                                     disabled={deleteAll.isPending}
                                     className={cn(
-                                        'text-xs px-3 py-1.5 rounded-lg',
-                                        'bg-red-600 hover:bg-red-700 text-white',
-                                        'transition-colors disabled:opacity-50',
+                                        'text-sm px-3 py-1.5 rounded-lg',
+                                        'bg-red-600 hover:bg-red-700 text-zinc-100',
+                                        'cursor-pointer transition-colors disabled:opacity-50',
                                     )}
                                 >
                                     {deleteAll.isPending ? 'Clearing...' : 'Yes, clear all'}
                                 </button>
                                 <button onClick={() => setConfirmClear(false)}
                                     className={cn(
-                                        'text-xs px-3 py-1.5 rounded-lg',
-                                        'bg-zinc-100 dark:bg-zinc-800',
+                                        'text-sm px-3 py-1.5 rounded-lg',
+                                        'bg-zinc-200 dark:bg-zinc-800',
                                         'text-zinc-600 dark:text-zinc-400',
-                                        'hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors',
+                                        'hover:bg-zinc-300 dark:hover:bg-zinc-700',
+                                        'cursor-pointer transition-colors',
                                     )}
                                 >
                                     Cancel
@@ -180,14 +184,14 @@ export function BookmarksPageClient({
                         ) : (
                             <button onClick={() => setConfirmClear(true)}
                                 className={cn(
-                                    'flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg',
+                                    'flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg',
                                     'text-zinc-400 dark:text-zinc-500',
                                     'hover:text-red-500 dark:hover:text-red-400',
                                     'hover:bg-zinc-100 dark:hover:bg-zinc-800',
-                                    'transition-colors',
+                                    'cursor-pointer transition-colors',
                                 )}
                             >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                <Trash2 className="h-4 w-4" />
                                 Clear all
                             </button>
                         )}
@@ -199,7 +203,7 @@ export function BookmarksPageClient({
             {displayBookmarks.length === 0 ? (
                 <EmptyState isFiltered={isFiltered} isLoading={isFiltered && filteredQuery.isLoading} />
             ) : (
-                <div className="space-y-3">
+                <div className="my-2 border-x border-zinc-200 dark:border-zinc-800">
                     {displayBookmarks.map((bookmark) => (
                         <BookmarkCard
                             key={bookmark.id}
@@ -211,7 +215,7 @@ export function BookmarksPageClient({
             )}
 
             {/* bottom pagination */}
-            {!isFiltered && totalPages > 1 && (
+            {displayTotalPages > 1 && (
                 <PaginationControls
                     currentPage={currentPage}
                     totalPages={totalPages}
