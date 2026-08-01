@@ -76,7 +76,9 @@ export function BookmarksPageClient({
         {
             translation_id: filters.translation_id ?? undefined,
             book_id: filters.book_id ?? undefined,
-            chapter_number: filters.chapter_number ?? undefined
+            chapter_number: filters.chapter_number ?? undefined,
+            limit,
+            offset: (currentPage - 1) * limit,
         },
         {
             enabled: isFiltered
@@ -95,7 +97,7 @@ export function BookmarksPageClient({
         : initBookmarks
         
     const displayTotal = isFiltered
-        ? (filteredQuery.data?.bookmarks.length ?? 0)
+        ? (filteredQuery.data?.total ?? 0)
         : total
 
     const displayTotalPages = isFiltered
