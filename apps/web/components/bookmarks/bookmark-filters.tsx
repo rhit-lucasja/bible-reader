@@ -29,11 +29,10 @@ export function BookmarkFilters({
 }: BookmarkFiltersProps) {
 
     // fetch books for selected translation
-    const books = filters.translation_id
-        ? trpc.translation.listBooks.useQuery(
-            { translation_id: filters.translation_id }
-        ).data || []
-        : []
+    const { data: books = [] } = trpc.translation.listBooks.useQuery(
+        { translation_id: filters.translation_id ?? '' },
+        { enabled: !!filters.translation_id }
+    )
 
     const selectedBook = books.find((b) => b.id === filters.book_id)
 
@@ -66,15 +65,8 @@ export function BookmarkFilters({
         })
     }
 
-    function clearAllFilters() {
-        onFiltersChange({
-            translation_id: null,
-            book_id: null,
-            chapter_number: null,
-        })
-    }
-
-    const hasActiveFilters = filters.translation_id !== null ||
+    const hasActiveFilters =
+        filters.translation_id !== null ||
         filters.book_id !== null ||
         filters.chapter_number !== null
 
@@ -83,7 +75,6 @@ export function BookmarkFilters({
             <div className="flex flex-wrap gap-2 items-center">
                 {/* Translation */}
                 <FilterSelect
-                    label="Translation"
                     value={filters.translation_id ?? ''}
                     onChange={(v) => setTranslation(v || null)}
                     placeholder={"All translations"}
@@ -95,7 +86,6 @@ export function BookmarkFilters({
 
                 {/* Book - only enabled when translation selected */}
                 <FilterSelect
-                    label="Book"
                     value={filters.book_id ?? ''}
                     onChange={(v) => setBook(v || null)}
                     placeholder={"All books"}
@@ -108,7 +98,6 @@ export function BookmarkFilters({
 
                 {/* Chapter - only enabled when book is selected */}
                 <FilterSelect
-                    label="Chapter"
                     value={filters.chapter_number?.toString() ?? ''}
                     onChange={(v) => setChapter(v ? parseInt(v, 10) : null)}
                     placeholder="All chapters"
@@ -121,7 +110,7 @@ export function BookmarkFilters({
 
                 {/* Clear filters */}
                 {hasActiveFilters && (
-                    <button onClick={clearAllFilters}
+                    <button onClick={() => onFiltersChange({ translation_id: null, book_id: null, chapter_number: null })}
                         className={cn(
                             'flex items-center gap-1 text-xs px-2.5 py-1 rounded-md',
                             'text-zinc-400 dark:text-zinc-500',
@@ -140,7 +129,6 @@ export function BookmarkFilters({
 }
 
 interface FilterSelectProps {
-    label: string
     value: string
     onChange: (value: string) => void
     placeholder: string
@@ -149,7 +137,6 @@ interface FilterSelectProps {
 }
 
 function FilterSelect({
-    label,
     value,
     onChange,
     placeholder,

@@ -6,11 +6,23 @@ import { BookmarksPageClient } from '@/components/bookmarks/bookmarks-page-clien
 import { cn } from '@/lib/utils'
 
 interface BookmarksPageProps {
-    searchParams: Promise<{ page?: string }>
+    searchParams: Promise<{
+        page?: string
+        translation_id?: string
+        book_id?: string
+        chapter_number?: string
+    }>
 }
 
 export default async function BookmarksPage({ searchParams }: BookmarksPageProps) {
-    const { page = '1' } = await searchParams
+    // determine page and filters from URL parameters
+    const {
+        page = '1',
+        translation_id,
+        book_id,
+        chapter_number
+    } = await searchParams
+
     const pageNum = Math.max(1, parseInt(page, 10) || 1)
     const limit = 50
     const offset = (pageNum - 1) * limit
@@ -22,12 +34,21 @@ export default async function BookmarksPage({ searchParams }: BookmarksPageProps
         redirect('/auth/signin?callbackUrl=/bookmarks')
     }
 
+    const chapterNum = chapter_number ? parseInt(chapter_number, 10) : undefined
+
     const [{ bookmarks, total }, translations] = await Promise.all([
-        trpc.bookmark.getBookmarks.query({ limit, offset }),
+        trpc.bookmark.getBookmarks.query({
+            limit,
+            offset,
+            translation_id: translation_id ?? undefined,
+            book_id: book_id ?? undefined,
+            chapter_number: chapterNum
+        }),
         trpc.translation.listTranslations.query()
     ])
 
     const totalPages = Math.ceil(total / limit)
+    const isFiltered = !!(translation_id || book_id || chapter_number)
 
     return (
         <div className={cn(
@@ -43,12 +64,18 @@ export default async function BookmarksPage({ searchParams }: BookmarksPageProps
             </p>
 
             <BookmarksPageClient
-                initBookmarks={bookmarks}
+                bookmarks={bookmarks}
                 total={total}
                 currentPage={pageNum}
                 totalPages={totalPages}
                 limit={limit}
                 translations={translations}
+                currentFilters={{
+                    translation_id: translation_id ?? null,
+                    book_id: book_id ?? null,
+                    chapter_number: chapterNum ?? null
+                }}
+                isFiltered={isFiltered}
             />
         </div>
     )
