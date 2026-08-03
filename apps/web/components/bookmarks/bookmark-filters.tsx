@@ -79,7 +79,6 @@ export function BookmarkFilters({
         filters.chapter_number !== null
 
     return (
-        // TODO: styling spacing between filters
         <div>
             <div className="flex flex-wrap gap-2 items-center">
                 {/* Translation */}
@@ -124,7 +123,6 @@ export function BookmarkFilters({
                 {hasActiveFilters && (
                     <button onClick={clearAllFilters}
                         className={cn(
-                            // TODO: styling clear all button
                             'flex items-center gap-1 text-xs px-2.5 py-1 rounded-md',
                             'text-zinc-400 dark:text-zinc-500',
                             'hover:text-zinc-600', 'dark:hover:text-zinc-300',
@@ -159,7 +157,6 @@ function FilterSelect({
     disabled = false
 }: FilterSelectProps) {
     return (
-        // TODO: style filter select dropdown
         <div className="relative">
             <select value={value}
                 onChange={(e) => onChange(e.target.value)}
@@ -170,7 +167,8 @@ function FilterSelect({
                     'bg-white dark:bg-zinc-900',
                     'text-zinc-700 dark:text-zinc-300',
                     'focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-500',
-                    'transition-colors',
+                    'scrollbar-track-transparent scrollbar-thumb-neutral-400',
+                    'cursor-pointer transition-colors',
                     disabled && 'opacity-40 cursor-not-allowed',
                 )}
             >
