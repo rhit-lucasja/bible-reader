@@ -114,7 +114,6 @@ export function BookmarksPageClient({
     const endEntry = Math.min(currentPage * limit, displayTotal)
 
     return (
-        // TODO: style spacing here if needed
         <div className="space-y-2">
 
             {/* Filters */}
