@@ -115,7 +115,7 @@ export function BookmarksPageClient({
 
     return (
         // TODO: style spacing here if needed
-        <div className="space-y-6">
+        <div className="space-y-2">
 
             {/* Filters */}
             <BookmarkFilters
@@ -131,8 +131,7 @@ export function BookmarksPageClient({
             <div className="flex items-center justify-between">
                 {/* switch between pages of results */}
                 {isFiltered && filteredQuery.isLoading ? (
-                    // TODO: styling the delay part
-                    <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                    <p className="text-md text-zinc-500 dark:text-zinc-400">
                         Searching...
                     </p>
                 ) : (
@@ -150,7 +149,7 @@ export function BookmarksPageClient({
                 )}
 
                 {/* Clear all bookmarks */}
-                {total > 0 && (
+                {(total > 0 && !isFiltered) && (
                     <div className="flex items-center gap-2">
                         {confirmClear ? (
                             <>
@@ -237,7 +236,6 @@ function EmptyState({
     isFiltered: boolean
     isLoading: boolean
 }) {
-    // TODO: styling empty state
     if (isLoading) {
         return (
             <div className="space-y-3">
