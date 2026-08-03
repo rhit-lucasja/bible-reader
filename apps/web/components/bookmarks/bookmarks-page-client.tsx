@@ -237,7 +237,7 @@ function EmptyState({
     isFiltered: boolean
     isLoading: boolean
 }) {
-    // TODO: styling stuff
+    // TODO: styling empty state
     if (isLoading) {
         return (
             <div className="space-y-3">
