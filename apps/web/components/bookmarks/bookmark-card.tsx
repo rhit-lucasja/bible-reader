@@ -47,7 +47,6 @@ export function BookmarkCard({ bookmark, onDeleted }: BookmarkCardProps) {
         : verse.text
     const cleanedText = truncatedText.replace(/^[()\[\]{}‘’'“”"\s]+|[()\[\]{}‘’'“”"\s]+$/g, '')
 
-    // TODO: style bookmark card
     return (
         <div className={cn(
             'px-6 py-4 bg-white dark:bg-zinc-900',
