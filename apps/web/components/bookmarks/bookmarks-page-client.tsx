@@ -216,12 +216,12 @@ export function BookmarksPageClient({
             {displayTotalPages > 1 && (
                 <PaginationControls
                     currentPage={currentPage}
-                    totalPages={totalPages}
+                    totalPages={displayTotalPages}
                     hasPrev={hasPrev}
                     hasNext={hasNext}
                     startEntry={startEntry}
                     endEntry={endEntry}
-                    total={total}
+                    total={displayTotal}
                     onPrev={() => goToPage(currentPage - 1)}
                     onNext={() => goToPage(currentPage + 1)}
                 />
