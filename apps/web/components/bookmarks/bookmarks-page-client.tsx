@@ -114,7 +114,7 @@ export function BookmarksPageClient({
     const endEntry = Math.min(currentPage * limit, displayTotal)
 
     return (
-        <div className="space-y-2">
+        <div className="pt-2 space-y-2">
 
             {/* Filters */}
             <BookmarkFilters

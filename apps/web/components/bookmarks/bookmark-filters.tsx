@@ -80,7 +80,7 @@ export function BookmarkFilters({
 
     return (
         // TODO: styling spacing between filters
-        <div className="space-y-3">
+        <div>
             <div className="flex flex-wrap gap-2 items-center">
                 {/* Translation */}
                 <FilterSelect
@@ -90,7 +90,7 @@ export function BookmarkFilters({
                     placeholder={"All translations"}
                     options={translations.map((t) => ({
                         value: t.id,
-                        label: `${t.short_name} - ${t.english_name}`,
+                        label: t.short_name,
                     }))}
                 />
 
@@ -124,10 +124,10 @@ export function BookmarkFilters({
                 {hasActiveFilters && (
                     <button onClick={clearAllFilters}
                         className={cn(
-                            // TOOD: styling clear all button
-                            'flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg',
+                            // TODO: styling clear all button
+                            'flex items-center gap-1 text-xs px-2.5 py-1 rounded-md',
                             'text-zinc-400 dark:text-zinc-500',
-                            'hover:text-zinc-600', 'dark:hover-text-zinc-300',
+                            'hover:text-zinc-600', 'dark:hover:text-zinc-300',
                             'hover:bg-zinc-100 dark:hover:bg-zinc-800',
                             'transition-colors cursor-pointer',
                         )}
