@@ -45,7 +45,7 @@ export function BookmarkCard({ bookmark, onDeleted }: BookmarkCardProps) {
     const truncatedText = verse.text.length > 160
         ? verse.text.slice(0, 160).trimEnd() + '...'
         : verse.text
-    const cleanedText = truncatedText.replace(/^[()\[\]{}‘’'“”"\s]+|[()\[\]{}‘’'“”"\s]+$/g, '')
+    const cleanedText = truncatedText.replace(/^[()[\]{}‘’'“”"\s]+|[()[\]{}‘’'“”"\s]+$/g, '')
 
     return (
         <div className={cn(
