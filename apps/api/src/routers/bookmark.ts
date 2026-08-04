@@ -122,7 +122,7 @@ export const bookmarkRouter = router({
                             }
                         }
                     },
-                    orderBy: { created_at: 'desc' },
+                    orderBy: { updated_at: 'desc' },
                     take: limit,
                     skip: offset
                 }),

@@ -23,6 +23,7 @@ interface BookmarkCardProps {
         translation_id: string
         note: string | null
         created_at: Date
+        updated_at: Date
         book_name: string
         verse: Verse
     }
@@ -36,7 +37,7 @@ export function BookmarkCard({ bookmark, onDeleted }: BookmarkCardProps) {
         onSuccess: onDeleted,
     })
 
-    const { verse, book_name, note, created_at, translation_id } = bookmark
+    const { verse, book_name, note, created_at, updated_at, translation_id } = bookmark
 
     const referenceLabel = `${book_name} ${verse.chapter_number}:${verse.number}`
     const href = `/read/${verse.book_id}/${verse.chapter_number}?translation=${translation_id}#verse-${verse.number}`
@@ -74,7 +75,7 @@ export function BookmarkCard({ bookmark, onDeleted }: BookmarkCardProps) {
                 </Link>
                 <div className="flex items-center gap-1.5 text-sm text-zinc-400 dark:text-zinc-500 shrink-0 ml-4">
                     <Clock className="h-4 w-4" />
-                    <RelativeTime date={new Date(created_at)} />
+                    <RelativeTime date={new Date(updated_at)} />
                 </div>
             </div>
 

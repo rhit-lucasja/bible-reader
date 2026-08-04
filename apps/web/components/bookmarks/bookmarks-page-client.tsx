@@ -24,6 +24,7 @@ interface Bookmark {
     translation_id: string
     note: string | null
     created_at: Date
+    updated_at: Date
     book_name: string
     verse: Verse
 }
