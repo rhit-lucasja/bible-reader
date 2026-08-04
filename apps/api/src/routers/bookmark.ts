@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { router, protectedProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
-import { getDataTransformer } from '@trpc/server/unstable-core-do-not-import'
 
 export const bookmarkRouter = router({
 
@@ -32,7 +31,6 @@ export const bookmarkRouter = router({
             }
 
             // upsert bookmark/note for this verse + user
-            // TODO: modify created_at if update and not insert
             const bookmark = await ctx.db.bookmark.upsert({
                 where: {
                     user_id_verse_id_translation_id: {
@@ -198,8 +196,7 @@ export const bookmarkRouter = router({
             return ctx.db.bookmark.update({
                 where: { id: input.bookmark_id },
                 data: {
-                    note: input.note,
-                    // TODO: updating a note should update created_at
+                    note: input.note
                 }
             })
         }),
