@@ -174,6 +174,7 @@ model Bookmark {
     translation_id      String
     note                String?
     created_at          DateTime @default(now())
+    updated_at          DateTime @updatedAt @default(now())
 
     user                User @relation(fields: [user_id], references: [id], onDelete: Cascade)
     verse               Verse @relation(fields: [verse_id], references: [id], onDelete: Cascade)
