@@ -36,7 +36,7 @@ export function TranslationAccordion({
                     translation={t}
                     isOpen={openTranslationId === t.id}
                     isPreferred={t.id === preferredTranslationId}
-                    onToggle={() => handleToggle(translations.id)}
+                    onToggle={() => handleToggle(t.id)}
                 />
             ))}
         </div>
