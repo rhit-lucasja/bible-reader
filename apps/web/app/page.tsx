@@ -1,40 +1,33 @@
-import { auth, signOut } from '@/auth'
+export const dynamic = 'force-dynamic'
+
+import { auth } from '@/auth'
 import { createServerClient } from '@/lib/trpc/server'
+import { HeroSection } from '@/components/home/hero-section'
+import { TranslationAccordion } from '@/components/home/translation-accordion'
 
 export default async function Home() {
-    const session = await auth()
-    const trpc = await createServerClient()
+    const [session, trpc] = await Promise.all([
+        auth(),
+        createServerClient()
+    ])
 
-    // to test API is reachable from frontend
-    const translations = await trpc.translation.listTranslations.query()
+    // gather available translations and user preferences
+    const [translations, prefs] = await Promise.all([
+        trpc.translation.listTranslations.query(),
+        session ? trpc.user.getPreferences.query() : Promise.resolve(null)
+    ])
 
     return (
-        <div className="space-y-4">
-            <h1 className="text-3xl text-red-600 font-bold underline">Ignis Divinus</h1>
-
-            {session ? (
-                <div>
-                    <p>Signed in as {session.user?.email}</p>
-                    <p>User ID: {session.user?.id}</p>
-                    <form
-                        action={async () => {
-                            'use server'
-                            await signOut({ redirectTo: '/' })
-                        }}
-                    >
-                        <button type="submit">Sign out</button>
-                    </form>
-                </div>
-            ) : (
-                <a href="/auth/signin">Sign in</a>
-            )}
-
-            <h2 className="text-lg text-red-600 underline">Available Translations</h2>
-            <ul>
-                {translations.map((t) => (
-                    <li key={t.id}>{t.english_name} ({t.id})</li>
-                ))}
-            </ul>
+        // TODO: styling the element separation
+        <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
+            <HeroSection
+                userName={session?.user?.name ?? null}
+                isSignedIn={!!session}
+            />
+            <TranslationAccordion
+                translations={translations}
+                preferredTranslationId={prefs?.preferred_translation_id ?? null}
+            />
         </div>
     )
 }
