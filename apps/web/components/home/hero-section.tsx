@@ -13,7 +13,6 @@ export function HeroSection({
     isSignedIn
 }: HeroSectionProps) {
     return (
-        // TODO: style the hero section
         <div className="space-y-8">
 
             {/* Greeting */}
@@ -70,7 +69,6 @@ function FeatureSpotlight({
     text: string[]
 }) {
     return (
-        // TODO: style individual pills
         <div className={cn(
             'gap-1.5 px-3 py-1.5 rounded-md',
             'border border-zinc-300 dark:border-zinc-700',
