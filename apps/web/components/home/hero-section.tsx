@@ -17,46 +17,43 @@ export function HeroSection({
         <div className="space-y-8">
 
             {/* Greeting */}
-            <div className="space-y-3">
-                {isSignedIn && userName ? (
-                    <>
-                        <p className="text-sm text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                            Welcome back
-                        </p>
-                        <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">
-                            {userName}
-                        </h1>
-                    </>
-                ) : (
-                    <>
-                        <p className="text-sm text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                            Welcome to
-                        </p>
-                        <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">
-                            Ignis Divinus
-                        </h1>
-                    </>
-                )}
-                <p className="text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl leading-relaxed">
-                    Read and explore Scripture across multiple translations. Search by
-                    keyword or concept using AI-powered semantic search, bookmark
-                    meaningful verses, and keep notes on passages that speak to you.
+            <div className="space-y-2 text-center">
+                <p className="text-md text-zinc-500 uppercase tracking-widest">
+                    Welcome to
+                </p>
+                <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+                    Ignis Divinus
+                </h1>
+                <p className="text-md text-zinc-500 uppercase tracking-wider">
+                    Scripture Search Engine
                 </p>
             </div>
 
-            {/* Feature pills */}
-            <div className="flex flex-wrap gap-3">
-                <FeaturePill
-                    icon={<BookOpenText className="h-3.5 w-3.5" />}
-                    label="Multiple translations"
+            {/* Feature highlights */}
+            <div className="flex flex-col justify-center gap-3">
+                <FeatureSpotlight
+                    icon={<BookOpenText className="h-16 w-16" />}
+                    label="Multiple Translations"
+                    text={[
+                        'Read Scripture that makes sense to you.',
+                        'Choose between traditional and modern translations, from the King James Version to the New American Bible.'
+                    ]}
                 />
-                <FeaturePill
-                    icon={<Search className="h-3.5 w-3.5" />}
-                    label="AI semantic search"
+                <FeatureSpotlight
+                    icon={<Search className="h-16 w-16" />}
+                    label="Semantic Search"
+                    text={[
+                        'Seek, and you shall find.',
+                        'Whether you\'re looking for a specific phrase or searching for a general theme, leverage the hybrid search engine for powerful results.'
+                    ]}
                 />
-                <FeaturePill
-                    icon={<Bookmark className="h-3.5 w-3.5" />}
-                    label="Bookmarks & notes"
+                <FeatureSpotlight
+                    icon={<Bookmark className="h-16 w-16" />}
+                    label="Bookmarks & Notes"
+                    text={[
+                        'Find a verse that speaks to you?',
+                        'Record your thoughts in the moment, and revisit them whenever you want.'
+                    ]}
                 />
             </div>
 
@@ -94,35 +91,55 @@ export function HeroSection({
                         Sign in to save bookmarks
                     </Link>
                 )}
-
-                {/* Divider */}
-                <div className="border-t border-zinc-100 dark:border-zinc-800" />
-
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                    Browse translations
-                </p>
             </div>
+
+            {/* Divider */}
+            <div className="border-t border-zinc-200 dark:border-zinc-800" />
+
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Browse translations
+            </p>
         </div>
     )
 }
 
-function FeaturePill({
+function FeatureSpotlight({
     icon,
-    label
+    label,
+    text
 }: {
     icon: React.ReactNode
     label: string
+    text: string[]
 }) {
     return (
         // TODO: style individual pills
-        <span className={cn(
-            'flex items-center gap-1.5 px-3 py-1.5',
-            'rounded-full text-xs font-medium',
-            'bg-zinc-100 dark:bg-zinc-800',
-            'text-zinc-600 dark:text-zinc-400',
+        <div className={cn(
+            'gap-1.5 px-3 py-1.5 rounded-md',
+            'border border-zinc-300 dark:border-zinc-700',
+            'text-lg text-center text-zinc-600 dark:text-zinc-400',
+            'font-bold uppercase tracking-wider',
         )}>
-            {icon}
             {label}
-        </span>
+            <div className="border-t border-zinc-300 dark:border-zinc-700 my-1" />
+            <div className={cn(
+                'flex items-center justify-between gap-16',
+                'px-4 py-2',
+            )}>
+                <div>
+                    {icon}
+                </div>
+                <div className={cn(
+                    'text-md text-zinc-500 space-y-4',
+                    'font-normal normal-case tracking-normal leading-normal',
+                )}>
+                    {text.map((t, i) => (
+                        <div key={i}>
+                            {t}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     )
 }
