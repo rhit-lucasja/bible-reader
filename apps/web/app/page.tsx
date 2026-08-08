@@ -4,6 +4,7 @@ import { auth } from '@/auth'
 import { createServerClient } from '@/lib/trpc/server'
 import { HeroSection } from '@/components/home/hero-section'
 import { TranslationAccordion } from '@/components/home/translation-accordion'
+import { cn } from '@/lib/utils'
 
 export default async function Home() {
     const [session, trpc] = await Promise.all([
@@ -18,8 +19,11 @@ export default async function Home() {
     ])
 
     return (
-        // TODO: styling the element separation
-        <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        <div className={cn(
+            'max-w-3xl mx-auto px-6 py-8',
+            'border-x border-zinc-200 dark:border-zinc-800',
+            'min-h-[calc(100vh-3.6rem)]',
+        )}>
             <HeroSection
                 userName={session?.user?.name ?? null}
                 isSignedIn={!!session}
