@@ -56,49 +56,6 @@ export function HeroSection({
                     ]}
                 />
             </div>
-
-            {/* CTA row */}
-            <div className="flex items-center gap-3">
-                <Link href="/read/GEN/1"
-                    className={cn(
-                        'px-5 py-2.5 rounded-lg text-sm font-medium',
-                        'bg-zinc-900 dark:bg-zinc-100',
-                        'text-white dark:text-zinc-900',
-                        'hover:opacity-80 transition-opacity',
-                    )}
-                >
-                    Start from The Beginning
-                </Link>
-                <Link href="/search"
-                    className={cn(
-                        'px-5 py-2.5 rounded-lg text-sm font-medium',
-                        'border border-zinc-200 dark:border-zinc-700',
-                        'text-zinc-700 dark:text-zinc-300',
-                        'hover:bg-zinc-50 dark:hover:bg-zinc-800',
-                        'transition-colors',
-                    )}
-                >
-                    Search passages
-                </Link>
-                {!isSignedIn && (
-                    <Link href="/auth/signin"
-                        className={cn(
-                            'text-sm text-zinc-400 dark:text-zinc-500',
-                            'hover:text-zinc-600 dark:hover:text-zinc-300',
-                            'transition-colors ml-1',
-                        )}
-                    >
-                        Sign in to save bookmarks
-                    </Link>
-                )}
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-zinc-200 dark:border-zinc-800" />
-
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Browse translations
-            </p>
         </div>
     )
 }
