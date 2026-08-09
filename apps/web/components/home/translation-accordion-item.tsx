@@ -40,38 +40,38 @@ export function TranslationAccordionItem({
     }
 
     return (
-        // TODO: styling books accordion
         <div className={cn(
-            'rounded-xl border transition-colors',
-            isOpen
-                ? 'border-zinc-300 dark:border-zinc-600'
-                : 'border-zinc-200 dark:border-zinc-800',
-            isPreferred && !isOpen && 'border-amber-200 dark:border-amber-900/50',
+            'rounded-md border transition-colors',
+            isPreferred
+                ? 'border-blue-500 dark:border-blue-400'
+                : isOpen
+                    ? 'border-zinc-400 dark:border-zinc-600'
+                    : 'border-zinc-300 dark:border-zinc-700',
         )}>
 
             {/* Translation header */}
             <button onClick={onToggle}
                 className={cn(
-                    'w-full flex items-center justify-between px-5 py-4 rounded-xl',
-                    'text-left transition-colors',
+                    'w-full flex items-center justify-between px-5 py-4 rounded-md',
+                    'text-left transition-colors cursor-pointer',
                     isOpen
                         ? 'bg-zinc-50 dark:bg-zinc-800/50 rounded-b-none'
-                        : 'bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/50',
+                        : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50',
                 )}
             >
                 <div className="flex items-center gap-3 min-w-0">
                     {/* Short name badge */}
                     <span className={cn(
-                        'shrink-0 text-xs font-mono font-semibold px-2 py-1 rounded-md',
-                        'bg-zinc-100 dark:bg-zinc-800',
-                        'text-zinc-600 dark:text-zinc-400',
+                        'shrink-0 text-xs font-bold px-2 py-1 rounded-md',
+                        'bg-blue-500/10 dark:bg-blue-400/10',
+                        'text-blue-500 dark:text-blue-400',
                     )}>
                         {translation.short_name}
                     </span>
 
                     <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                            <span className="text-sm text-zinc-900 dark:text-zinc-100 truncate">
                                 {translation.english_name}
                             </span>
                             {/* Preferred indicator */}
@@ -79,26 +79,27 @@ export function TranslationAccordionItem({
                                 <span className={cn(
                                     'flex items-center gap-1 shrink-0',
                                     'text-xs font-medium',
-                                    'text-amber-500 dark:text-amber-400',
+                                    'text-blue-500 dark:text-blue-400',
                                 )}>
-                                    <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                    <Star className="h-3 w-3 fill-blue-500 dark:fill-blue-400" />
                                     Preferred
                                 </span>
                             )}
                         </div>
-                        <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
-                            {translation.num_books} books | {translation.language}
+                        <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                            {translation.num_books} books
                         </p>
                     </div>
                 </div>
 
                 <ChevronRight className={cn(
-                    'h-4 w-4 text-zinc-400 shrink-0 transition-transform duration-200',
+                    'h-4 w-4 text-zinc-400 dark:text-zinc-500 shrink-0 transition-transform duration-200',
                     isOpen && 'rotate-90',
                 )} />
             </button>
 
             {/* Expanded list of books */}
+            {/* TODO: Continue styling below */}
             {isOpen && (
                 <div className={cn(
                     'border-t border-zinc-200 dark:border-zinc-700',
