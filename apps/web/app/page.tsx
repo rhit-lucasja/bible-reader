@@ -20,7 +20,7 @@ export default async function Home() {
 
     return (
         <div className={cn(
-            'max-w-3xl mx-auto px-6 py-8',
+            'max-w-3xl mx-auto px-6 py-8 space-y-16',
             'border-x border-zinc-200 dark:border-zinc-800',
             'min-h-[calc(100vh-3.6rem)]',
         )}>

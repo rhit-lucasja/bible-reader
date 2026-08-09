@@ -74,6 +74,7 @@ function FeatureSpotlight({
             'border border-zinc-300 dark:border-zinc-700',
             'text-lg text-center text-zinc-600 dark:text-zinc-400',
             'font-bold uppercase tracking-wider',
+            'hover:-translate-y-0.5 transition-transform'
         )}>
             {label}
             <div className="border-t border-zinc-300 dark:border-zinc-700 my-1" />
