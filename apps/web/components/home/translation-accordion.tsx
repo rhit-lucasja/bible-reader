@@ -28,17 +28,21 @@ export function TranslationAccordion({
     }
 
     return (
-        // TODO: styling overall accordion fit
-        <div className="space-y-2">
-            {translations.map((t) => (
-                <TranslationAccordionItem
-                    key={t.id}
-                    translation={t}
-                    isOpen={openTranslationId === t.id}
-                    isPreferred={t.id === preferredTranslationId}
-                    onToggle={() => handleToggle(t.id)}
-                />
-            ))}
+        <div className="space-y-4">
+            <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+                Available Translations
+            </p>
+            <div className="space-y-2">
+                {translations.map((t) => (
+                    <TranslationAccordionItem
+                        key={t.id}
+                        translation={t}
+                        isOpen={openTranslationId === t.id}
+                        isPreferred={t.id === preferredTranslationId}
+                        onToggle={() => handleToggle(t.id)}
+                    />
+                ))}
+            </div>
         </div>
     )
 }
