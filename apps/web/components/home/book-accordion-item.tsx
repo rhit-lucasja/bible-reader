@@ -18,7 +18,7 @@ interface HomeBookItemProps {
     translationId: string
 }
 
-export function HomeBookItem({
+export function BookAccordionItem({
     book,
     isOpen,
     onToggle,

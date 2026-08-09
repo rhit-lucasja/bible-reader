@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { ChevronRight, Star } from 'lucide-react'
 import { trpc } from '@/lib/trpc/client'
-import { HomeBookItem } from './home-book-item'
+import { BookAccordionItem } from './book-accordion-item'
 import { cn } from '@/lib/utils'
 
 interface Translation {
@@ -117,7 +117,7 @@ export function TranslationAccordionItem({
                     ) : (
                         <div className="p-4 space-y-0.5">
                             {books.map((book) => (
-                                <HomeBookItem
+                                <BookAccordionItem
                                     key={book.id}
                                     book={book}
                                     isOpen={openBookId === book.id}
