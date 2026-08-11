@@ -34,6 +34,10 @@ export function TranslationAccordionItem({
         { translation_id: translation.id },
         { enabled: isOpen }
     )
+    // split books in half for display columns
+    const mid = Math.ceil(books.length / 2)
+    const firstHalf = books.slice(0, mid)
+    const secondHalf = books.slice(mid)
 
     function handleBookToggle(bookId: string) {
         setOpenBookId((prev) => (prev === bookId ? null : bookId))
@@ -99,33 +103,57 @@ export function TranslationAccordionItem({
             </button>
 
             {/* Expanded list of books */}
-            {/* TODO: Continue styling below */}
             {isOpen && (
                 <div className={cn(
                     'border-t border-zinc-200 dark:border-zinc-700',
-                    'rounded-b-xl overflow-hidden',
+                    'rounded-b-md overflow-hidden',
                     'bg-white dark:bg-zinc-900',
                 )}>
                     {isLoading ? (
-                        <div className="p-6 space-y-2">
-                            {[...Array(5)].map((_, i) => (
-                                <div key={i}
-                                    className="h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse"
-                                    style={{ width: `${60 + (i % 3) * 15}%` }}
-                                />
-                            ))}
+                        <div className="flex w-full gap-2 px-2 py-3">
+                            <div className="flex-1 space-y-2">
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i}
+                                        className="h-8 rounded-md bg-zinc-100 dark:bg-zinc-800 animate-pulse"
+                                        style={{ width: `${60 + (i % 3) * 15}%` }}
+                                    />
+                                ))}
+                            </div>
+                            <div className="w-0 border-l border-zinc-200 dark:border-zinc-700" />
+                            <div className="flex-1 space-y-2">
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i}
+                                        className="h-8 rounded-md bg-zinc-100 dark:bg-zinc-800 animate-pulse"
+                                        style={{ width: `${60 + (i % 4) * 10}%` }}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     ) : (
-                        <div className="p-4 space-y-0.5">
-                            {books.map((book) => (
-                                <BookAccordionItem
-                                    key={book.id}
-                                    book={book}
-                                    isOpen={openBookId === book.id}
-                                    onToggle={() => handleBookToggle(book.id)}
-                                    translationId={translation.id}
-                                />
-                            ))}
+                        <div className="flex w-full gap-2 px-2 py-3">
+                            <div className="flex-1">
+                                {firstHalf.map((book) => (
+                                    <BookAccordionItem
+                                        key={book.id}
+                                        book={book}
+                                        isOpen={openBookId === book.id}
+                                        onToggle={() => handleBookToggle(book.id)}
+                                        translationId={translation.id}
+                                    />
+                                ))}
+                            </div>
+                            <div className="w-0 border-l border-zinc-200 dark:border-zinc-700" />
+                            <div className="flex-1">
+                                {secondHalf.map((book) => (
+                                    <BookAccordionItem
+                                        key={book.id}
+                                        book={book}
+                                        isOpen={openBookId === book.id}
+                                        onToggle={() => handleBookToggle(book.id)}
+                                        translationId={translation.id}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
