@@ -1,0 +1,101 @@
+import Link from 'next/link'
+import { BookOpenText, Search, Bookmark } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import React from 'react'
+
+interface HeroSectionProps {
+    userName: string | null
+    isSignedIn: boolean
+}
+
+export function HeroSection({
+    userName,
+    isSignedIn
+}: HeroSectionProps) {
+    return (
+        <div className="space-y-8">
+
+            {/* Greeting */}
+            <div className="space-y-2 text-center">
+                <p className="text-md text-zinc-500 uppercase tracking-widest">
+                    Welcome to
+                </p>
+                <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+                    Ignis Divinus
+                </h1>
+                <p className="text-md text-zinc-500 uppercase tracking-wider">
+                    Scripture Search Engine
+                </p>
+            </div>
+
+            {/* Feature highlights */}
+            <div className="flex flex-col justify-center gap-3">
+                <FeatureSpotlight
+                    icon={<BookOpenText className="h-16 w-16" />}
+                    label="Multiple Translations"
+                    text={[
+                        'Read Scripture that makes sense to you.',
+                        'Choose between traditional and modern translations, from the King James Version to the New American Bible.'
+                    ]}
+                />
+                <FeatureSpotlight
+                    icon={<Search className="h-16 w-16" />}
+                    label="Semantic Search"
+                    text={[
+                        'Seek, and you shall find.',
+                        'Whether you\'re looking for a specific phrase or searching for a general theme, leverage the hybrid search engine for powerful results.'
+                    ]}
+                />
+                <FeatureSpotlight
+                    icon={<Bookmark className="h-16 w-16" />}
+                    label="Bookmarks & Notes"
+                    text={[
+                        'Find a verse that speaks to you?',
+                        'Record your thoughts in the moment, and revisit them whenever you want.'
+                    ]}
+                />
+            </div>
+        </div>
+    )
+}
+
+function FeatureSpotlight({
+    icon,
+    label,
+    text
+}: {
+    icon: React.ReactNode
+    label: string
+    text: string[]
+}) {
+    return (
+        <div className={cn(
+            'gap-1.5 px-3 py-1.5 rounded-md',
+            'border border-zinc-300 dark:border-zinc-700',
+            'text-lg text-center text-zinc-600 dark:text-zinc-400',
+            'font-bold uppercase tracking-wider',
+            'hover:-translate-y-0.5 transition-transform'
+        )}>
+            {label}
+            <div className="border-t border-zinc-300 dark:border-zinc-700 my-1" />
+            <div className={cn(
+                'flex items-center justify-between gap-16',
+                'px-4 py-2',
+            )}>
+                <div>
+                    {icon}
+                </div>
+                <div className={cn(
+                    'text-md text-zinc-500 space-y-4',
+                    'font-normal normal-case tracking-normal leading-normal',
+                )}>
+                    {text.map((t, i) => (
+                        <div key={i}>
+                            {t}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+}
