@@ -31,11 +31,11 @@ export function BookAccordionItem({
             <button onClick={onToggle}
                 className={cn(
                     'w-full flex items-center justify-between',
-                    'px-3 py-2 rounded-lg text-sm text-left',
-                    'transition-colors',
+                    'px-3 py-2 text-sm text-left rounded-md',
                     isOpen
                         ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50',
+                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800',
+                    'transition-colors cursor-pointer',
                 )}
             >
                 <span className="truncate">
@@ -46,7 +46,7 @@ export function BookAccordionItem({
                         {book.num_chapters} ch.
                     </span>
                     <ChevronRight className={cn(
-                        'h-3.5 w-3.5 text-zinc-400 transition-transform duration-200',
+                        'h-3.5 w-3.5 shrink-0 text-zinc-400 transition-transform duration-200',
                         isOpen && 'rotate-90',
                     )} />
                 </div>
@@ -54,18 +54,16 @@ export function BookAccordionItem({
 
             {/* Chapter grid */}
             {isOpen && (
-                <div className="mt-0.5 mb-1 ml-3 pl-3 border-l border-zinc-200 dark:border-zinc-700">
-                    <div className="flex flex-wrap gap-0.5 py-1.5 pr-2">
+                <div className="mt-0.5 mb-1 ml-3 pl-2 border-l border-zinc-200 dark:border-zinc-700">
+                    <div className="flex flex-wrap gap-0.5 py-1 pr-2">
                         {Array.from({ length: book.num_chapters }, (_, i) => i + 1).map((ch) => (
                             <Link key={ch}
                                 href={`/read/${book.id}/${ch}?translation=${translationId}`}
                                 className={cn(
-                                    'h-7 w-7 flex items-center justify-center',
-                                    'text-xs rounded-md font-medium',
-                                    'text-zinc-500 dark:text-zinc-400',
-                                    'hover:bg-zinc-900 dark:hover:bg-zinc-100',
-                                    'hover:text-white dark:hover:text-zinc-900',
-                                    'transition-colors'
+                                    'h-7 w-7 text-sm rounded-md flex items-center justify-center',
+                                    'transition-colors cursor-pointer',
+                                    'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100',
+                                    'hover:bg-zinc-100 dark:hover:bg-zinc-800',
                                 )}
                             >
                                 {ch}
