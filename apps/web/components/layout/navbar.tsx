@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { UserMenu } from '@/components/ui/user-menu'
 import { SearchBar } from '@/components/ui/search-bar'
-import { Flame, BookOpenText } from 'lucide-react'
+import { Flame } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function Navbar() {
@@ -15,22 +15,11 @@ export default function Navbar() {
             'backdrop-blur supports-[backdrop-filter]:bg-blue-950/90'
         )}>
             <nav className="mx-auto max-w-7xl px-3 h-14 flex items-center gap-4">
-                {/* Home direct - abbreviated on small screens */}
+                {/* Home direct */}
                 <Link href="/" className="flex items-center gap-1 text-zinc-100 hover:opacity-80 transition-opacity shrink-0">
                     <Flame className="h-8 w-auto" />
-                    <span className="hidden sm:inline text-lg">
-                        Ignis Divinus
-                    </span>
-                    <span className="inline sm:hidden text-lg">
-                        ID
-                    </span>
-                </Link>
-
-                {/* reading navigational link */}
-                <Link href="/read/GEN/1" className="flex items-center gap-2 text-zinc-100 hover:opacity-80 transition-opacity">
-                    <BookOpenText className="h-8 w-auto" />
                     <span className="text-lg">
-                        Read
+                        Ignis Divinus
                     </span>
                 </Link>
             
